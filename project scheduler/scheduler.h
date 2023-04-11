@@ -12,6 +12,8 @@ using namespace std;
 class scheduler
 {
 private:
+	int STL;
+	int forkprob;
 	int processno;
 	int FCFSno;
 	int SJFno;
@@ -28,6 +30,7 @@ public:
 	}
 	void loadfile()
 	{
+		char garbage;
 		cout << "enter file name";
 		ofstream outputFile;
 		ifstream inputFile;
@@ -42,11 +45,22 @@ public:
 			RoundRobin::set_RTF(rtf);
 			inputFile >> Maxw;
 			FCFS::set_Maxw(Maxw);
+			inputFile >> STL>>forkprob;
 			inputFile >> processno;
 			for (int i = 0; i < processno; i++)
 			{
-				process* p = new process()
+				int at, int pid, int ct, int io_num, int io_R, int io_D;
+				inputFile >> at >> pid >> ct >> io_num;
+				inputFile >> garbage;//bracket1
+				inputFile >> io_R; //ioR
+				inputFile >> garbage;//comma
+				inputFile >> io_D; //ioD
+					process* p = new process(at,pid, ct, io_num, io_R, io_D);
+					NEW.enqueue(*p);
 			}
+			int SigId,SigT;
+				inputFile >> SigT;
+				outputFile.close();
 	}
 		void NEWtoRDY()
 	{

@@ -16,11 +16,13 @@ private:
 	int IO_R;
 	int IO_D;
 	int num_of_IO;
+	int kill_time;
 public:
 	int CpuTime;
 	process()
 	{
 		state = "NEW";
+		kill_time = 0;
 	}
 	process(int at,int pid,int ct,int IO_num, int io_R,int io_D)
 	{
@@ -33,6 +35,14 @@ public:
 	void setstate()
 	{
 
+	}
+	int getID()
+	{
+		return PID;
+	}
+	void setkiltime(int t)
+	{
+		kill_time = t;
 	}
 	void print()
 	{
