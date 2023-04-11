@@ -45,7 +45,7 @@ public:
 			inputFile >> processno;
 			for (int i = 0; i < processno; i++)
 			{
-				
+				process* p = new process()
 			}
 	}
 		void NEWtoRDY()

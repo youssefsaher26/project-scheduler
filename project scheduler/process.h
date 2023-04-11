@@ -22,6 +22,11 @@ public:
 	{
 		state = "NEW";
 	}
+	process(int AT,int Pid,int CT,int IO_num, int IO_R,int IO_D)
+	{
+	/
+	
+	}
 	void setstate()
 	{
 
