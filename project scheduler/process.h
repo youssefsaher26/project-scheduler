@@ -15,17 +15,20 @@ private:
 	string state;
 	int IO_R;
 	int IO_D;
-
+	int num_of_IO;
 public:
 	int CpuTime;
 	process()
 	{
 		state = "NEW";
 	}
-	process(int AT,int Pid,int CT,int IO_num, int IO_R,int IO_D)
+	process(int at,int pid,int ct,int IO_num, int io_R,int io_D)
 	{
-	/
-	
+		AT = at;
+		PID = pid;
+		num_of_IO = IO_num;
+		IO_R = io_R;
+		IO_D = io_D;
 	}
 	void setstate()
 	{
