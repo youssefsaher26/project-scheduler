@@ -14,7 +14,8 @@ private:
 	int WT;
 	string state;
 	int IO_R;
-	int IO_P;
+	int IO_D;
+
 public:
 	int CpuTime;
 	process()

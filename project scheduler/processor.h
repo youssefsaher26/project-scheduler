@@ -7,7 +7,6 @@ class scheduler;
 class processor
 {
 protected:
-	LinkedList<process>* RDY;
 	process* RUN;
 	scheduler* Sptr;
 public:
@@ -25,7 +24,7 @@ public:
 				RUNtoBLK();
 			}if (random >= 20 && random <= 30)
 			{
-				RUNtoRDY();
+				//RUNtoRDY();
 			}
 			if (random>=50 && random<= 60)
 			{
@@ -47,11 +46,6 @@ public:
 		return x;
 	}
 	virtual void AddProcess(process* p) = 0;
-	virtual void RUNtoRDY()
-	{
-		RDY->InsertEnd(*RUN);
-		RUN = NULL;
-	}
 	virtual void RUNtoTRM()
 	{
 		Sptr->getTRM()->enqueue(*RUN);

@@ -5,11 +5,10 @@
 #include "processor.h"
 #include "process.h"
 
-class scheduler;
-
 class FCFS : public processor
 {
 private:
+	static int MaxW;
 	LinkedList<process> FCFS_RDY;
 public:
 	virtual int queuetime()
@@ -30,6 +29,19 @@ public:
 		FCFS_RDY.SetHead(temp->getNext());
 		RUN = temp->getItem();
 		delete temp;
+	}
+	void RUN_TO_FCFS_RDY()
+	{
+		FCFS_RDY.InsertEnd(*RUN);
+		RUN = NULL;
+	}
+	LinkedList<process>* get_FCFS_RDY()
+	{
+		return &FCFS_RDY;
+	}
+	static void set_Maxw(int x)
+	{
+		MaxW = x;
 	}
 };
 
