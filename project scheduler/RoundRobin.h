@@ -5,7 +5,7 @@
 #include "process.h"
 class RoundRobin : public processor
 {
-private:
+public:
 	static int TimeSlice;
 	static int RTF;
 public:
@@ -21,6 +21,6 @@ public:
 	{
 
 	}
-
 };
-
+ int RoundRobin::RTF = 0;
+ int RoundRobin::TimeSlice = 0;

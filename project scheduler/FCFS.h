@@ -8,9 +8,9 @@
 class FCFS : public processor
 {
 private:
-	static int MaxW;
 	LinkedList<process*> FCFS_RDY;
 public:
+	static int MaxW;
 	virtual int queuetime()
 	{
 		int sum = 0;
@@ -56,4 +56,5 @@ public:
 		}
 	}
 };
+int FCFS::MaxW=0;
 
