@@ -8,10 +8,13 @@ class SJF : public processor
 {
 private:
 
+
 public:
+	LinkedList<process>* FCFS_RDY;
 	virtual int queuetime()
 	{
 
 	}
+	
 };
 

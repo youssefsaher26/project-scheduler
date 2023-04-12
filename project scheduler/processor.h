@@ -7,13 +7,24 @@ class scheduler;
 class processor
 {
 protected:
-	process* RUN;
 	scheduler* Sptr;
+	process* RUN;
+	int processornumber;
 public:
+	
 	bool State; //  0-IDLE 1-BUSY
 	int IdleTime;
 	int BusyTime;
 	int TotalTRT;
+	int getpnumber()
+	{
+		return processornumber;
+	}
+	process* getrun()
+	{
+		return RUN;
+
+	}
 	virtual void SchduleAlgo()
 	{
 		if (State == 0)
