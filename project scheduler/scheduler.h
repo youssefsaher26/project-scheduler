@@ -52,25 +52,25 @@ public:
 			inputFile >> processno;
 			for (int i = 0; i < processno; i++)
 			{
-				int at, int pid, int ct, int io_num, int io_R, int io_D;
+				int at, pid, ct, io_num, io_R, io_D;
 				inputFile >> at >> pid >> ct >> io_num;
 				inputFile >> garbage;//bracket1
 				inputFile >> io_R; //ioR
 				inputFile >> garbage;//comma
 				inputFile >> io_D; //ioD
-					process* p = new process(at,pid, ct, io_num, io_R, io_D);
-					NEW->enqueue(p);
+				process* p = new process(at,pid, ct, io_num, io_R, io_D);
+				NEW->enqueue(p);
 			}
 			int SigId,SigT;
-			while (!inputFile.eof()) {
+			while (!inputFile.eof())
+			{
 				inputFile >> SigT >> SigId;
 				kill* k = new kill(SigT, SigId);
 				killsigs->enqueue(k);
 			}
 			outputFile.close();
-			}
-
-		void NEWtoRDY()
+	}
+	void NEWtoRDY()
 	{
 		process* ptr1;
 		Node<processor*> *temp;
@@ -140,5 +140,4 @@ public:
 		
 	}
 };
-//snhit
 

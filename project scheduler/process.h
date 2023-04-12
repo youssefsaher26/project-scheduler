@@ -1,7 +1,6 @@
 #include"LinkedList.h"
 #include"Node.h"
 #include"QueueADT.h"
-#include"StackADT.h"
 #include<string>
 class process
 {
