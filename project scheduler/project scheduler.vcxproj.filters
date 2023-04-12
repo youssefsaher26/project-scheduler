@@ -45,5 +45,13 @@
     <ClInclude Include="QueueADT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="kill.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="kill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

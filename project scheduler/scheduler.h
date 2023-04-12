@@ -6,6 +6,7 @@
 #include<iostream>
 #include"RoundRobin.h"
 #include"FCFS.h"
+#include "kill.h"
 using namespace std;
 #include<fstream>
 
@@ -23,11 +24,12 @@ private:
 	QueueADT<process*>* BLK;
 	QueueADT<process*>* TRM;
 	QueueADT<processor*>* ProcessorsList;
+	QueueADT<kill*>* killsigs;
 
 public:
 	processor* processor_shortest_queue()
 	{
-		processor* p = *ProcessorsList->getfront()->getItem();
+		processor* p = ProcessorsList->getfront()->getItem();
 	}
 	void loadfile()
 	{
@@ -60,7 +62,9 @@ public:
 					NEW->enqueue(p);
 			}
 			int SigId,SigT;
-				inputFile >> SigT;
+			inputFile >> SigT >> SigId;
+				kill* k = new kill(SigT , SigId);
+				killsigs->enqueue(k);
 				outputFile.close();
 	}
 		void NEWtoRDY()
@@ -72,7 +76,7 @@ public:
 		while (temp)
 		{
 			processor* p2;
-			p2 = *temp->getItem();
+			p2 = temp->getItem();
 			p2->AddProcess(ptr1);
 			temp = temp->getNext();
 			if (temp->getNext() == NULL)

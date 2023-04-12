@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="FCFS.h" />
+    <ClInclude Include="kill.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="process.h" />
@@ -138,6 +139,9 @@
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="SJF.h" />
     <ClInclude Include="StackADT.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="kill.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
