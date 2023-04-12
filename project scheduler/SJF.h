@@ -4,6 +4,7 @@
 #include"StackADT.h"
 #include "processor.h"
 #include"process.h"
+#pragma once
 class SJF : public processor
 {
 private:

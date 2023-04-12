@@ -3,12 +3,13 @@
 #include"QueueADT.h"
 #include "processor.h"
 #include "process.h"
+#pragma once
 class RoundRobin : public processor
 {
 private:
+public:
 	static int TimeSlice;
 	static int RTF;
-public:
 	static void set_Timeslice(int x)
 	{
 		TimeSlice = x;
@@ -23,4 +24,6 @@ public:
 	}
 
 };
+int RoundRobin::RTF = 0;
+int RoundRobin::TimeSlice=0;
 

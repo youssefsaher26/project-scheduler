@@ -28,6 +28,21 @@ private:
 	QueueADT<kill*>* killsigs;
 
 public:
+	scheduler()
+	{
+		NEW = new QueueADT<process*>;
+		BLK = new QueueADT<process*>;
+		TRM = new QueueADT<process*>;
+		ProcessorsList = new QueueADT<processor*>;
+		killsigs = new QueueADT<kill*>;
+		time = 0;
+		STL = 0;
+		forkprob = 0;
+		FCFSno = 0;
+		SJFno = 0;
+		RRno = 0;
+
+	}
 	processor* processor_shortest_queue()
 	{
 		processor* p = ProcessorsList->getfront()->getItem();
@@ -35,11 +50,10 @@ public:
 	void loadfile()
 	{
 		char garbage;
-		cout << "enter file name";
+		cout << "enter file name"<<endl;
 		ofstream outputFile;
 		ifstream inputFile;
 		inputFile.open("Test.txt", ios::in);
-		
 			int rtf, t_slice, Maxw;
 			cout << "Processing"<<endl;
 			inputFile >> FCFSno>>SJFno>>RRno;
