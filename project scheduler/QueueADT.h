@@ -127,7 +127,7 @@ QueueADT<T>::QueueADT(const QueueADT<T>& LQ)
 template <typename T>
 Node<T>* QueueADT<T>::getrear() const
 {
-	return backptr;
+	return backPtr;
 }
 ///////////////////////////////////////////////////////////////////////////////////
 template <typename T>
