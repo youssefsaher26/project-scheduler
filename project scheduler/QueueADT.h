@@ -15,8 +15,8 @@ public:
 	bool enqueue(const T& newEntry);
 	bool dequeue(T& frntEntry);
 	bool peek(T& frntEntry)  const;
-	Node<T>* getfront();
-	Node<T>* getrear();
+	Node<T>* getfront() const;
+	Node<T>* getrear() const;
 	~QueueADT();
 
 	//copy constructor
@@ -125,13 +125,13 @@ QueueADT<T>::QueueADT(const QueueADT<T>& LQ)
 }
 ///////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-Node<T>* QueueADT<T>::getrear()
+Node<T>* QueueADT<T>::getrear() const
 {
 	return backptr;
 }
 ///////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-Node<T>* QueueADT<T>::getfront()
+Node<T>* QueueADT<T>::getfront() const
 {
 	return frontPtr;
 }	

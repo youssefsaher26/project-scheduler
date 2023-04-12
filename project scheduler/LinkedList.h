@@ -269,7 +269,7 @@ public:
 		}
 
 	}
-	Node<T>* GetHead()
+	Node<T>* GetHead() const
 	{
 		return Head;
 	}

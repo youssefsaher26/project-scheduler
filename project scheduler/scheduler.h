@@ -19,15 +19,15 @@ private:
 	int FCFSno;
 	int SJFno;
 	int RRno;
-	QueueADT<process>* NEW;
-	QueueADT<process>* BLK;
-	QueueADT<process>* TRM;
-	QueueADT<processor>* ProcessorsList;
+	QueueADT<process*>* NEW;
+	QueueADT<process*>* BLK;
+	QueueADT<process*>* TRM;
+	QueueADT<processor*>* ProcessorsList;
 
 public:
 	processor* processor_shortest_queue()
 	{
-		processor* p = ProcessorsList->getfront()->getItem();
+		processor* p = *ProcessorsList->getfront()->getItem();
 	}
 	void loadfile()
 	{
@@ -57,7 +57,7 @@ public:
 				inputFile >> garbage;//comma
 				inputFile >> io_D; //ioD
 					process* p = new process(at,pid, ct, io_num, io_R, io_D);
-					NEW->enqueue(*p);
+					NEW->enqueue(p);
 			}
 			int SigId,SigT;
 				inputFile >> SigT;
@@ -66,13 +66,13 @@ public:
 		void NEWtoRDY()
 	{
 		process* ptr1;
-		Node<processor> *temp;
-		NEW->dequeue(*ptr1);
+		Node<processor*> *temp;
+		NEW->dequeue(ptr1);
 		temp = ProcessorsList->getfront();
 		while (temp)
 		{
 			processor* p2;
-			p2 = temp->getItem();
+			p2 = *temp->getItem();
 			p2->AddProcess(ptr1);
 			temp = temp->getNext();
 			if (temp->getNext() == NULL)
@@ -81,26 +81,29 @@ public:
 			}
 		}
 	}
-	QueueADT<process>* getTRM()
+	QueueADT<process*>* getTRM()
 	{
 		return TRM;
 	}
-	QueueADT<process>* getBLK()
+	QueueADT<process*>* getBLK()
 	{
 		return BLK;
 	}
 	void simulator()
 	{
 		NEWtoRDY();
-		ProcessorsList->getfront()->getItem()->SchduleAlgo();
+		time++;
 	}
+	int countbusy()
+	{
 
+	}
 
 	friend ostream& operator<< (ostream& out, const scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;
 		out << "----------RDY PROCESSES----------" << endl;
-		Node <processor>* p = s.ProcessorsList->getfront();
+		Node <processor*>* p = s.ProcessorsList->getfront();
 		int i = 1;
 		while (p)
 		{
@@ -113,12 +116,12 @@ public:
 		//out<< count of blocked queueu<< loop on blocked queueu and print the IDs;
 		// same exact idea for TRM;
 		out << "-----------RUN PROCESSES----------" << endl;
-		Node <processor>* pt = s.ProcessorsList->getfront();
+		Node <processor*>* pt = s.ProcessorsList->getfront();
 		//find a way to get the count of the running processes...
 		//then, out<<
 		while (pt)
 		{
-			pt->getItem()->getrun();
+			*pt->getItem()->getrun();
 			if (pt)
 			{
 				out << pt->getItem()->getrun()->getID() <<"p"<<pt->getItem()->getpnumber() << " , ";
@@ -129,4 +132,5 @@ public:
 		
 	}
 };
+//snhit
 
