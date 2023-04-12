@@ -22,7 +22,7 @@ public:
 	process()
 	{
 		state = "NEW";
-		kill_time = 0;
+		kill_time = -1;
 	}
 	process(int at,int pid,int ct,int IO_num, int io_R,int io_D)
 	{

@@ -62,11 +62,14 @@ public:
 					NEW->enqueue(p);
 			}
 			int SigId,SigT;
-			inputFile >> SigT >> SigId;
-				kill* k = new kill(SigT , SigId);
+			while (!inputFile.eof()) {
+				inputFile >> SigT >> SigId;
+				kill* k = new kill(SigT, SigId);
 				killsigs->enqueue(k);
-				outputFile.close();
-	}
+			}
+			outputFile.close();
+			}
+
 		void NEWtoRDY()
 	{
 		process* ptr1;
