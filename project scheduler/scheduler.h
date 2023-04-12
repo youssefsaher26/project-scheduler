@@ -27,7 +27,7 @@ private:
 public:
 	processor* processor_shortest_queue()
 	{
-		processor* p = *ProcessorsList->getfront()->getItem();
+		processor* p = ProcessorsList->getfront()->getItem();
 	}
 	void loadfile()
 	{
@@ -72,7 +72,7 @@ public:
 		while (temp)
 		{
 			processor* p2;
-			p2 = *temp->getItem();
+			p2 = temp->getItem();
 			p2->AddProcess(ptr1);
 			temp = temp->getNext();
 			if (temp->getNext() == NULL)
