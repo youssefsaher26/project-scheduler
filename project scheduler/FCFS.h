@@ -4,7 +4,7 @@
 #include "processor.h"
 #include "process.h"
 #include <iostream>
-
+#pragma once
 class FCFS : public processor
 {
 private:

@@ -1,5 +1,6 @@
 #ifndef _NODE
 #define _NODE
+#pragma once
 
 //First let's declare a single node in the list
 template<typename T>

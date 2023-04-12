@@ -1,7 +1,7 @@
 #include"LinkedList.h"
-#include"Node.h"
 #include"QueueADT.h"
 #include "process.h"
+#pragma once
 class scheduler;
 
 class processor
@@ -32,14 +32,14 @@ public:
 			int random = 1 + (rand() % 100);
 			if (random >= 1 && random <= 15)
 			{
-				RUNtoBLK();
+				//RUNtoBLK();
 			}if (random >= 20 && random <= 30)
 			{
 				//RUNtoRDY();
 			}
 			if (random>=50 && random<= 60)
 			{
-				RUNtoTRM();
+				//RUNtoTRM();
 			}
 		}
 	}
@@ -57,15 +57,16 @@ public:
 		return x;
 	}
 	virtual void AddProcess(process* p) = 0;
-	virtual void RUNtoTRM()
-	{
-		Sptr->getTRM()->enqueue(RUN);
-		RUN = NULL;
-	}
-	virtual void RUNtoBLK()
-	{
-		Sptr->getBLK()->enqueue(RUN);
-		RUN = NULL;
-	}
+	//virtual void RUNtoTRM()
+	//{
+	//	Sptr->getTRM()->enqueue(RUN);
+	//	RUN = NULL;
+	//}
+	//virtual void RUNtoBLK()
+	//{
+	//	Sptr->getBLK()->enqueue(RUN);
+	//	RUN = NULL;
+	//}
+	
 };
 

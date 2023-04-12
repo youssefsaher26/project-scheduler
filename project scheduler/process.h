@@ -2,6 +2,8 @@
 #include"Node.h"
 #include"QueueADT.h"
 #include<string>
+#pragma once
+
 class process
 {
 private:

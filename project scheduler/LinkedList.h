@@ -2,6 +2,7 @@
 #define _LINKEDLIST
 #include "Node.h"
 #include<iostream>
+#pragma once
 using namespace std;
 template <typename T>
 class LinkedList

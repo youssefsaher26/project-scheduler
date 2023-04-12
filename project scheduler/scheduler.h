@@ -7,6 +7,7 @@
 #include"RoundRobin.h"
 #include"FCFS.h"
 #include "kill.h"
+#pragma once
 using namespace std;
 #include<fstream>
 
