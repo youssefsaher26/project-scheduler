@@ -23,6 +23,7 @@ public:
 			sum = C->CpuTime + sum;
 			temp = temp->getNext();
 		}
+			return sum;
 	}
 	void FCFS_RDY_TO_RUN()
 	{

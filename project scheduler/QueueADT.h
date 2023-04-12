@@ -6,11 +6,13 @@ class QueueADT
 private:
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
+	int count;
 public:
 	QueueADT()
 	{
 		backPtr = nullptr;
 		frontPtr = nullptr;
+		count = 0;
 	}
 	bool isEmpty() const
 	{
@@ -26,6 +28,7 @@ public:
 			backPtr->setNext(newNodePtr); // The queue was not empty
 
 		backPtr = newNodePtr; // New node is the last node now
+		count++;
 		return true;
 	} // end enqueue
 	bool dequeue(T& frntEntry)
@@ -42,7 +45,7 @@ public:
 
 		// Free memory reserved for the dequeued node
 		delete nodeToDeletePtr;
-
+		count--;
 		return true;
 
 	}
@@ -94,6 +97,10 @@ public:
 			backPtr = ptr;
 			NodePtr = NodePtr->getNext();
 		}
+	}
+	int getcount()
+	{
+		return count;
 	}
 }
 ;

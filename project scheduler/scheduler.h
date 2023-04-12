@@ -1,3 +1,4 @@
+#pragma once
 #include"LinkedList.h"
 #include"Node.h"
 #include"QueueADT.h"
@@ -6,10 +7,9 @@
 #include<iostream>
 #include"RoundRobin.h"
 #include"FCFS.h"
-#include "kill.h"
-#pragma once
-using namespace std;
 #include<fstream>
+#include "kill.h"
+using namespace std;
 
 class scheduler
 {

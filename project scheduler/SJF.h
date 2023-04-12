@@ -8,14 +8,22 @@
 class SJF : public processor
 {
 private:
-
+	QueueADT<process*> SJF_RDY;
 
 public:
-	LinkedList<process>* FCFS_RDY;
+public:
 	virtual int queuetime()
 	{
-
+		int sum = 0;
+		Node<process*>* temp;
+		while (temp)
+		{
+			temp = SJF_RDY.getfront();
+			process* C = temp->getItem();
+			sum = C->CpuTime + sum;
+			temp = temp->getNext();
+		}
+		return sum;
 	}
 	
 };
-
