@@ -31,9 +31,9 @@ public:
 		next = nextNodePtr;
 	} // end setNext
 
-	T* getItem() const
+	T getItem() const
 	{
-		return &item;
+		return item;
 	} // end getItem
 
 	Node<T>* getNext() const

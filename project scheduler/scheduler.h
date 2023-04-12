@@ -121,10 +121,11 @@ public:
 		//then, out<<
 		while (pt)
 		{
-			*pt->getItem()->getrun();
+
+			pt->getItem()->getrun();
 			if (pt)
 			{
-				out << pt->getItem()->getrun()->getID() <<"p"<<pt->getItem()->getpnumber() << " , ";
+				out << pt->getItem()->getrun()->getID() <<"(p"<<pt->getItem()->getpnumber() << ") , ";
 			}
 			pt = pt->getNext();
 		}

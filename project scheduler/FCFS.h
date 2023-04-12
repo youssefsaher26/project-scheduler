@@ -19,7 +19,7 @@ public:
 		while (temp)
 		{
 			temp = FCFS_RDY.GetHead();
-			process* C = *temp->getItem();
+			process* C = temp->getItem();
 			sum = C->CpuTime + sum;
 			temp = temp->getNext();
 		}
@@ -28,7 +28,7 @@ public:
 	{
 		Node<process*>* temp = FCFS_RDY.GetHead();
 		FCFS_RDY.SetHead(temp->getNext());
-		RUN = *temp->getItem();
+		RUN = temp->getItem();
 		delete temp;
 	}
 	void RUN_TO_FCFS_RDY()

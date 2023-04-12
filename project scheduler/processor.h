@@ -59,12 +59,12 @@ public:
 	virtual void AddProcess(process* p) = 0;
 	virtual void RUNtoTRM()
 	{
-		Sptr->getTRM()->enqueue(*RUN);
+		Sptr->getTRM()->enqueue(RUN);
 		RUN = NULL;
 	}
 	virtual void RUNtoBLK()
 	{
-		Sptr->getBLK()->enqueue(*RUN);
+		Sptr->getBLK()->enqueue(RUN);
 		RUN = NULL;
 	}
 };
