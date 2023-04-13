@@ -18,6 +18,26 @@ public:
 	{
 		return (frontPtr == nullptr);
 	}
+	
+
+	bool CircEnqueue(const T& newEntry)
+	{
+		Node<T>* newNodePtr = new Node<T>(newEntry);
+		// Insert the new node
+		if (isEmpty())	//special case if this is the first node to insert
+			frontPtr = newNodePtr; // The queue is empty
+		else
+		{
+			backPtr->setNext(newNodePtr);
+		}
+		// The queue was not empty
+
+		backPtr = newNodePtr;
+		backPtr->setNext(frontPtr);// New node is the last node now
+		count++;
+		return true;
+	}
+
 	bool enqueue(const T& newEntry)
 	{
 		Node<T>* newNodePtr = new Node<T>(newEntry);
@@ -48,6 +68,30 @@ public:
 		count--;
 		return true;
 
+	}
+	bool CircDequeue(T& frntEntry)
+	{
+		if (isEmpty())
+			return false;
+
+		Node<T>* nodeToDeletePtr = frontPtr;
+		frntEntry = frontPtr->getItem();
+		frontPtr = frontPtr->getNext();
+		backPtr->setNext(frontPtr);
+		// Queue is not empty; remove front
+		if (nodeToDeletePtr == backPtr)	 // Special case: last node in the queue
+			backPtr = nullptr;
+
+		// Free memory reserved for the dequeued node
+		delete nodeToDeletePtr;
+		count--;
+		return true;
+
+	}
+
+	void setcount(int x)
+	{
+		count = x;
 	}
 	bool peek(T& frntEntry)  const
 	{

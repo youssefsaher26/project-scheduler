@@ -76,6 +76,7 @@ public:
 					inputFile >> garbage;//comma
 					inputFile >> io_D; //ioD
 					inputFile >> garbage;//bracket2
+					inputFile >> garbage;//comma
 				}
 				process* p = new process(at,pid, ct, io_num, io_R, io_D);
 				NEW->enqueue(p);

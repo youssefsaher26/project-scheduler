@@ -32,6 +32,8 @@ public:
 		num_of_IO = IO_num;
 		IO_R = io_R;
 		IO_D = io_D;
+		state = "NEW";
+		kill_time = -1;
 	}
 	void setstate()
 	{

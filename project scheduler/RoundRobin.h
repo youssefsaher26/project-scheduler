@@ -7,9 +7,14 @@
 class RoundRobin : public processor
 {
 private:
+	QueueADT<process*>* RR_RDY;
 public:
 	static int TimeSlice;
 	static int RTF;
+	RoundRobin()
+	{
+		RR_RDY = new QueueADT<process*>;
+	}
 	static void set_Timeslice(int x)
 	{
 		TimeSlice = x;

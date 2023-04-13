@@ -9,8 +9,16 @@ class FCFS : public processor
 {
 private:
 	
-	LinkedList<process*> FCFS_RDY;
+	LinkedList<process*>* FCFS_RDY;
 public:
+	FCFS()
+	{
+		FCFS_RDY= new LinkedList<process*>;
+	}
+	void addtoFCFS_RDY(process* p)
+	{
+		FCFS_RDY->InsertEnd(p);
+	}
 	static int MaxW;
 	virtual int queuetime()
 	{
@@ -18,7 +26,7 @@ public:
 		Node<process*>* temp;
 		while (temp)
 		{
-			temp = FCFS_RDY.GetHead();
+			temp = FCFS_RDY->GetHead();
 			process* C = temp->getItem();
 			sum = C->CpuTime + sum;
 			temp = temp->getNext();
@@ -27,20 +35,20 @@ public:
 	}
 	void FCFS_RDY_TO_RUN()
 	{
-		Node<process*>* temp = FCFS_RDY.GetHead();
-		FCFS_RDY.SetHead(temp->getNext());
+		Node<process*>* temp = FCFS_RDY->GetHead();
+		FCFS_RDY->SetHead(temp->getNext());
 		RUN = temp->getItem();
 		delete temp;
 	}
 	void RUN_TO_FCFS_RDY()
 	{
-		FCFS_RDY.InsertEnd(RUN);
+		FCFS_RDY->InsertEnd(RUN);
 		RUN = NULL;
 	}
 	LinkedList<process*>* get_FCFS_RDY()
 	{
-		LinkedList<process*>* L = &FCFS_RDY;
-		return L;
+		
+		return FCFS_RDY;
 	}
 	static void set_Maxw(int x)
 	{
@@ -50,7 +58,7 @@ public:
 	friend ostream& operator<< (ostream& out, const FCFS& p)
 	{
 		out << "[FCFS] : " << p.RUN->getID() << " ";
-		Node <process*>* ptr = p.FCFS_RDY.GetHead();
+		Node <process*>* ptr = p.FCFS_RDY->GetHead();
 		while (ptr)
 		{
 			out << ptr->getItem()->getID() <<" , ";
