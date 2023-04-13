@@ -69,10 +69,14 @@ public:
 			{
 				int at, pid, ct, io_num, io_R, io_D;
 				inputFile >> at >> pid >> ct >> io_num;
-				inputFile >> garbage;//bracket1
-				inputFile >> io_R; //ioR
-				inputFile >> garbage;//comma
-				inputFile >> io_D; //ioD
+				for (int i = 0; i < io_num; i++)
+				{
+					inputFile >> garbage;//bracket1
+					inputFile >> io_R; //ioR
+					inputFile >> garbage;//comma
+					inputFile >> io_D; //ioD
+					inputFile >> garbage;//bracket2
+				}
 				process* p = new process(at,pid, ct, io_num, io_R, io_D);
 				NEW->enqueue(p);
 			}
