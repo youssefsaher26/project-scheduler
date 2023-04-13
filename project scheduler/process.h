@@ -20,6 +20,7 @@ private:
 	int kill_time;
 public:
 	int CpuTime;
+	int RemTime;
 	process()
 	{
 		state = "NEW";

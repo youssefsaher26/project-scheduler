@@ -1,14 +1,14 @@
 #include "Node.h"
 #pragma once
 template <typename T>
-class QueueADT
+class PriorityQueue
 {
 private:
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
 	int count;
 public:
-	QueueADT()
+	PriorityQueue()
 	{
 		backPtr = nullptr;
 		frontPtr = nullptr;
@@ -19,37 +19,50 @@ public:
 		return (frontPtr == nullptr);
 	}
 
-	bool CircEnqueue(const T& newEntry)
-	{
-		Node<T>* newNodePtr = new Node<T>(newEntry);
-		// Insert the new node
-		if (isEmpty())	//special case if this is the first node to insert
-			frontPtr = newNodePtr; // The queue is empty
-		else
-		{
-			backPtr->setNext(newNodePtr);
-		}
-		// The queue was not empty
-
-		backPtr = newNodePtr;
-		backPtr->setNext(frontPtr);// New node is the last node now
-		count++;
-		return true;
-	}
-
 	bool enqueue(const T& newEntry)
 	{
 		Node<T>* newNodePtr = new Node<T>(newEntry);
-		// Insert the new node
-		if (isEmpty())	//special case if this is the first node to insert
-			frontPtr = newNodePtr; // The queue is empty
-		else
-			backPtr->setNext(newNodePtr); // The queue was not empty
 
-		backPtr = newNodePtr; // New node is the last node now
-		count++;
-		return true;
-	} // end enqueue
+		if (isEmpty())	//special case if this is the first node to insert
+		{
+			frontPtr = newNodePtr; // The queue is empty
+			count++;
+			return true;
+		}
+		else
+		{
+			Node<T>* prv = frontPtr;
+			Node<T>* ptr = frontPtr->getNext();
+			if (prv->getItem() > newEntry)
+			{
+				newNodePtr->setNext(frontPtr);
+				frontPtr = newNodePtr ;
+				count++;
+				return true;
+			}
+			else
+			{
+				while (ptr)
+				{
+					if (ptr->getItem() > newEntry)
+					{
+						prv->setNext(newNodePtr);
+						newNodePtr->setNext(ptr);
+						count++
+						return true;
+					}
+					ptr = ptr->getNext();
+					prv = prv->getNext();
+				}
+				prv->setNext(newNodePtr);
+				newNodePtr->setNext(nullptr);
+				backPtr = newNodePtr;
+				count++;
+				return true;
+			}
+		}
+	}
+		
 	bool dequeue(T& frntEntry)
 	{
 		if (isEmpty())
@@ -68,26 +81,6 @@ public:
 		return true;
 
 	}
-	bool CircDequeue(T& frntEntry)
-	{
-		if (isEmpty())
-			return false;
-
-		Node<T>* nodeToDeletePtr = frontPtr;
-		frntEntry = frontPtr->getItem();
-		frontPtr = frontPtr->getNext();
-		backPtr->setNext(frontPtr);
-		// Queue is not empty; remove front
-		if (nodeToDeletePtr == backPtr)	 // Special case: last node in the queue
-			backPtr = nullptr;
-
-		// Free memory reserved for the dequeued node
-		delete nodeToDeletePtr;
-		count--;
-		return true;
-
-	}
-
 	void setcount(int x)
 	{
 		count = x;
@@ -109,7 +102,7 @@ public:
 	{
 		return backPtr;
 	}
-	~QueueADT()
+	~PriorityQueue()
 	{
 		T temp;
 
@@ -118,7 +111,7 @@ public:
 	}
 
 	//copy constructor
-	QueueADT(const QueueADT<T>& LQ)
+	PriorityQueue(const PriorityQueue<T>& LQ)
 	{
 		Node<T>* NodePtr = LQ.frontPtr;
 		if (!NodePtr) //LQ is empty
@@ -147,3 +140,4 @@ public:
 	}
 }
 ;
+
