@@ -23,10 +23,9 @@ public:
 	virtual int queuetime()
 	{
 		int sum = 0;
-		Node<process*>* temp;
+		Node<process*>* temp = FCFS_RDY->GetHead();
 		while (temp)
 		{
-			temp = FCFS_RDY->GetHead();
 			process* C = temp->getItem();
 			sum = C->CpuTime + sum;
 			temp = temp->getNext();
@@ -57,7 +56,7 @@ public:
 
 	friend ostream& operator<< (ostream& out, const FCFS& p)
 	{
-		out << "[FCFS] : " << p.RUN->getID() << " ";
+		out << "[FCFS] : " << p.RUN->getID() << " RDY: ";
 		Node <process*>* ptr = p.FCFS_RDY->GetHead();
 		while (ptr)
 		{

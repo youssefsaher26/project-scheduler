@@ -119,13 +119,28 @@ public:
 	void simulator()
 	{
 		NEWtoRDY();
+		//call print fn
+		//mouseclick before incrementing time
 		time++;
 	}
 	int countbusy()
 	{
 
 	}
-
+	int CountRun() const
+	{
+		Node <processor*>* p = ProcessorsList->getfront();
+		int c = 0;
+		while (p)
+		{
+			if (p->getItem()->State == 1)
+			{
+				c++;
+			}
+			p = p->getNext();
+		}
+		return c;
+	}
 	friend ostream& operator<< (ostream& out, const scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;
@@ -134,30 +149,51 @@ public:
 		int i = 1;
 		while (p)
 		{
-			cout << "Processor " << i << " " << p << endl;
+			out << "Processor " << i << " " << p << endl;
 			i++;
 			p = p->getNext();
 
 		}
 		out << "----------BLK PROCESSES----------" << endl;
-		//out<< count of blocked queueu<< loop on blocked queueu and print the IDs;
-		// same exact idea for TRM;
+		Node<process*>* pr = s.BLK->getfront();
+		out << s.BLK->getcount() << " BLK: ";
+		while (pr)
+		{
+			out << pr->getItem()->getID()<<" , ";
+			pr=pr->getNext();
+		}
+		out << endl;
 		out << "-----------RUN PROCESSES----------" << endl;
+		int x = s.CountRun();
+		out << x << " RUN: ";
 		Node <processor*>* pt = s.ProcessorsList->getfront();
-		//find a way to get the count of the running processes...
-		//then, out<<
 		while (pt)
 		{
 
 			pt->getItem()->getrun();
 			if (pt)
 			{
-				out << pt->getItem()->getrun()->getID() <<"(p"<<pt->getItem()->getpnumber() << ") , ";
+				out << pt->getItem()->getrun()->getID() <<"(p"<<pt->getItem()->getpnumber() << "), ";
 			}
 			pt = pt->getNext();
 		}
-
+		out << endl;
+		out << "----------TRM PROCESSES----------" << endl;
+		Node<process*>* ptrm = s.TRM->getfront();
+		out << s.TRM->getcount() << " TRM: ";
+		while (ptrm)
+		{
+			out << ptrm->getItem()->getID() << " , ";
+			ptrm = ptrm->getNext();
+		}
+		out << endl;
+		out << "PRESS ANY KEY TO MOVE TO NEXT STEP!"<<endl;
 		
+	}
+	void print()
+	{
+		scheduler S = *this;
+		cout << S;
 	}
 
 };

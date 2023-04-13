@@ -9,7 +9,6 @@ class SJF : public processor
 {
 private:
 	QueueADT<process*>* SJF_RDY;
-	Node<process*>* min;
 
 public:
 	SJF()
@@ -73,15 +72,23 @@ public:
 	virtual int queuetime()
 	{
 		int sum = 0;
-		Node<process*>* temp;
+		Node<process*>* temp= SJF_RDY->getfront();
 		while (temp)
 		{
-			temp = SJF_RDY->getfront();
 			process* C = temp->getItem();
 			sum = C->CpuTime + sum;
 			temp = temp->getNext();
 		}
 		return sum;
 	}
-	
+	friend ostream& operator<< (ostream& out, const SJF& p)
+	{
+		out << "[SJF] : " << p.RUN->getID() <<" RDY: ";
+		Node <process*>* ptr = p.SJF_RDY->getfront();
+		while (ptr)
+		{
+			out << ptr->getItem()->getID() << " , ";
+			ptr = ptr->getNext();
+		}
+	}
 };

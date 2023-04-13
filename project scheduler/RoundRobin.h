@@ -27,6 +27,21 @@ public:
 	{
 
 	}
+	
+	friend ostream& operator<< (ostream& out, const RoundRobin& p)
+	{
+		out << "[RR  ] : " << p.RUN->getID() << " RDY: ";
+		Node <process*>* ptr = p.RR_RDY->getfront();
+		while (ptr)
+		{
+			out << ptr->getItem()->getID() <<" , ";
+			if (ptr == p.RR_RDY->getrear())
+			{
+				break;
+			}
+			ptr = ptr->getNext();
+		}
+	}
 };
 int RoundRobin::RTF = 0;
 int RoundRobin::TimeSlice=0;
