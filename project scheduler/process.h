@@ -26,6 +26,10 @@ public:
 		state = "NEW";
 		kill_time = -1;
 	}
+	int GetArrTime()
+	{
+		return AT;
+	}
 	process(int at,int pid,int ct,int IO_num, int io_R,int io_D)
 	{
 		AT = at;
@@ -36,9 +40,17 @@ public:
 		state = "NEW";
 		kill_time = -1;
 	}
-	void setstate()
+	bool operator > (process* p)
 	{
-
+		if (CpuTime> p->CpuTime)
+		{
+			return true;
+		}
+		return false;
+	}
+	void setstate(string s)
+	{
+		state = s;
 	}
 	int getID()
 	{

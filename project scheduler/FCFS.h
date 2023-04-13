@@ -37,16 +37,17 @@ public:
 		Node<process*>* temp = FCFS_RDY->GetHead();
 		FCFS_RDY->SetHead(temp->getNext());
 		RUN = temp->getItem();
+		RUN->setstate("RUN");
 		delete temp;
 	}
 	void RUN_TO_FCFS_RDY()
 	{
+		RUN->setstate("RDY");
 		FCFS_RDY->InsertEnd(RUN);
 		RUN = NULL;
 	}
 	LinkedList<process*>* get_FCFS_RDY()
 	{
-		
 		return FCFS_RDY;
 	}
 	static void set_Maxw(int x)

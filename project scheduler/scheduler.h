@@ -95,18 +95,24 @@ public:
 	{
 		process* ptr1;
 		Node<processor*> *temp;
-		NEW->dequeue(ptr1);
+		NEW->peek(ptr1);
 		temp = ProcessorsList->getfront();
-		while (temp)
+		while (ptr1)
 		{
+			if(ptr1->GetArrTime()>time)
+			{
+				break;
+			}
+			NEW->dequeue(ptr1);
 			processor* p2;
 			p2 = temp->getItem();
 			p2->AddProcess(ptr1);
 			temp = temp->getNext();
-			if (temp->getNext() == NULL)
+			if (temp->getNext() == nullptr)
 			{
 				temp->setNext(ProcessorsList->getfront());
 			}
+			NEW->peek(ptr1);
 		}
 	}
 	QueueADT<process*>* getTRM()
