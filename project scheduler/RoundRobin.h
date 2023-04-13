@@ -23,9 +23,22 @@ public:
 	{
 		RTF = x;
 	}
+	virtual void AddProcess(process* p)
+	{
+		RR_RDY->enqueue(p);
+	}
 	virtual int queuetime()
 	{
 
+	}
+	void RR_RDY_TO_RUN()
+	{
+		RR_RDY->CircDequeue(RUN);
+	}
+	void RUN_TO_RR_RDY()
+	{
+		RR_RDY->CircEnqueue(RUN);
+		RUN = NULL;
 	}
 	
 	friend ostream& operator<< (ostream& out, const RoundRobin& p)

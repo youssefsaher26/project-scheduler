@@ -1,74 +1,43 @@
 #include"LinkedList.h"
 #include"Node.h"
-#include"QueueADT.h"
-#include"StackADT.h"
+#include"PriorityQueue.h"
 #include "processor.h"
 #include"process.h"
 #pragma once
 class SJF : public processor
 {
 private:
-	QueueADT<process*>* SJF_RDY;
+	PriorityQueue<process*>* SJF_RDY;
 
 public:
 	SJF()
 	{
-		SJF_RDY = new QueueADT<process*>;
+		SJF_RDY = new PriorityQueue<process*>;
 	}
-	Node<process*>* findmin()
-	{
-		Node<process*>* ptr = SJF_RDY->getfront();
-		Node<process*>* min = ptr;
-		if (ptr != nullptr)
-		{
-			int x = ptr->getItem()->CpuTime;
-			while (ptr)
-			{
-				ptr = ptr->getNext();
-				if (ptr->getItem()->CpuTime < x)
-				{
-					min = ptr;
-					x = min->getItem()->CpuTime;
-				}
-			}
-			return min;
-		}
-		return nullptr;
-	}
-
-	//void insert(process* p)
+	//Node<process*>* findmin()
 	//{
-	//	Node<process*>* spprv = SJF_RDY->getfront();
-	//	if (spprv == nullptr)
+	//	Node<process*>* ptr = SJF_RDY->getfront();
+	//	Node<process*>* min = ptr;
+	//	if (ptr != nullptr)
 	//	{
-	//		SJF_RDY->enqueue(p);
-	//		return;
-	//	}
-	//	else
-	//	{
-	//		Node<process*>* ptr = new Node<process*>(p);
-	//		Node<process*>* sp = SJF_RDY->getfront()->getNext();
-	//		while (sp)
+	//		int x = ptr->getItem()->CpuTime;
+	//		while (ptr)
 	//		{
-	//			int z = spprv->getItem()->CpuTime;
-	//			if (z> p->CpuTime)
+	//			ptr = ptr->getNext();
+	//			if (ptr->getItem()->CpuTime < x)
 	//			{
-	//				ptr->setNext(spprv);
-	//				ptr = SJF_RDY->getfront();
-	//			}
-	//			int y = sp->getItem()->CpuTime;
-	//			if (y > p->CpuTime)
-	//			{
-	//				sp = sp->getNext();
+	//				min = ptr;
+	//				x = min->getItem()->CpuTime;
 	//			}
 	//		}
+	//		return min;
 	//	}
-	//	//last step
-	//	int x = SJF_RDY->getcount() + 1;
-	//	SJF_RDY->setcount(x);
+	//	return nullptr;
 	//}
-
-
+	void Add_To_SJF_RDY(process* p)
+	{
+		SJF_RDY->enqueue(p);
+	}
 	virtual int queuetime()
 	{
 		int sum = 0;
@@ -80,6 +49,19 @@ public:
 			temp = temp->getNext();
 		}
 		return sum;
+	}
+	virtual void AddProcess(process* p)
+	{
+		SJF_RDY->enqueue(p);
+	}
+	void SJF_RDY_TO_RUN()
+	{
+		SJF_RDY->dequeue(RUN);
+	}
+	void RUN_TO_SJF_RDY()
+	{
+		SJF_RDY->enqueue(RUN);
+		RUN = NULL;
 	}
 	friend ostream& operator<< (ostream& out, const SJF& p)
 	{

@@ -15,7 +15,7 @@ public:
 	{
 		FCFS_RDY= new LinkedList<process*>;
 	}
-	void addtoFCFS_RDY(process* p)
+	virtual void AddProcess(process* p)
 	{
 		FCFS_RDY->InsertEnd(p);
 	}
