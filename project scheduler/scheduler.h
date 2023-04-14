@@ -10,6 +10,7 @@
 #include"FCFS.h"
 #include<fstream>
 #include "kill.h"
+#include"IO_R_D.h"
 using namespace std;
 
 class scheduler
@@ -26,8 +27,8 @@ private:
 	QueueADT<process*>* BLK;
 	QueueADT<process*>* TRM;
 	QueueADT<processor*>* ProcessorsList;
-	QueueADT<kill*>* killsigs;
-
+	QueueADT<kill*>* killsigs=nullptr;
+	QueueADT<IO_R_D*>* inputsigs=nullptr;
 public:
 	scheduler()
 	{
@@ -36,6 +37,7 @@ public:
 		TRM = new QueueADT<process*>;
 		ProcessorsList = new QueueADT<processor*>;
 		killsigs = new QueueADT<kill*>;
+		inputsigs = new QueueADT<IO_R_D*>;
 		time = 0;
 		STL = 0;
 		forkprob = 0;
@@ -55,7 +57,6 @@ public:
 	void loadfile()
 	{
 		char garbage;
-		cout << "enter file name"<<endl;
 		ofstream outputFile;
 		ifstream inputFile;
 		inputFile.open("Test.txt", ios::in);
@@ -81,10 +82,13 @@ public:
 					inputFile >> garbage;//comma
 					inputFile >> io_D; //ioD
 					inputFile >> garbage;//bracket2
+					IO_R_D* iod = new IO_R_D(io_R, io_D, pid);
+					inputsigs->enqueue(iod);
+					if (i!=io_num-1)
 					inputFile >> garbage;//comma
-					//ior and iod can be initialised as zero, that way no error when no io requests.
+					//ior and mod can be initialised as zero, that way no error when no io requests.
 				}
-				process* p = new process(at,pid, ct, io_num, io_R, io_D);
+				process* p = new process(at,pid, ct, io_num,inputsigs);
 				NEW->enqueue(p);
 			}
 			int SigId,SigT;
@@ -94,6 +98,7 @@ public:
 				kill* k = new kill(SigT, SigId);
 				killsigs->enqueue(k);
 			}
+
 			outputFile.close();
 	}
 	void NEWtoRDY()

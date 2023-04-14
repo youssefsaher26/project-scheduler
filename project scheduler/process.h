@@ -2,6 +2,7 @@
 #include"Node.h"
 #include"QueueADT.h"
 #include<string>
+#include"IO_R_D.h"
 #pragma once
 
 class process
@@ -14,21 +15,20 @@ private:
 	int TRT;
 	int WT;
 	string state;
-	int IO_R;
-	int IO_D;
+	QueueADT<IO_R_D*>* inputsigs;//if null then no input iutout sigs
 	int num_of_IO;
 	int kill_time;
 	int RemTime;
 public:
 	int CpuTime;
-	process(int at, int pid, int ct, int IO_num, int io_R, int io_D)
+	process(int at, int pid, int ct, int IO_num, QueueADT<IO_R_D*>* input_sigs)
 	{
 		RemTime = ct;
+		CpuTime = ct;
 		AT = at;
 		PID = pid;
 		num_of_IO = IO_num;
-		IO_R = io_R;
-		IO_D = io_D;
+		inputsigs = input_sigs;
 		state = "NEW";
 		kill_time = -1;
 	}
@@ -68,6 +68,10 @@ public:
 		TT = t;
 		TRT = TT - AT;
 		WT = TRT - CpuTime;
+	}
+	void add_inputsigs(int IO_r,int IO_d)
+	{
+
 	}
 	bool operator > (process* p)
 	{
