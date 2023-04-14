@@ -145,6 +145,7 @@ public:
 			{
 				p->getItem()->GetRun()->SetRemTime(c--);
 			}
+			p = p->getNext();
 		}
 	}
 	void RUNtoBLK()
