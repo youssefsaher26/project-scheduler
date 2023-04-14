@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="FCFS.h" />
+    <ClInclude Include="IO_R_D.h" />
     <ClInclude Include="kill.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Node.h" />
