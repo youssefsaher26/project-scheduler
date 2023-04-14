@@ -75,6 +75,7 @@ public:
 			{
 				int at, pid, ct, io_num, io_R, io_D;
 				inputFile >> at >> pid >> ct >> io_num;
+				process* p = new process(at, pid, ct, io_num, nullptr);
 				for (int i = 0; i < io_num; i++)
 				{
 					inputFile >> garbage;//bracket1
@@ -84,11 +85,12 @@ public:
 					inputFile >> garbage;//bracket2
 					IO_R_D* iod = new IO_R_D(io_R, io_D, pid);
 					inputsigs->enqueue(iod);
+					p->add_inputs_sigs(iod);
 					if (i!=io_num-1)
 					inputFile >> garbage;//comma
+
 					//ior and mod can be initialised as zero, that way no error when no io requests.
 				}
-				process* p = new process(at,pid, ct, io_num,inputsigs);
 				NEW->enqueue(p);
 			}
 			int SigId,SigT;

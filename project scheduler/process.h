@@ -32,6 +32,10 @@ public:
 		state = "NEW";
 		kill_time = -1;
 	}
+	void add_inputs_sigs(IO_R_D* ptr)
+	{
+		inputsigs->enqueue(ptr);
+	}
 	process()
 	{
 		state = "NEW";
