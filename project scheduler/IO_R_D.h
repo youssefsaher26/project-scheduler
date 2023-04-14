@@ -10,7 +10,7 @@ public:
 	{
 		io_R = io_r;
 		io_D = io_d;
-		pid = piD;
+		pid = piD; 
 	}
 };
 

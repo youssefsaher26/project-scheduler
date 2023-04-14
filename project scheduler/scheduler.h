@@ -27,8 +27,8 @@ private:
 	QueueADT<process*>* BLK;
 	QueueADT<process*>* TRM;
 	QueueADT<processor*>* ProcessorsList;
-	QueueADT<kill*>* killsigs=nullptr;
-	QueueADT<IO_R_D*>* inputsigs=nullptr;
+	QueueADT<kill*>* killsigs;
+	QueueADT<IO_R_D*>* inputsigs;
 public:
 	scheduler()
 	{
@@ -75,7 +75,7 @@ public:
 			{
 				int at, pid, ct, io_num, io_R, io_D;
 				inputFile >> at >> pid >> ct >> io_num;
-				process* p = new process(at, pid, ct, io_num, nullptr);
+				process* p = new process(at, pid, ct, io_num);
 				for (int i = 0; i < io_num; i++)
 				{
 					inputFile >> garbage;//bracket1

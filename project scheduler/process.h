@@ -15,26 +15,25 @@ private:
 	int TRT;
 	int WT;
 	string state;
-	QueueADT<IO_R_D*>* inputsigs;//if null then no input iutout sigs
+	QueueADT<IO_R_D*> inputsigs;//if null then no input iutout sigs
 	int num_of_IO;
 	int kill_time;
 	int RemTime;
 public:
 	int CpuTime;
-	process(int at, int pid, int ct, int IO_num, QueueADT<IO_R_D*>* input_sigs)
+	process(int at, int pid, int ct, int IO_num)
 	{
 		RemTime = ct;
 		CpuTime = ct;
 		AT = at;
 		PID = pid;
 		num_of_IO = IO_num;
-		inputsigs = input_sigs;
 		state = "NEW";
 		kill_time = -1;
 	}
 	void add_inputs_sigs(IO_R_D* ptr)
 	{
-		inputsigs->enqueue(ptr);
+		inputsigs.enqueue(ptr);
 	}
 	process()
 	{
@@ -72,10 +71,6 @@ public:
 		TT = t;
 		TRT = TT - AT;
 		WT = TRT - CpuTime;
-	}
-	void add_inputsigs(int IO_r,int IO_d)
-	{
-
 	}
 	bool operator > (process* p)
 	{
