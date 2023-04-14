@@ -6,6 +6,7 @@
 #include"processor.h"
 #include<iostream>
 #include"RoundRobin.h"
+#include "PriorityQueue.h"
 #include"FCFS.h"
 #include<fstream>
 #include "kill.h"
@@ -43,9 +44,13 @@ public:
 		RRno = 0;
 
 	}
-	processor* processor_shortest_queue()
+	void simulator()
 	{
-		processor* p = ProcessorsList->getfront()->getItem();
+		NEWtoRDY();
+		RUNtoTRM();
+		print();
+		//mouseclick before incrementing time
+		time++;
 	}
 	void loadfile()
 	{
@@ -115,39 +120,36 @@ public:
 			NEW->peek(ptr1);
 		}
 	}
-	QueueADT<process*>* getTRM()
-	{
-		return TRM;
-	}
-	QueueADT<process*>* getBLK()
-	{
-		return BLK;
-	}
-	void simulator()
-	{
-		NEWtoRDY();
-		//call print fn
-		//mouseclick before incrementing time
-		time++;
-	}
-	int countbusy()
-	{
-
-	}
-	int CountRun() const
+	void RUNtoTRM()
 	{
 		Node <processor*>* p = ProcessorsList->getfront();
-		int c = 0;
 		while (p)
 		{
-			if (p->getItem()->State == 1)
+			int c = p->getItem()->GetRun()->GetRemTime();
+			if (c == 0)
 			{
-				c++;
+				TRM->enqueue(p->getItem()->GetRun());
+				p->getItem()->GetRun()->finishTimes(time);
+				p->getItem()->setstate(0);
+				p->getItem()->SetRun();
+
 			}
-			p = p->getNext();
+			else
+			{
+				p->getItem()->GetRun()->SetRemTime(c--);
+			}
 		}
-		return c;
 	}
+	void RUNtoBLK()
+	{
+		//ORASHY
+	}
+	void BLKtoRDY()
+	{
+		//orashy
+	}
+
+
 	friend ostream& operator<< (ostream& out, const scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;
@@ -166,7 +168,11 @@ public:
 		out << s.BLK->getcount() << " BLK: ";
 		while (pr)
 		{
-			out << pr->getItem()->getID()<<" , ";
+			out << pr->getItem()->getID();
+			if (pr->getNext() != nullptr)
+			{
+				out << " , ";
+			}
 			pr=pr->getNext();
 		}
 		out << endl;
@@ -177,10 +183,14 @@ public:
 		while (pt)
 		{
 
-			pt->getItem()->getrun();
+			pt->getItem()->GetRun();
 			if (pt)
 			{
-				out << pt->getItem()->getrun()->getID() <<"(p"<<pt->getItem()->getpnumber() << "), ";
+				out << pt->getItem()->GetRun()->getID() <<"(P"<<pt->getItem()->getpnumber() << ")";
+			}
+			if (pt->getNext() != nullptr)
+			{
+				out << ", ";
 			}
 			pt = pt->getNext();
 		}
@@ -190,18 +200,38 @@ public:
 		out << s.TRM->getcount() << " TRM: ";
 		while (ptrm)
 		{
-			out << ptrm->getItem()->getID() << " , ";
+			out << ptrm->getItem()->getID();
+			if (ptrm->getNext() != nullptr)
+			{
+				out << " , ";
+			}
 			ptrm = ptrm->getNext();
 		}
 		out << endl;
 		out << "PRESS ANY KEY TO MOVE TO NEXT STEP!"<<endl;
 		
 	}
+
+	int CountRun() const
+	{
+		Node <processor*>* p = ProcessorsList->getfront();
+		int c = 0;
+		while (p)
+		{
+			if (p->getItem()->State == 1)
+			{
+				c++;
+			}
+			p = p->getNext();
+		}
+		return c;
+	}
 	void print()
 	{
 		scheduler S = *this;
 		cout << S;
 	}
+
 
 };
 

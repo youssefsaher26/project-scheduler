@@ -14,6 +14,38 @@ public:
 	RoundRobin()
 	{
 		RR_RDY = new QueueADT<process*>;
+		type = 2;
+	}
+
+	virtual void AddProcess(process* p)
+	{
+		RR_RDY->CircEnqueue(p);
+	}
+	virtual int queuetime()
+	{
+		int sum = 0;
+		Node <process*>* ptr = RR_RDY->getfront();
+		while (ptr)
+		{
+			sum = sum + ptr->getItem()->GetRemTime();
+			if (ptr == RR_RDY->getrear())
+			{
+				break;
+			}
+			ptr = ptr->getNext();
+		
+		}
+	}
+	void RDY_TO_RUN()
+	{
+		RR_RDY->CircDequeue(RUN);
+		State = 1;
+	}
+	void RUN_TO_RDY()
+	{
+		RR_RDY->CircEnqueue(RUN);
+		RUN = NULL;
+		State = 0;
 	}
 	static void set_Timeslice(int x)
 	{
@@ -22,23 +54,6 @@ public:
 	static void set_RTF(int x)
 	{
 		RTF = x;
-	}
-	virtual void AddProcess(process* p)
-	{
-		RR_RDY->enqueue(p);
-	}
-	virtual int queuetime()
-	{
-
-	}
-	void RR_RDY_TO_RUN()
-	{
-		RR_RDY->CircDequeue(RUN);
-	}
-	void RUN_TO_RR_RDY()
-	{
-		RR_RDY->CircEnqueue(RUN);
-		RUN = NULL;
 	}
 	
 	friend ostream& operator<< (ostream& out, const RoundRobin& p)

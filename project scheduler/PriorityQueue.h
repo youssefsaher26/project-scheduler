@@ -26,6 +26,7 @@ public:
 		if (isEmpty())	//special case if this is the first node to insert
 		{
 			frontPtr = newNodePtr; // The queue is empty
+			backPtr = newNodePtr;
 			count++;
 			return true;
 		}
@@ -48,7 +49,7 @@ public:
 					{
 						prv->setNext(newNodePtr);
 						newNodePtr->setNext(ptr);
-						count++
+						count++;
 						return true;
 					}
 					ptr = ptr->getNext();

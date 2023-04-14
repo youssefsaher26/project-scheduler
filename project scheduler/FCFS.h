@@ -11,15 +11,17 @@ private:
 	
 	LinkedList<process*>* FCFS_RDY;
 public:
+	static int MaxW;
+
 	FCFS()
 	{
 		FCFS_RDY= new LinkedList<process*>;
+		type = 1;
 	}
 	virtual void AddProcess(process* p)
 	{
 		FCFS_RDY->InsertEnd(p);
 	}
-	static int MaxW;
 	virtual int queuetime()
 	{
 		int sum = 0;
@@ -27,24 +29,30 @@ public:
 		while (temp)
 		{
 			process* C = temp->getItem();
-			sum = C->CpuTime + sum;
+			sum = C->GetRemTime() + sum;
 			temp = temp->getNext();
 		}
 			return sum;
 	}
-	void FCFS_RDY_TO_RUN()
+	void RDY_TO_RUN()
 	{
 		Node<process*>* temp = FCFS_RDY->GetHead();
-		FCFS_RDY->SetHead(temp->getNext());
-		RUN = temp->getItem();
-		RUN->setstate("RUN");
-		delete temp;
+		if (temp == nullptr)
+		{
+			return;
+		}
+		else
+		{
+			FCFS_RDY->SetHead(temp->getNext());
+			RUN = temp->getItem();
+			State = 1;
+		}
 	}
-	void RUN_TO_FCFS_RDY()
+	void RUN_TO_RDY()
 	{
-		RUN->setstate("RDY");
 		FCFS_RDY->InsertEnd(RUN);
 		RUN = NULL;
+		State = 0;
 	}
 	LinkedList<process*>* get_FCFS_RDY()
 	{
@@ -61,7 +69,11 @@ public:
 		Node <process*>* ptr = p.FCFS_RDY->GetHead();
 		while (ptr)
 		{
-			out << ptr->getItem()->getID() <<" , ";
+			out << ptr->getItem()->getID();
+			if (ptr->getNext() != nullptr)
+			{
+				out << " , ";
+			}
 			ptr = ptr->getNext();
 		}
 	}

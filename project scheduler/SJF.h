@@ -13,31 +13,9 @@ public:
 	SJF()
 	{
 		SJF_RDY = new PriorityQueue<process*>;
+		type = 3;
 	}
-	//Node<process*>* findmin()
-	//{
-	//	Node<process*>* ptr = SJF_RDY->getfront();
-	//	Node<process*>* min = ptr;
-	//	if (ptr != nullptr)
-	//	{
-	//		int x = ptr->getItem()->CpuTime;
-	//		while (ptr)
-	//		{
-	//			ptr = ptr->getNext();
-	//			if (ptr->getItem()->CpuTime < x)
-	//			{
-	//				min = ptr;
-	//				x = min->getItem()->CpuTime;
-	//			}
-	//		}
-	//		return min;
-	//	}
-	//	return nullptr;
-	//}
-	void Add_To_SJF_RDY(process* p)
-	{
-		SJF_RDY->enqueue(p);
-	}
+
 	virtual int queuetime()
 	{
 		int sum = 0;
@@ -45,7 +23,7 @@ public:
 		while (temp)
 		{
 			process* C = temp->getItem();
-			sum = C->CpuTime + sum;
+			sum = C->GetRemTime() + sum;
 			temp = temp->getNext();
 		}
 		return sum;
@@ -54,14 +32,16 @@ public:
 	{
 		SJF_RDY->enqueue(p);
 	}
-	void SJF_RDY_TO_RUN()
+	void RDY_TO_RUN()
 	{
 		SJF_RDY->dequeue(RUN);
+		State = 1;
 	}
-	void RUN_TO_SJF_RDY()
+	void RUN_TO_RDY()
 	{
 		SJF_RDY->enqueue(RUN);
 		RUN = NULL;
+		State = 0;
 	}
 	friend ostream& operator<< (ostream& out, const SJF& p)
 	{
@@ -69,7 +49,11 @@ public:
 		Node <process*>* ptr = p.SJF_RDY->getfront();
 		while (ptr)
 		{
-			out << ptr->getItem()->getID() << " , ";
+			out << ptr->getItem()->getID();
+			if (ptr->getNext() != nullptr)
+			{
+				out << " , ";
+			}
 			ptr = ptr->getNext();
 		}
 	}

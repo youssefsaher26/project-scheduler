@@ -2,25 +2,36 @@
 #include"QueueADT.h"
 #include "process.h"
 #pragma once
-class scheduler;
+
 
 class processor
 {
 protected:
-	scheduler* Sptr;
 	process* RUN;
 	int processornumber;
+	int type; //1 is FCFS, 2 is RR, 3 is SJF
+	int IdleTime;
+	int BusyTime; //phase 2
 public:
 	
 	bool State; //  0-IDLE 1-BUSY
-	int IdleTime;
-	int BusyTime;
 	int TotalTRT;
+	virtual void RDY_TO_RUN() = 0;
+	virtual void RUN_TO_RDY() = 0;
+	virtual int queuetime() = 0;
+	virtual void AddProcess(process* p) = 0;
+
+	processor()
+	{
+		IdleTime = 0;
+		BusyTime = 0;
+
+	}
 	int getpnumber()
 	{
 		return processornumber;
 	}
-	process* getrun()
+	process* GetRun()
 	{
 		return RUN;
 
@@ -43,30 +54,36 @@ public:
 			}
 		}
 	}
-	virtual int queuetime() = 0;
-	virtual void setstate(bool s)=0;
-	virtual int pLoad()
+	virtual void setstate(bool s)
 	{
-		int x = BusyTime / TotalTRT;
-		return x;
-		
+		State = s;
 	}
-	virtual int pUtil()
+	void SetRun()
 	{
-		int x = BusyTime / (BusyTime + IdleTime);
-		return x;
+		RUN = nullptr;
 	}
-	virtual void AddProcess(process* p) = 0;
-	//virtual void RUNtoTRM()
+	bool operator > (processor* p)
+	{
+		if (this->queuetime() > p->queuetime())
+			return true;
+		return false;
+	}
+	bool operator < (processor* p)
+	{
+		if (this->queuetime() < p->queuetime())
+			return true;
+		return false;
+	}
+	//virtual int pLoad()
 	//{
-	//	Sptr->getTRM()->enqueue(RUN);
-	//	RUN = NULL;
+	//	int x = BusyTime / TotalTRT;
+	//	return x;
+	//	
 	//}
-	//virtual void RUNtoBLK()
+	//virtual int pUtil()
 	//{
-	//	Sptr->getBLK()->enqueue(RUN);
-	//	RUN = NULL;
+	//	int x = BusyTime / (BusyTime + IdleTime);
+	//	return x;
 	//}
 	
 };
-
