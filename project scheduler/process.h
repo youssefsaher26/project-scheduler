@@ -79,7 +79,10 @@ public:
 	{
 		state = s;
 	}
-
+	void decremtime()
+	{
+		RemTime--;
+	}
 	void setkiltime(int t)
 	{
 		kill_time = t;

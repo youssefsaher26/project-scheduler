@@ -27,6 +27,14 @@ public:
 		BusyTime = 0;
 
 	}
+	bool getstate()
+	{
+		return State;
+	}
+	int get_type()
+	{
+		return type;
+	}
 	int getpnumber()
 	{
 		return processornumber;

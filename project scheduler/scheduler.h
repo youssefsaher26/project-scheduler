@@ -29,6 +29,7 @@ private:
 	QueueADT<processor*>* ProcessorsList;
 	QueueADT<kill*>* killsigs;
 	QueueADT<IO_R_D*>* inputsigs;
+	Node<processor*>* random;
 public:
 	scheduler()
 	{
@@ -44,14 +45,49 @@ public:
 		FCFSno = 0;
 		SJFno = 0;
 		RRno = 0;
-
+		random = ProcessorsList->getfront();
 	}
 	void simulator()
 	{
-		NEWtoRDY();
-		RUNtoTRM();
+		loadfile();
+		//while() termination condition-> all processors are empty AND new list is emptyt..
+		Node <processor*>* p = ProcessorsList->getfront();
+		while (p)
+		{
+			NEWtoRDY();
+			processor* ptr = p->getItem();
+			ptr->RDY_TO_RUN();
+			if (p->getItem()->getstate() != 0)
+			{
+				if (p->getItem()->GetRun()->GetRemTime() == 0)
+				{
+					RUNtoTRM(ptr);
+				}
+				int random = 1 + (rand() % 100);
+				if (random >= 1 && random <= 15)
+				{
+					RUNtoBLK(ptr);
+				}
+				else if (random >= 20 && random <= 30)
+				{
+					RUNtoRDY(ptr);
+				}
+				else if (random >= 50 && random <= 60)
+				{
+					RUNtoTRM(ptr);
+				}
+				else
+				{
+					ptr->GetRun()->decremtime();
+				}
+			}
+			p = p->getNext();
+		}
+		BLKtoRDY();
+		int id = 1 + rand() % processno;
+		FORCEDTRM(id);
 		print();
-		//mouseclick before incrementing time
+		//lazem keyboard click
 		time++;
 	}
 	void loadfile()
@@ -103,6 +139,25 @@ public:
 
 			outputFile.close();
 	}
+	void FORCEDTRM(int ID)
+	{
+		FCFS* fcfs;//loop on processors. if fcfs, call forcedtrm,
+		Node <processor*>* ptr = ProcessorsList->getfront();
+		while (ptr) //loops on processors
+		{
+			int t=ptr->getItem()->get_type();
+			if (t == 1) //only fcfs get past this point
+			{
+				fcfs=(FCFS*)ptr->getItem();
+				process* pTrm=fcfs->ForcedTRM(ID);
+				if (pTrm != nullptr)
+				{
+					TRM->enqueue(pTrm);
+				}
+			}
+			ptr = ptr->getNext();
+		}
+	}
 	void NEWtoRDY()
 	{
 		process* ptr1;
@@ -127,76 +182,52 @@ public:
 			NEW->peek(ptr1);
 		}
 	}
-	void RUNtoTRM()
+	//simulator: generate the probability and take action accordingly
+	void RUNtoTRM(processor* p)
 	{
-		Node <processor*>* p = ProcessorsList->getfront();
-		while (p)
+		process* run = p->GetRun();
+		if (run != nullptr)
 		{
-			int c = p->getItem()->GetRun()->GetRemTime();
-			if (c == 0)
+			TRM->enqueue(run);
+			p->GetRun()->finishTimes(time);
+			p->setstate(0);
+			p->SetRun();
+		}
+	}
+	void RUNtoBLK(processor* p)
+	{
+		process* run = p->GetRun();
+		BLK->enqueue(run);
+		p->setstate(0);
+		p->SetRun();
+	}
+	void RUNtoRDY(processor* p)
+	{
+		process* run = p->GetRun();
+		if (random == nullptr)
+		{
+			random = ProcessorsList->getfront();
+		}
+		random->getItem()->AddProcess(run);
+		random = random->getNext();
+		p->setstate(0);
+		p->SetRun();
+	}
+	void BLKtoRDY()
+	{
+		if (BLK->isEmpty() != true)
+		{
+			process* item;
+			BLK->dequeue(item);
+			if (random == nullptr)
 			{
-				TRM->enqueue(p->getItem()->GetRun());
-				p->getItem()->GetRun()->finishTimes(time);
-				p->getItem()->setstate(0);
-				p->getItem()->SetRun();
+				random = ProcessorsList->getfront();
+			}
+			random->getItem()->AddProcess(item);
+			random = random->getNext();
+		}
+	}
 
-			}
-			else
-			{
-				p->getItem()->GetRun()->SetRemTime(c--);
-			}
-			p = p->getNext();
-		}
-	}
-	bool RUNtoBLK()
-	{
-		Node <processor*>* p = ProcessorsList->getfront();
-		int c_iors = p->getItem()->GetRun()->get_inputsigs()->getcount();//count of iors
-		if (c_iors == 0)
-		{
-			return false;
-		}
-		while (p)
-			{
-				int ct = p->getItem()->GetRun()->CpuTime;
-				int rem = p->getItem()->GetRun()->GetRemTime();
-				int io_r = p->getItem()->GetRun()->get_ior();
-				if ((ct - rem) == io_r)
-				{
-					p->getItem()->GetRun()->set_remIO(p->getItem()->GetRun()->get_iod());
-					BLK->enqueue(p->getItem()->GetRun());
-					p->getItem()->SetRun();
-					p->getItem()->setstate(0);
-				}
-				p = p->getNext();
-			}
-	}
-	/*bool BLKtoRDY()
-	{
-		Node <processor*>* p = ProcessorsList->getfront();
-		int rem_IO = p->getItem()->GetRun()->get_rem_io();
-		if (rem_IO==0)
-		{
-			process* ptr;
-			BLK->dequeue(ptr);
-			processor* shortpro= shortest_processor();
-			shortpro->AddProcess(ptr);
-		}
-	}
-	processor* shortest_processor()
-	{
-		Node <processor*>* p = ProcessorsList->getfront();
-		processor* min=p->getItem();
-		while (p)
-		{
-			if (min > p->getItem())
-			{
-				min = p->getItem();
-			}
-			p = p->getNext();
-		}
-		return min;
-	 }*/
 	friend ostream& operator<< (ostream& out, const scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;
@@ -282,3 +313,75 @@ public:
 
 };
 
+/*bool BLKtoRDY()
+{
+	Node <processor*>* p = ProcessorsList->getfront();
+	int rem_IO = p->getItem()->GetRun()->get_rem_io();
+	if (rem_IO==0)
+	{
+		process* ptr;
+		BLK->dequeue(ptr);
+		processor* shortpro= shortest_processor();
+		shortpro->AddProcess(ptr);
+	}
+}
+processor* shortest_processor()
+{
+	Node <processor*>* p = ProcessorsList->getfront();
+	processor* min=p->getItem();
+	while (p)
+	{
+		if (min > p->getItem())
+		{
+			min = p->getItem();
+		}
+		p = p->getNext();
+	}
+	return min;
+ }*/
+ //void RUNtoTRM()
+	 //{
+	 //	Node <processor*>* p = ProcessorsList->getfront();
+	 //	while (p)
+	 //	{
+	 //		int c = p->getItem()->GetRun()->GetRemTime();
+	 //		if (c == 0)
+	 //		{
+	 //			TRM->enqueue(p->getItem()->GetRun());
+	 //			p->getItem()->GetRun()->finishTimes(time);
+	 //			p->getItem()->setstate(0);
+	 //			p->getItem()->SetRun();
+
+	 //		}
+	 //		else
+	 //		{
+	 //			p->getItem()->GetRun()->SetRemTime(c--);
+	 //		}
+	 //		p = p->getNext();
+	 //	}
+	 //}
+	 // 
+
+	 //bool RUNtoBLK()
+	 //{
+	 //	Node <processor*>* p = ProcessorsList->getfront();
+	 //	int c_iors = p->getItem()->GetRun()->get_inputsigs()->getcount();//count of iors
+	 //	if (c_iors == 0)
+	 //	{
+	 //		return false;
+	 //	}
+	 //	while (p)
+	 //		{
+	 //			int ct = p->getItem()->GetRun()->CpuTime;
+	 //			int rem = p->getItem()->GetRun()->GetRemTime();
+	 //			int io_r = p->getItem()->GetRun()->get_ior();
+	 //			if ((ct - rem) == io_r)
+	 //			{
+	 //				p->getItem()->GetRun()->set_remIO(p->getItem()->GetRun()->get_iod());
+	 //				BLK->enqueue(p->getItem()->GetRun());
+	 //				p->getItem()->SetRun();
+	 //				p->getItem()->setstate(0);
+	 //			}
+	 //			p = p->getNext();
+	 //		}
+	 //}

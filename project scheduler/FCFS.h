@@ -63,6 +63,24 @@ public:
 		MaxW = x;
 	}
 
+	process* ForcedTRM(int ID)
+	{
+		Node <process*>* p = FCFS_RDY->GetHead();
+		while (p)
+		{
+			int id = p->getItem()->getID();
+			if (id == ID)
+			{
+				process* temp = p->getItem();
+				FCFS_RDY->DeleteNode(temp);
+				return temp;
+
+			}
+			p = p->getNext();
+		}
+		return nullptr;
+	}
+
 	friend ostream& operator<< (ostream& out, const FCFS& p)
 	{
 		out << "[FCFS] : " << p.RUN->getID() << " RDY: ";
