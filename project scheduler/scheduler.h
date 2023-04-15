@@ -148,16 +148,55 @@ public:
 			p = p->getNext();
 		}
 	}
-	void RUNtoBLK()
+	bool RUNtoBLK()
 	{
-		//ORASHY
+		Node <processor*>* p = ProcessorsList->getfront();
+		int c_iors = p->getItem()->GetRun()->get_inputsigs()->getcount();//count of iors
+		if (c_iors == 0)
+		{
+			return false;
+		}
+		while (p)
+			{
+				int ct = p->getItem()->GetRun()->CpuTime;
+				int rem = p->getItem()->GetRun()->GetRemTime();
+				int io_r = p->getItem()->GetRun()->get_ior();
+				if ((ct - rem) == io_r)
+				{
+					p->getItem()->GetRun()->set_remIO(p->getItem()->GetRun()->get_iod());
+					BLK->enqueue(p->getItem()->GetRun());
+					p->getItem()->SetRun();
+					p->getItem()->setstate(0);
+				}
+				p = p->getNext();
+			}
 	}
-	void BLKtoRDY()
+	/*bool BLKtoRDY()
 	{
-		//orashy
+		Node <processor*>* p = ProcessorsList->getfront();
+		int rem_IO = p->getItem()->GetRun()->get_rem_io();
+		if (rem_IO==0)
+		{
+			process* ptr;
+			BLK->dequeue(ptr);
+			processor* shortpro= shortest_processor();
+			shortpro->AddProcess(ptr);
+		}
 	}
-
-
+	processor* shortest_processor()
+	{
+		Node <processor*>* p = ProcessorsList->getfront();
+		processor* min=p->getItem();
+		while (p)
+		{
+			if (min > p->getItem())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
+		}
+		return min;
+	 }*/
 	friend ostream& operator<< (ostream& out, const scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;

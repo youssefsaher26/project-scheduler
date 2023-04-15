@@ -58,7 +58,7 @@ public:
 	{
 		State = s;
 	}
-	void SetRun()
+	void SetRun()//sets run=null
 	{
 		RUN = nullptr;
 	}
@@ -74,6 +74,7 @@ public:
 			return true;
 		return false;
 	}
+
 	//virtual int pLoad()
 	//{
 	//	int x = BusyTime / TotalTRT;
