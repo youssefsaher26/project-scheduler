@@ -91,10 +91,7 @@ public:
 			int idd = 1+(rand() % processno);
 			FORCEDTRM(idd);
 			print();
-			if (cin.get() == '\n')
-			{
-				time++;
-			}
+			time++;
 		}
 		cout << "END OF SIMULATION" << endl;
 	}
@@ -286,19 +283,19 @@ public:
 			
 			if (p->getItem()->get_type() == 1)
 			{
-				out << "Processor " << i << " " << *(FCFS*)p->getItem() << endl;
+				out << "Processor " << p->getItem()->getpnumber() << " " << *(FCFS*)p->getItem() << endl;
 				i++;
 				p = p->getNext();
 			}
 			else if(p->getItem()->get_type()==2)
 			{
-				out << "Processor " << i << " " << *(RoundRobin*)p->getItem() << endl;
+				out << "Processor " << p->getItem()->getpnumber() << " " << *(RoundRobin*)p->getItem() << endl;
 				i++;
 				p = p->getNext();
 			}
 			else
 			{
-				out << "Processor " << i << " " << *(SJF*)p->getItem() << endl;
+				out << "Processor " << p->getItem()->getpnumber() << " " << *(SJF*)p->getItem() << endl;
 				i++;
 				p = p->getNext();
 			}

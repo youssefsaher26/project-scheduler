@@ -80,6 +80,11 @@ public:
 			if (id == ID)
 			{
 				process* temp = p->getItem();
+				if (temp == RUN)
+				{
+					RUN = nullptr;
+					State = 0;
+				}
 				FCFS_RDY->DeleteNode(temp);
 				return temp;
 
