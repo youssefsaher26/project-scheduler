@@ -54,6 +54,7 @@ public:
 		loadfile();
 		CreateProcessors();
 		while (DONE() == false)
+
 		{
 			Node <processor*>* p = ProcessorsList->getfront();
 			while (p)
@@ -67,16 +68,16 @@ public:
 					{
 						RUNtoTRM(ptr);
 					}
-					int random = 1 + (rand() % 100);
-					if (random >= 1 && random <= 15)
+					int Random = 1 + (rand() % 100);
+					if (Random >= 1 && Random <= 15)
 					{
 						RUNtoBLK(ptr);
 					}
-					else if (random >= 20 && random <= 30)
+					else if (Random >= 20 && Random <= 30)
 					{
 						RUNtoRDY(ptr);
 					}
-					else if (random >= 50 && random <= 60)
+					else if (Random >= 50 && Random <= 60)
 					{
 						RUNtoTRM(ptr);
 					}
@@ -91,6 +92,7 @@ public:
 			int idd = 1+(rand() % processno);
 			FORCEDTRM(idd);
 			print();
+			cin.ignore();
 			time++;
 		}
 		cout << "END OF SIMULATION" << endl;
@@ -206,24 +208,34 @@ public:
 	{
 		process* ptr1;
 		Node<processor*> *temp;
-		NEW->peek(ptr1);
-		temp = ProcessorsList->getfront();
-		while (ptr1)
+		if (NEW->isEmpty() != true)
 		{
-			if(ptr1->GetArrTime()>time)
-			{
-				break;
-			}
-			NEW->dequeue(ptr1);
-			processor* p2;
-			p2 = temp->getItem();
-			p2->AddProcess(ptr1);
-			temp = temp->getNext();
-			if (temp->getNext() == nullptr)
-			{
-				temp->setNext(ProcessorsList->getfront());
-			}
+			
+
 			NEW->peek(ptr1);
+			temp = ProcessorsList->getfront();
+			while (ptr1)
+			{
+				if (ptr1->GetArrTime() > time)
+				{
+					break;
+				}
+				NEW->dequeue(ptr1);
+				processor* p2;
+				p2 = temp->getItem();
+				p2->AddProcess(ptr1);
+				temp = temp->getNext();
+				if (temp->getNext() == nullptr)
+				{
+					temp->setNext(ProcessorsList->getfront());
+				}
+				if (NEW->isEmpty() == true)
+				{
+					break;
+				}
+
+				NEW->peek(ptr1);
+			}
 		}
 	}
 	//simulator: generate the probability and take action accordingly

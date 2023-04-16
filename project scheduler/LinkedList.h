@@ -90,6 +90,7 @@ public:
 		{
 			Head = newNode;
 			newNode->setNext(nullptr);
+			count++;
 			return;
 		}
 		Node<T>* ptr = new Node<T>(data);
@@ -177,6 +178,7 @@ public:
 			Node<T>* p = Head->getNext();
 			delete Head;
 			Head = p;
+			count--;
 			return true;
 		}
 		Node<T>* prev = Head;
@@ -187,6 +189,7 @@ public:
 			{
 				prev->setNext(ptr->getNext());
 				delete ptr;
+				count--;
 				return true;
 			}
 			else
@@ -196,7 +199,6 @@ public:
 			}
 		}
 		return false;
-		count--;
 	}
 	bool isEmpty()
 	{

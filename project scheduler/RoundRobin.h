@@ -74,6 +74,10 @@ public:
 	friend ostream& operator<< (ostream& out, const RoundRobin& p)
 	{
 		out << "[RR  ] : "<< p.RR_RDY->getcount()<<" RDY: ";
+		if (p.RR_RDY->getcount()==0)
+		{
+			return out;
+		}
 		Node <process*>* ptr = p.RR_RDY->getfront();
 		while (ptr)
 		{
