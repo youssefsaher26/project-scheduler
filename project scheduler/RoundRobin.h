@@ -73,7 +73,9 @@ public:
 	
 	friend ostream& operator<< (ostream& out, const RoundRobin& p)
 	{
-		out << "[RR  ] : " << p.RUN->getID() << " RDY: ";
+		out << "[RR  ] : ";
+		if (p.RUN != nullptr)
+			out << p.RUN->getID() << " RDY: ";
 		Node <process*>* ptr = p.RR_RDY->getfront();
 		while (ptr)
 		{
@@ -84,6 +86,7 @@ public:
 			}
 			ptr = ptr->getNext();
 		}
+		return out;
 	}
 };
 int RoundRobin::RTF = 0;

@@ -60,7 +60,9 @@ public:
 	}
 	friend ostream& operator<< (ostream& out, const SJF& p)
 	{
-		out << "[SJF ] : " << p.RUN->getID() <<" RDY: ";
+		out << "[SJF ] : ";
+		if (p.RUN != nullptr)
+			out<< p.RUN->getID() <<" RDY: ";
 		Node <process*>* ptr = p.SJF_RDY->getfront();
 		while (ptr)
 		{
@@ -71,5 +73,6 @@ public:
 			}
 			ptr = ptr->getNext();
 		}
+		return out;
 	}
 };

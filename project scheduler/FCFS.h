@@ -91,7 +91,10 @@ public:
 
 	friend ostream& operator<< (ostream& out, const FCFS& p)
 	{
-		out << "[FCFS] : " << p.RUN->getID() << " RDY: ";
+
+		out << "[FCFS] : ";
+		if(p.RUN!=nullptr)
+			out << p.RUN->getID() << " RDY: ";
 		Node <process*>* ptr = p.FCFS_RDY->GetHead();
 		while (ptr)
 		{
@@ -102,6 +105,7 @@ public:
 			}
 			ptr = ptr->getNext();
 		}
+		return out;
 	}
 };
 int FCFS::MaxW = 0;

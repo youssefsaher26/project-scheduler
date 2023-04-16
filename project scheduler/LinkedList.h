@@ -9,6 +9,7 @@ class LinkedList
 {
 private:
 	Node<T>* Head;	//Pointer to the head of the list
+	int count;
 public:
 
 
@@ -141,6 +142,7 @@ public:
 		Node<T>* ptr = Head;
 		Head = Head->getNext();
 		delete ptr;
+
 	}
 
 

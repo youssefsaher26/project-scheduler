@@ -280,9 +280,26 @@ public:
 		int i = 1;
 		while (p)
 		{
-			out << "Processor " << i << " " << p->getItem() << endl;
-			i++;
-			p = p->getNext();
+			
+			if (p->getItem()->get_type() == 1)
+			{
+				out << "Processor " << i << " " << *(FCFS*)p->getItem() << endl;
+				i++;
+				p = p->getNext();
+			}
+			else if(p->getItem()->get_type()==2)
+			{
+				out << "Processor " << i << " " << *(RoundRobin*)p->getItem() << endl;
+				i++;
+				p = p->getNext();
+			}
+			else
+			{
+				out << "Processor " << i << " " << *(SJF*)p->getItem() << endl;
+				i++;
+				p = p->getNext();
+			}
+
 
 		}
 		out << "----------BLK PROCESSES----------" << endl;
@@ -304,12 +321,12 @@ public:
 		Node <processor*>* pt = s.ProcessorsList->getfront();
 		while (pt)
 		{
-			process*pp=pt->getItem()->GetRun();
+			process*pp = pt->getItem()->GetRun();
 			if (pp)
 			{
 				out << pt->getItem()->GetRun()->getID() <<"(P"<<pt->getItem()->getpnumber() << ")";
 			}
-			if (pt->getNext() != nullptr)
+			if (pt->getNext() != nullptr && pp!=nullptr)
 			{
 				out << ", ";
 			}
