@@ -92,9 +92,7 @@ public:
 	friend ostream& operator<< (ostream& out, const FCFS& p)
 	{
 
-		out << "[FCFS] : ";
-		if(p.RUN!=nullptr)
-			out << p.RUN->getID() << " RDY: ";
+		out << "[FCFS] : " << p.FCFS_RDY->get_count() << " RDY: ";
 		Node <process*>* ptr = p.FCFS_RDY->GetHead();
 		while (ptr)
 		{

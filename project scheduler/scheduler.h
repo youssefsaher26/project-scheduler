@@ -91,9 +91,12 @@ public:
 			int idd = 1+(rand() % processno);
 			FORCEDTRM(idd);
 			print();
-			cin.ignore();
-			time++;
+			if (cin.get() == '\n')
+			{
+				time++;
+			}
 		}
+		cout << "END OF SIMULATION" << endl;
 	}
 	void CreateProcessors()
 	{
