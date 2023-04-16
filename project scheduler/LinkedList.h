@@ -190,6 +190,12 @@ public:
 		}
 		return false;
 	}
+	bool isEmpty()
+	{
+		if (Head == nullptr)
+			return true;
+		return false;
+	}
 
 
 	//[7] DeleteNodes

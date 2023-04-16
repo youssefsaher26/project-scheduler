@@ -11,6 +11,7 @@
 #include<fstream>
 #include "kill.h"
 #include"IO_R_D.h"
+#include "SJF.h"
 using namespace std;
 
 class scheduler
@@ -47,48 +48,90 @@ public:
 		RRno = 0;
 		random = ProcessorsList->getfront();
 	}
+
 	void simulator()
 	{
 		loadfile();
-		//while() termination condition-> all processors are empty AND new list is emptyt..
-		Node <processor*>* p = ProcessorsList->getfront();
-		while (p)
+		CreateProcessors();
+		while (DONE() == false)
 		{
-			NEWtoRDY();
-			processor* ptr = p->getItem();
-			ptr->RDY_TO_RUN();
-			if (p->getItem()->getstate() != 0)
+			Node <processor*>* p = ProcessorsList->getfront();
+			while (p)
 			{
-				if (p->getItem()->GetRun()->GetRemTime() == 0)
+				NEWtoRDY();
+				processor* ptr = p->getItem();
+				ptr->RDY_TO_RUN();
+				if (p->getItem()->getstate() == 1)
 				{
-					RUNtoTRM(ptr);
+					if (p->getItem()->GetRun()->GetRemTime() == 0)
+					{
+						RUNtoTRM(ptr);
+					}
+					int random = 1 + (rand() % 100);
+					if (random >= 1 && random <= 15)
+					{
+						RUNtoBLK(ptr);
+					}
+					else if (random >= 20 && random <= 30)
+					{
+						RUNtoRDY(ptr);
+					}
+					else if (random >= 50 && random <= 60)
+					{
+						RUNtoTRM(ptr);
+					}
+					else
+					{
+						ptr->GetRun()->decremtime();
+					}
 				}
-				int random = 1 + (rand() % 100);
-				if (random >= 1 && random <= 15)
-				{
-					RUNtoBLK(ptr);
-				}
-				else if (random >= 20 && random <= 30)
-				{
-					RUNtoRDY(ptr);
-				}
-				else if (random >= 50 && random <= 60)
-				{
-					RUNtoTRM(ptr);
-				}
-				else
-				{
-					ptr->GetRun()->decremtime();
-				}
+				p = p->getNext();
 			}
-			p = p->getNext();
+			BLKtoRDY();
+			int id = 1 + rand() % processno;
+			FORCEDTRM(id);
+			print();
+			//lazem keyboard click
+			time++;
 		}
-		BLKtoRDY();
-		int id = 1 + rand() % processno;
-		FORCEDTRM(id);
-		print();
-		//lazem keyboard click
-		time++;
+	}
+	void CreateProcessors()
+	{
+		processor* ptr;
+		int id = 1;
+		for (int i = 0; i < FCFSno; i++)
+		{
+			ptr = new FCFS(id);
+			ProcessorsList->enqueue(ptr);
+			id++;
+		}
+		for (int i = 0; i < RRno; i++)
+		{
+			ptr = new RoundRobin(id);
+			ProcessorsList->enqueue(ptr);
+			id++;
+		}
+		for (int i = 0; i < SJFno; i++)
+		{
+			ptr = new SJF(id);
+			ProcessorsList->enqueue(ptr);
+			id++;
+		}
+	}
+	bool DONE()
+	{
+		if (NEW->isEmpty() == true)
+		{
+			Node <processor*>* p = ProcessorsList->getfront();
+			while (p)
+			{
+				if (p->getItem()->Done() == false)
+					return false;
+				p = p->getNext();
+			}
+			return true;
+		}
+		return false;
 	}
 	void loadfile()
 	{
@@ -215,7 +258,7 @@ public:
 	}
 	void BLKtoRDY()
 	{
-		if (BLK->isEmpty() != true)
+		if (BLK->isEmpty() == false)
 		{
 			process* item;
 			BLK->dequeue(item);

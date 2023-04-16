@@ -10,10 +10,11 @@ private:
 	PriorityQueue<process*>* SJF_RDY;
 
 public:
-	SJF()
+	SJF(int x)
 	{
 		SJF_RDY = new PriorityQueue<process*>;
 		type = 3;
+		processornumber = x;
 	}
 
 	virtual int queuetime()
@@ -37,11 +38,18 @@ public:
 		SJF_RDY->dequeue(RUN);
 		State = 1;
 	}
+
 	void RUN_TO_RDY()
 	{
 		SJF_RDY->enqueue(RUN);
 		RUN = NULL;
 		State = 0;
+	}
+	virtual bool Done()
+	{
+		if (RUN == nullptr && SJF_RDY->isEmpty() == true)
+			return true;
+		return false;
 	}
 	friend ostream& operator<< (ostream& out, const SJF& p)
 	{

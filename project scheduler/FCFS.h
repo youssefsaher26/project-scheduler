@@ -13,10 +13,11 @@ private:
 public:
 	static int MaxW;
 
-	FCFS()
+	FCFS(int x)
 	{
 		FCFS_RDY= new LinkedList<process*>;
 		type = 1;
+		processornumber = x;
 	}
 	virtual void AddProcess(process* p)
 	{
@@ -48,11 +49,18 @@ public:
 			State = 1;
 		}
 	}
+
 	void RUN_TO_RDY()
 	{
 		FCFS_RDY->InsertEnd(RUN);
 		RUN = NULL;
 		State = 0;
+	}
+	virtual bool Done()
+	{
+		if (RUN == nullptr && FCFS_RDY->isEmpty() == true)
+			return true;
+		return false;
 	}
 	LinkedList<process*>* get_FCFS_RDY()
 	{

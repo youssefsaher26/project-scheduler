@@ -11,10 +11,11 @@ private:
 public:
 	static int TimeSlice;
 	static int RTF;
-	RoundRobin()
+	RoundRobin(int x)
 	{
 		RR_RDY = new QueueADT<process*>;
 		type = 2;
+		processornumber = x;
 	}
 
 	virtual void AddProcess(process* p)
@@ -41,11 +42,18 @@ public:
 		RR_RDY->CircDequeue(RUN);
 		State = 1;
 	}
+
 	void RUN_TO_RDY()
 	{
 		RR_RDY->CircEnqueue(RUN);
 		RUN = NULL;
 		State = 0;
+	}
+	virtual bool Done()
+	{
+		if (RUN == nullptr && RR_RDY->isEmpty() == true)
+			return true;
+		return false;
 	}
 	static void set_Timeslice(int x)
 	{

@@ -20,11 +20,14 @@ public:
 	virtual void RUN_TO_RDY() = 0;
 	virtual int queuetime() = 0;
 	virtual void AddProcess(process* p) = 0;
+	virtual bool Done() = 0;
 
 	processor()
 	{
 		IdleTime = 0;
 		BusyTime = 0;
+		RUN = nullptr;
+		State = 0;
 
 	}
 	bool getstate()
