@@ -16,6 +16,7 @@ public:
 	LinkedList()
 	{
 		Head = nullptr;
+		count = 0;
 	}
 
 	//List is being desturcted ==> delete all items in the list
@@ -54,7 +55,7 @@ public:
 		Node<T>* R = new Node<T>(data);
 		R->setNext(Head);
 		Head = R;
-
+		count++;
 	}
 	////////////////////////////////////////////////////////////////////////
 	/*
@@ -70,6 +71,7 @@ public:
 			delete Head;
 			Head = P;
 		}
+		count = 0;
 	}
 
 
@@ -99,6 +101,7 @@ public:
 		ptr->setNext(newNode);
 		newNode->setItem(data);
 		newNode->setNext(nullptr);
+		count++;
 	}
 
 	//[2]Find 
@@ -142,6 +145,7 @@ public:
 		Node<T>* ptr = Head;
 		Head = Head->getNext();
 		delete ptr;
+		count--;
 
 	}
 
@@ -159,6 +163,7 @@ public:
 		}
 		prev->setNext(nullptr);
 		delete ptr;
+		count--;
 	}
 
 	//[6] DeleteNode
@@ -191,6 +196,7 @@ public:
 			}
 		}
 		return false;
+		count--;
 	}
 	bool isEmpty()
 	{
@@ -217,6 +223,7 @@ public:
 			Head = Head->getNext();
 			delete R;
 			found++;
+			count--;
 		}
 		while (ptr)
 		{
@@ -227,6 +234,7 @@ public:
 				prev->setNext(ptr);
 				delete R;
 				found++;
+				count--;
 			}
 			else
 			{
@@ -260,6 +268,7 @@ public:
 			ptr = ptr->getNext();
 		}
 		ptr->setNext(L.Head);
+		count = count + L.count;
 	}
 	Node<T>* GetHead() const
 	{
@@ -268,6 +277,10 @@ public:
 	void SetHead(Node<T>* H)
 	{
 		H = Head;
+	}
+	int get_count()
+	{
+		return count;
 	}
 
 };
