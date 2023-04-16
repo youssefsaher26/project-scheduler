@@ -259,24 +259,6 @@ public:
 		}
 		ptr->setNext(L.Head);
 	}
-
-	//[9] Reverse
-	//Reverses the linked list (without allocating any new Nodes)
-	void Reverse()
-	{
-		Node<T>* prev = Head;
-		Node<T>* ptr = prev->getNext();
-		while (ptr->getNext())
-		{
-			ptr = ptr->getNext();
-			prev = prev->getNext();
-		}
-		while (true)
-		{
-
-		}
-
-	}
 	Node<T>* GetHead() const
 	{
 		return Head;

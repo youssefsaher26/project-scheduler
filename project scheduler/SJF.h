@@ -36,7 +36,14 @@ public:
 	void RDY_TO_RUN()
 	{
 		SJF_RDY->dequeue(RUN);
-		State = 1;
+		if (RUN== nullptr)
+		{
+			State = 0;
+		}
+		else 
+		{
+			State = 1;
+		}
 	}
 
 	void RUN_TO_RDY()

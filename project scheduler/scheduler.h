@@ -40,7 +40,7 @@ public:
 		ProcessorsList = new QueueADT<processor*>;
 		killsigs = new QueueADT<kill*>;
 		inputsigs = new QueueADT<IO_R_D*>;
-		time = 0;
+		time = 1;
 		STL = 0;
 		forkprob = 0;
 		FCFSno = 0;
@@ -88,10 +88,10 @@ public:
 				p = p->getNext();
 			}
 			BLKtoRDY();
-			int id = 1 + rand() % processno;
-			FORCEDTRM(id);
+			int idd = 1+(rand() % processno);
+			FORCEDTRM(idd);
 			print();
-			//lazem keyboard click
+			cin.ignore();
 			time++;
 		}
 	}
@@ -118,6 +118,7 @@ public:
 			id++;
 		}
 	}
+
 	bool DONE()
 	{
 		if (NEW->isEmpty() == true)
@@ -279,7 +280,7 @@ public:
 		int i = 1;
 		while (p)
 		{
-			out << "Processor " << i << " " << p << endl;
+			out << "Processor " << i << " " << p->getItem() << endl;
 			i++;
 			p = p->getNext();
 
@@ -303,9 +304,8 @@ public:
 		Node <processor*>* pt = s.ProcessorsList->getfront();
 		while (pt)
 		{
-
-			pt->getItem()->GetRun();
-			if (pt)
+			process*pp=pt->getItem()->GetRun();
+			if (pp)
 			{
 				out << pt->getItem()->GetRun()->getID() <<"(P"<<pt->getItem()->getpnumber() << ")";
 			}
@@ -330,7 +330,7 @@ public:
 		}
 		out << endl;
 		out << "PRESS ANY KEY TO MOVE TO NEXT STEP!"<<endl;
-		
+		return out;
 	}
 
 	int CountRun() const

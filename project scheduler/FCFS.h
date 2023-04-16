@@ -33,7 +33,7 @@ public:
 			sum = C->GetRemTime() + sum;
 			temp = temp->getNext();
 		}
-			return sum;
+		return sum;
 	}
 	void RDY_TO_RUN()
 	{

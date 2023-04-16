@@ -34,13 +34,20 @@ public:
 				break;
 			}
 			ptr = ptr->getNext();
-		
 		}
+		return sum;
 	}
 	void RDY_TO_RUN()
 	{
 		RR_RDY->CircDequeue(RUN);
-		State = 1;
+		if (RUN == nullptr)
+		{
+			State = 0;
+		}
+		else
+		{
+			State = 1;
+		}
 	}
 
 	void RUN_TO_RDY()
