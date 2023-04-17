@@ -68,27 +68,34 @@ public:
 					{
 						RUNtoTRM(ptr);
 					}
-					int Random = 1 + (rand() % 100);
-					if (Random >= 1 && Random <= 15)
-					{
-						RUNtoBLK(ptr);
-					}
-					else if (Random >= 20 && Random <= 30)
-					{
-						RUNtoRDY(ptr);
-					}
-					else if (Random >= 50 && Random <= 60)
-					{
-						RUNtoTRM(ptr);
-					}
 					else
 					{
-						ptr->GetRun()->decremtime();
+						int Random = 1 + (rand() % 100);
+						if (Random >= 1 && Random <= 15)
+						{
+							RUNtoBLK(ptr);
+						}
+						else if (Random >= 20 && Random <= 30)
+						{
+							RUNtoRDY(ptr);
+						}
+						else if (Random >= 50 && Random <= 60)
+						{
+							RUNtoTRM(ptr);
+						}
+						else
+						{
+							ptr->GetRun()->decremtime();
+						}
 					}
 				}
 				p = p->getNext();
 			}
-			BLKtoRDY();
+			int r = 1 + (rand() % 100);
+			if (r < 10)
+			{
+				BLKtoRDY();
+			}
 			int idd = 1+(rand() % processno);
 			FORCEDTRM(idd);
 			print();

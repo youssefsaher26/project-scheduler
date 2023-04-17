@@ -37,16 +37,19 @@ public:
 	}
 	void RDY_TO_RUN()
 	{
-		Node<process*>* temp = FCFS_RDY->GetHead();
-		if (temp == nullptr)
+		if (RUN == nullptr)
 		{
-			return;
-		}
-		else
-		{
-			FCFS_RDY->SetHead(temp->getNext());
-			RUN = temp->getItem();
-			State = 1;
+			Node<process*>* temp = FCFS_RDY->GetHead();
+			if (temp == nullptr)
+			{
+				return;
+			}
+			else
+			{
+				RUN = temp->getItem();
+				FCFS_RDY->DeleteFirst();
+				State = 1;
+			}
 		}
 	}
 
@@ -73,6 +76,18 @@ public:
 
 	process* ForcedTRM(int ID)
 	{
+
+		if (RUN != nullptr)
+		{
+			if (RUN->getID() == ID)
+			{
+				process* t = RUN;
+				RUN = nullptr;
+				State = 0;
+				return t;
+
+			}
+		}
 		Node <process*>* p = FCFS_RDY->GetHead();
 		while (p)
 		{
@@ -80,14 +95,8 @@ public:
 			if (id == ID)
 			{
 				process* temp = p->getItem();
-				if (temp == RUN)
-				{
-					RUN = nullptr;
-					State = 0;
-				}
 				FCFS_RDY->DeleteNode(temp);
 				return temp;
-
 			}
 			p = p->getNext();
 		}
@@ -98,6 +107,10 @@ public:
 	{
 
 		out << "[FCFS] : " << p.FCFS_RDY->get_count() << " RDY: ";
+		if (p.FCFS_RDY->get_count() == 0)
+		{
+			return out;
+		}
 		Node <process*>* ptr = p.FCFS_RDY->GetHead();
 		while (ptr)
 		{

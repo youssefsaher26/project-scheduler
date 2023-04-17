@@ -39,14 +39,17 @@ public:
 	}
 	void RDY_TO_RUN()
 	{
-		RR_RDY->CircDequeue(RUN);
 		if (RUN == nullptr)
 		{
-			State = 0;
-		}
-		else
-		{
-			State = 1;
+			RR_RDY->CircDequeue(RUN);
+			if (RUN == nullptr)
+			{
+				State = 0;
+			}
+			else
+			{
+				State = 1;
+			}
 		}
 	}
 

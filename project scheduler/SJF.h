@@ -33,16 +33,19 @@ public:
 	{
 		SJF_RDY->enqueue(p);
 	}
-	void RDY_TO_RUN()
-	{
-		SJF_RDY->dequeue(RUN);
-		if (RUN== nullptr)
+	void RDY_TO_RUN()	
+	{ 
+		if (RUN == nullptr)
 		{
-			State = 0;
-		}
-		else 
-		{
-			State = 1;
+			SJF_RDY->dequeue(RUN);
+			if (RUN == nullptr)
+			{
+				State = 0;
+			}
+			else
+			{
+				State = 1;
+			}
 		}
 	}
 
@@ -61,6 +64,10 @@ public:
 	friend ostream& operator<< (ostream& out, const SJF& p)
 	{
 		out << "[SJF ] : " << p.SJF_RDY->getcount() << " RDY: ";
+		if (p.SJF_RDY->getcount() == 0)
+		{
+			return out;
+		}
 		Node <process*>* ptr = p.SJF_RDY->getfront();
 		while (ptr)
 		{
