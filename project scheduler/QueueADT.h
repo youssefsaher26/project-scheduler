@@ -42,7 +42,10 @@ public:
 		Node<T>* newNodePtr = new Node<T>(newEntry);
 		// Insert the new node
 		if (isEmpty())	//special case if this is the first node to insert
-			frontPtr = newNodePtr; // The queue is empty
+		{
+			frontPtr = newNodePtr;
+			backPtr = newNodePtr;
+		}// The queue is empty
 		else
 			backPtr->setNext(newNodePtr); // The queue was not empty
 
@@ -57,13 +60,15 @@ public:
 
 		Node<T>* nodeToDeletePtr = frontPtr;
 		frntEntry = frontPtr->getItem();
-		frontPtr = frontPtr->getNext();
 		// Queue is not empty; remove front
-		if (nodeToDeletePtr == backPtr)	 // Special case: last node in the queue
+		if (frontPtr == backPtr)	 // Special case: last node in the queue
+		{
 			backPtr = nullptr;
-
+			frontPtr = nullptr;
+		}
+		else
+			frontPtr = frontPtr->getNext();
 		// Free memory reserved for the dequeued node
-		delete nodeToDeletePtr;
 		count--;
 		return true;
 

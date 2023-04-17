@@ -183,7 +183,7 @@ public:
 		}
 		Node<T>* prev = Head;
 		Node<T>* ptr = prev->getNext();
-		while (ptr->getNext())
+		while (ptr)
 		{
 			if (ptr->getItem() == value)
 			{

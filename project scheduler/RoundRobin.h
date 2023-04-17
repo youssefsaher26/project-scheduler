@@ -41,21 +41,24 @@ public:
 	{
 		if (RUN == nullptr)
 		{
-			RR_RDY->CircDequeue(RUN);
-			if (RUN == nullptr)
+			if (RR_RDY->isEmpty() == false)
 			{
-				State = 0;
-			}
-			else
-			{
-				State = 1;
+				RR_RDY->dequeue(RUN);
+				if (RUN == nullptr)
+				{
+					State = 0;
+				}
+				else
+				{
+					State = 1;
+				}
 			}
 		}
 	}
 
 	void RUN_TO_RDY()
 	{
-		RR_RDY->CircEnqueue(RUN);
+		RR_RDY->enqueue(RUN);
 		RUN = NULL;
 		State = 0;
 	}

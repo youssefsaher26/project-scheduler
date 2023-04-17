@@ -61,6 +61,7 @@ public:
 			{
 				NEWtoRDY();
 				processor* ptr = p->getItem();
+
 				ptr->RDY_TO_RUN();
 				if (p->getItem()->getstate() == 1)
 				{
@@ -130,7 +131,7 @@ public:
 
 	bool DONE()
 	{
-		if (NEW->isEmpty() == true)
+		if (NEW->isEmpty() == true && BLK->isEmpty()==true)
 		{
 			Node <processor*>* p = ProcessorsList->getfront();
 			while (p)
@@ -215,35 +216,30 @@ public:
 	{
 		process* ptr1;
 		Node<processor*> *temp;
-		if (NEW->isEmpty() != true)
-		{
-			
+		
 
 			NEW->peek(ptr1);
 			temp = ProcessorsList->getfront();
-			while (ptr1)
+			while (ptr1 && NEW->isEmpty()!=true)
 			{
-				if (ptr1->GetArrTime() > time)
-				{
-					break;
-				}
-				NEW->dequeue(ptr1);
-				processor* p2;
-				p2 = temp->getItem();
-				p2->AddProcess(ptr1);
-				temp = temp->getNext();
-				if (temp->getNext() == nullptr)
-				{
-					temp->setNext(ProcessorsList->getfront());
-				}
-				if (NEW->isEmpty() == true)
-				{
-					break;
-				}
+					
+						if (ptr1->GetArrTime() > time)
+						{
+							break;
+						}
+						NEW->dequeue(ptr1);
+						processor* p2;
+						p2 = temp->getItem();
+						p2->AddProcess(ptr1);
+						temp = temp->getNext();
+						if (temp->getNext() == nullptr)
+						{
+							temp = ProcessorsList->getfront();
+						}
 
-				NEW->peek(ptr1);
+						NEW->peek(ptr1);
+					
 			}
-		}
 	}
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p)
@@ -260,21 +256,29 @@ public:
 	void RUNtoBLK(processor* p)
 	{
 		process* run = p->GetRun();
-		BLK->enqueue(run);
-		p->setstate(0);
-		p->SetRun();
+		if (run != nullptr)
+		{
+			process* run = p->GetRun();
+			BLK->enqueue(run);
+			p->setstate(0);
+			p->SetRun();
+		}
 	}
 	void RUNtoRDY(processor* p)
 	{
+		
 		process* run = p->GetRun();
-		if (random == nullptr)
+		if (run != nullptr)
 		{
-			random = ProcessorsList->getfront();
+			if (random == nullptr)
+			{
+				random = ProcessorsList->getfront();
+			}
+			random->getItem()->AddProcess(run);
+			random = random->getNext();
+			p->setstate(0);
+			p->SetRun();
 		}
-		random->getItem()->AddProcess(run);
-		random = random->getNext();
-		p->setstate(0);
-		p->SetRun();
 	}
 	void BLKtoRDY()
 	{
