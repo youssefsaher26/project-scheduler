@@ -216,29 +216,25 @@ public:
 	{
 		process* ptr1;
 		Node<processor*> *temp;
-			NEW->peek(ptr1);
-			temp = ProcessorsList->getfront();
-			while (ptr1 && NEW->isEmpty()!=true)
+		NEW->peek(ptr1);
+		temp = ProcessorsList->getfront();
+		while (ptr1 && NEW->isEmpty()!=true)
+		{
+			if (ptr1->GetArrTime() > time)
 			{
-					
-						if (ptr1->GetArrTime() > time)
-						{
-							break;
-						}
-						NEW->dequeue(ptr1);
-						processor* p2;
-						p2 = temp->getItem();
-						p2->AddProcess(ptr1);
-						temp = temp->getNext();
-						if (temp->getNext() == nullptr)
-						{
-							temp = ProcessorsList->getfront();
-
-						}
-
-						NEW->peek(ptr1);
-					
+				break;
 			}
+			NEW->dequeue(ptr1);
+			processor* p2;
+			p2 = temp->getItem();
+			p2->AddProcess(ptr1);
+			temp = temp->getNext();
+			if (temp->getNext() == nullptr)
+			{
+				temp = ProcessorsList->getfront();
+			}
+			NEW->peek(ptr1);	
+		}
 	}
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p)
