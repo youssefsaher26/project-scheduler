@@ -25,9 +25,9 @@ public:
 		// Insert the new node
 		if (isEmpty())	//special case if this is the first node to insert
 		{
-			frontPtr = newNodePtr; 
+			frontPtr = newNodePtr;
 			backPtr = newNodePtr;
-				// The queue is empty
+		}		// The queue is empty
 		else
 		{
 			backPtr->setNext(newNodePtr);
@@ -96,9 +96,7 @@ public:
 		}
 		count--;
 		return true;
-
 	}
-
 	void setcount(int x)
 	{
 		count = x;
@@ -157,5 +155,4 @@ public:
 	{
 		return count;
 	}
-}
-;
+};
