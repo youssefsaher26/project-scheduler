@@ -46,13 +46,13 @@ public:
 		FCFSno = 0;
 		SJFno = 0;
 		RRno = 0;
-		random = ProcessorsList->getfront();
 	}
 
 	void simulator()
 	{
 		loadfile();
 		CreateProcessors();
+		random = ProcessorsList->getfront();
 		while (DONE() == false)
 
 		{
@@ -214,29 +214,25 @@ public:
 	}
 	void NEWtoRDY()
 	{
-		process* ptr1;
-		Node<processor*> *temp;
+			process* ptr1;
 			NEW->peek(ptr1);
-			temp = ProcessorsList->getfront();
 			while (ptr1 && NEW->isEmpty()!=true)
 			{
-					
-						if (ptr1->GetArrTime() > time)
-						{
-							break;
-						}
-						NEW->dequeue(ptr1);
-						processor* p2;
-						p2 = temp->getItem();
-						p2->AddProcess(ptr1);
-						temp = temp->getNext();
-						if (temp->getNext() == nullptr)
-						{
-							temp = ProcessorsList->getfront();
+					if (ptr1->GetArrTime() > time)
+					{
+						break;
+					}
+					NEW->dequeue(ptr1);
+					processor* p2;
+					p2 = random->getItem();
+					p2->AddProcess(ptr1);
+					if (random->getNext() == nullptr)
+					{
+						random = ProcessorsList->getfront();
 
-						}
-
-						NEW->peek(ptr1);
+					}
+					random = random->getNext();
+					NEW->peek(ptr1);
 					
 			}
 	}
