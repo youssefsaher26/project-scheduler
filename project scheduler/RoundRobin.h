@@ -20,10 +20,11 @@ public:
 
 	virtual void AddProcess(process* p)
 	{
-		RR_RDY->CircEnqueue(p);
+		RR_RDY->enqueue(p);
 	}
 	virtual int queuetime()
 	{
+		// add run time too
 		int sum = 0;
 		Node <process*>* ptr = RR_RDY->getfront();
 		while (ptr)

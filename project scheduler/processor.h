@@ -85,7 +85,6 @@ public:
 			return true;
 		return false;
 	}
-
 	//virtual int pLoad()
 	//{
 	//	int x = BusyTime / TotalTRT;
