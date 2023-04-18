@@ -15,7 +15,7 @@ private:
 	int TRT;
 	int WT;
 	string state;
-	QueueADT<IO_R_D*> inputsigs;//if null then no input iutout sigs
+	QueueADT<IO_R_D*> inputsigs;//if null then no input output sigs
 	int num_of_IO;
 	int kill_time;
 	int RemTime;
