@@ -46,13 +46,14 @@ public:
 		FCFSno = 0;
 		SJFno = 0;
 		RRno = 0;
-		random = ProcessorsList->getfront();
+		
 	}
 
 	void simulator()
 	{
 		loadfile();
 		CreateProcessors();
+		random = ProcessorsList->getfront();
 		while (DONE() == false)
 
 		{
