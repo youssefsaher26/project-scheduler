@@ -216,8 +216,6 @@ public:
 	{
 		process* ptr1;
 		Node<processor*> *temp;
-		
-
 			NEW->peek(ptr1);
 			temp = ProcessorsList->getfront();
 			while (ptr1 && NEW->isEmpty()!=true)
@@ -235,6 +233,7 @@ public:
 						if (temp->getNext() == nullptr)
 						{
 							temp = ProcessorsList->getfront();
+
 						}
 
 						NEW->peek(ptr1);
@@ -349,7 +348,7 @@ public:
 			{
 				out << pt->getItem()->GetRun()->getID() <<"(P"<<pt->getItem()->getpnumber() << ")";
 			}
-			if (pt->getNext() != nullptr && pp!=nullptr)
+			if (pt->getNext()!= nullptr && pp!=nullptr)
 			{
 				out << ", ";
 			}

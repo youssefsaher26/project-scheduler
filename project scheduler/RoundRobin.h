@@ -87,10 +87,14 @@ public:
 		Node <process*>* ptr = p.RR_RDY->getfront();
 		while (ptr)
 		{
-			out << ptr->getItem()->getID() <<" , ";
+			out << ptr->getItem()->getID();
 			if (ptr == p.RR_RDY->getrear())
 			{
 				break;
+			}
+			if (ptr->getNext() != nullptr)
+			{
+				out << " , ";
 			}
 			ptr = ptr->getNext();
 		}
