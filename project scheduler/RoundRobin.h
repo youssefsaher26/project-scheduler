@@ -21,6 +21,9 @@ public:
 	virtual void AddProcess(process* p)
 	{
 		RR_RDY->CircEnqueue(p);
+
+
+
 	}
 	virtual int queuetime()
 	{

@@ -1,4 +1,4 @@
-#pragma once
+
 #include"LinkedList.h"
 #include"Node.h"
 #include"QueueADT.h"
@@ -12,10 +12,14 @@
 #include "kill.h"
 #include"IO_R_D.h"
 #include "SJF.h"
+#pragma once
 using namespace std;
+
 
 class scheduler
 {
+
+
 private:
 	int time;
 	int STL;
@@ -46,7 +50,7 @@ public:
 		FCFSno = 0;
 		SJFno = 0;
 		RRno = 0;
-		
+
 	}
 
 	void simulator()
@@ -98,7 +102,7 @@ public:
 			{
 				BLKtoRDY();
 			}
-			int idd = 1+(rand() % processno);
+			int idd = 1 + (rand() % processno);
 			FORCEDTRM(idd);
 			print();
 			cin.ignore();
@@ -132,7 +136,7 @@ public:
 
 	bool DONE()
 	{
-		if (NEW->isEmpty() == true && BLK->isEmpty()==true)
+		if (NEW->isEmpty() == true && BLK->isEmpty() == true)
 		{
 			Node <processor*>* p = ProcessorsList->getfront();
 			while (p)
@@ -151,48 +155,48 @@ public:
 		ofstream outputFile;
 		ifstream inputFile;
 		inputFile.open("Test.txt", ios::in);
-			int rtf, t_slice, Maxw;
-			cout << "Processing"<<endl;
-			inputFile >> FCFSno>>SJFno>>RRno;
-			inputFile >> t_slice;
-			RoundRobin::set_Timeslice(t_slice);
-			inputFile >> rtf;
-			RoundRobin::set_RTF(rtf);
-			inputFile >> Maxw;
-			FCFS::set_Maxw(Maxw);
-			inputFile >> STL>>forkprob;
-			inputFile >> processno;
-			for (int i = 0; i < processno; i++)
+		int rtf, t_slice, Maxw;
+		cout << "Processing" << endl;
+		inputFile >> FCFSno >> SJFno >> RRno;
+		inputFile >> t_slice;
+		RoundRobin::set_Timeslice(t_slice);
+		inputFile >> rtf;
+		RoundRobin::set_RTF(rtf);
+		inputFile >> Maxw;
+		FCFS::set_Maxw(Maxw);
+		inputFile >> STL >> forkprob;
+		inputFile >> processno;
+		for (int i = 0; i < processno; i++)
+		{
+			int at, pid, ct, io_num, io_R, io_D;
+			inputFile >> at >> pid >> ct >> io_num;
+			process* p = new process(at, pid, ct, io_num);
+			for (int i = 0; i < io_num; i++)
 			{
-				int at, pid, ct, io_num, io_R, io_D;
-				inputFile >> at >> pid >> ct >> io_num;
-				process* p = new process(at, pid, ct, io_num);
-				for (int i = 0; i < io_num; i++)
-				{
-					inputFile >> garbage;//bracket1
-					inputFile >> io_R; //ioR
-					inputFile >> garbage;//comma
-					inputFile >> io_D; //ioD
-					inputFile >> garbage;//bracket2
-					IO_R_D* iod = new IO_R_D(io_R, io_D, pid);
-					inputsigs->enqueue(iod);
-					p->add_inputs_sigs(iod);
-					if (i!=io_num-1)
+				inputFile >> garbage;//bracket1
+				inputFile >> io_R; //ioR
+				inputFile >> garbage;//comma
+				inputFile >> io_D; //ioD
+				inputFile >> garbage;//bracket2
+				IO_R_D* iod = new IO_R_D(io_R, io_D, pid);
+				inputsigs->enqueue(iod);
+				p->add_inputs_sigs(iod);
+				if (i != io_num - 1)
 					inputFile >> garbage;//comma
 
-					//ior and mod can be initialised as zero, that way no error when no io requests.
-				}
-				NEW->enqueue(p);
+				//ior and mod can be initialised as zero, that way no error when no io requests.
 			}
-			int SigId,SigT;
-			while (!inputFile.eof())
-			{
-				inputFile >> SigT >> SigId;
-				kill* k = new kill(SigT, SigId);
-				killsigs->enqueue(k);
-			}
+			NEW->enqueue(p);
+		}
+		int SigId, SigT;
+		while (!inputFile.eof())
+		{
+			inputFile >> SigT >> SigId;
+			kill* k = new kill(SigT, SigId);
+			killsigs->enqueue(k);
+		}
 
-			outputFile.close();
+		outputFile.close();
 	}
 	void FORCEDTRM(int ID)
 	{
@@ -200,11 +204,11 @@ public:
 		Node <processor*>* ptr = ProcessorsList->getfront();
 		while (ptr) //loops on processors
 		{
-			int t=ptr->getItem()->get_type();
+			int t = ptr->getItem()->get_type();
 			if (t == 1) //only fcfs get past this point
 			{
-				fcfs=(FCFS*)ptr->getItem();
-				process* pTrm=fcfs->ForcedTRM(ID);
+				fcfs = (FCFS*)ptr->getItem();
+				process* pTrm = fcfs->ForcedTRM(ID);
 				if (pTrm != nullptr)
 				{
 					TRM->enqueue(pTrm);
@@ -214,32 +218,32 @@ public:
 		}
 	}
 	void NEWtoRDY()
+
+
+
 	{
 		process* ptr1;
-		Node<processor*> *temp;
-			NEW->peek(ptr1);
-			temp = ProcessorsList->getfront();
-			while (ptr1 && NEW->isEmpty()!=true)
+		NEW->peek(ptr1);
+		while (ptr1 && NEW->isEmpty() != true)
+		{
+
+			if (ptr1->GetArrTime() > time)
 			{
-					
-						if (ptr1->GetArrTime() > time)
-						{
-							break;
-						}
-						NEW->dequeue(ptr1);
-						processor* p2;
-						p2 = temp->getItem();
-						p2->AddProcess(ptr1);
-						temp = temp->getNext();
-						if (temp->getNext() == nullptr)
-						{
-							temp = ProcessorsList->getfront();
-
-						}
-
-						NEW->peek(ptr1);
-					
+				break;
 			}
+			if (random == nullptr)
+			{
+				random = ProcessorsList->getfront();
+
+			}
+			NEW->dequeue(ptr1);
+			processor* p2;
+			p2 = random->getItem();
+			p2->AddProcess(ptr1);
+			random = random->getNext();
+			NEW->peek(ptr1);
+
+		}
 	}
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p)
@@ -266,7 +270,7 @@ public:
 	}
 	void RUNtoRDY(processor* p)
 	{
-		
+
 		process* run = p->GetRun();
 		if (run != nullptr)
 		{
@@ -284,12 +288,12 @@ public:
 	{
 		if (BLK->isEmpty() == false)
 		{
-			process* item;
-			BLK->dequeue(item);
 			if (random == nullptr)
 			{
 				random = ProcessorsList->getfront();
 			}
+			process* item;
+			BLK->dequeue(item);
 			random->getItem()->AddProcess(item);
 			random = random->getNext();
 		}
