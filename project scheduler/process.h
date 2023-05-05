@@ -20,10 +20,12 @@ private:
 	int kill_time;
 	int RemTime;
 	int Rem_IO;
+	int RR_TIME;
 public:
 	int CpuTime;
 	process(int at, int pid, int ct, int IO_num)
 	{
+		RR_TIME = 0;
 		RemTime = ct;
 		CpuTime = ct;
 		AT = at;
@@ -50,6 +52,10 @@ public:
 	{
 		return RemTime;
 	}
+	int GetRRTime()
+	{
+		return RR_TIME;
+	}
 	int getID()
 	{
 		return PID;
@@ -69,6 +75,14 @@ public:
 	QueueADT<IO_R_D*>* get_inputsigs()
 	{
 		return &inputsigs;
+	}
+	void RR_INC()
+	{
+		RR_TIME++;
+	}
+	void RR_RESET()
+	{
+		RR_TIME = 0;
 	}
 	void SetRemTime(int y)
 	{

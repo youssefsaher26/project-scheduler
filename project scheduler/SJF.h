@@ -48,7 +48,22 @@ public:
 			}
 		}
 	}
-
+	virtual void SchedAlgo()
+	{
+		if (!RUN)
+		{
+			RDY_TO_RUN();
+		}
+		if (RUN)
+		{
+			NeedBlock();
+			NeedTrm();
+			if (Block == 0 && Terminate == 0)
+			{
+				RUN->decremtime();
+			}
+		}
+	}
 	void RUN_TO_RDY()
 	{
 		SJF_RDY->enqueue(RUN);

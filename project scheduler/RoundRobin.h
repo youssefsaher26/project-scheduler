@@ -56,6 +56,34 @@ public:
 			}
 		}
 	}
+	virtual void SchedAlgo()
+	{
+		if (!RUN)
+		{
+			RDY_TO_RUN();
+		}
+		if (RUN)
+		{
+			NeedBlock();
+			NeedTrm();
+			if (Block == 1 || Terminate == 1)
+			{
+				RUN->RR_RESET();
+				return;
+			}
+			if (Block == 0 && Terminate == 0)
+			{
+				RUN->decremtime();
+				RUN->RR_INC();
+				if (RUN->GetRRTime()== TimeSlice)
+				{
+					RUN->RR_RESET();
+					RR_RDY->dequeue(RUN);
+					RR_RDY->enqueue(RUN);
+				}
+			}
+		}
+	}
 
 	void RUN_TO_RDY()
 	{

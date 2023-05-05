@@ -61,14 +61,16 @@ public:
 			{
 				NEWtoRDY();
 				processor* ptr = p->getItem();
-
-				ptr->RDY_TO_RUN();
-				RUNtoBLK(ptr);
-				RUNtoTRM(ptr);
-				if (ptr->GetRun())
+				//ptr->SchedAlgo();
+				if (ptr->Block)
 				{
-					ptr->GetRun()->decremtime();
+					RUNtoBLK(ptr);
 				}
+				else if (ptr->Terminate)
+				{
+					RUNtoTRM(ptr);
+				}
+				p->getItem()->STATE();
 				p = p->getNext();
 			}
 			print();
@@ -205,17 +207,10 @@ public:
 	void RUNtoTRM(processor* p)
 	{
 		process* ptr = p->GetRun();
-		if (ptr)
-		{
-			int c = ptr->GetRemTime();
-			if (c == 0)
-			{
-				TRM->enqueue(ptr);
-				ptr->finishTimes(time);
-				ptr->setstate(0);
-				p->SetRun();
-			}
-		}
+		TRM->enqueue(ptr);
+		ptr->finishTimes(time);
+		ptr->setstate(0);		
+		p->SetRun();
 	}
 	void RUNtoBLK(processor* p)
 	{

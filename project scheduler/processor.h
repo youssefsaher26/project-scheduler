@@ -13,7 +13,8 @@ protected:
 	int IdleTime;
 	int BusyTime; //phase 2
 public:
-	
+	bool Block;
+	bool Terminate;
 	bool State; //  0-IDLE 1-BUSY
 	int TotalTRT;
 	virtual void RDY_TO_RUN() = 0;
@@ -21,6 +22,10 @@ public:
 	virtual int queuetime() = 0;
 	virtual void AddProcess(process* p) = 0;
 	virtual bool Done() = 0;
+	virtual void SchedAlgo() = 0;
+	virtual void NeedBlock();
+	virtual void NeedTrm();
+	virtual void STATE();
 
 	processor()
 	{
@@ -28,7 +33,19 @@ public:
 		BusyTime = 0;
 		RUN = nullptr;
 		State = 0;
-
+		Block = 0;
+		Terminate = 0;
+	}
+	virtual void STATE()
+	{
+		if(RUN==nullptr)
+		{
+			State = 0;
+		}
+		else
+		{
+			State = 1;
+		}
 	}
 	bool getstate()
 	{
@@ -47,24 +64,32 @@ public:
 		return RUN;
 
 	}
-	virtual void SchduleAlgo()
+	virtual void NeedBlock()
 	{
-		if (State == 0)
+		int c_iors = RUN->get_inputsigs()->getcount();//count of iors
+		if (c_iors == 0)
 		{
-			int random = 1 + (rand() % 100);
-			if (random >= 1 && random <= 15)
-			{
-				//RUNtoBLK();
-			}if (random >= 20 && random <= 30)
-			{
-				//RUNtoRDY();
-			}
-			if (random>=50 && random<= 60)
-			{
-				//RUNtoTRM();
-			}
+			Block = 0;
+			return;
+		}
+		int ct = RUN->CpuTime;
+		int rem = RUN->GetRemTime();
+		int io_r = RUN->get_ior();
+		if ((ct - rem) == io_r)
+		{
+			Block = 1;
+		}
+	
+	}
+	virtual void NeedTrm()
+	{
+		int c = RUN->GetRemTime();
+		if (c == 0)
+		{
+			Terminate = 1;
 		}
 	}
+
 	virtual void setstate(bool s)
 	{
 		State = s;
