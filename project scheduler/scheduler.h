@@ -18,8 +18,6 @@ using namespace std;
 
 class scheduler
 {
-
-
 private:
 	int time;
 	int STL;
