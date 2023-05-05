@@ -1,4 +1,3 @@
-
 #include"LinkedList.h"
 #include"Node.h"
 #include"QueueADT.h"
@@ -50,14 +49,12 @@ public:
 		RRno = 0;
 
 	}
-
 	void simulator()
 	{
 		loadfile();
 		CreateProcessors();
 		random = ProcessorsList->getfront();
 		while (DONE() == false)
-
 		{
 			Node <processor*>* p = ProcessorsList->getfront();
 			while (p)
@@ -66,42 +63,14 @@ public:
 				processor* ptr = p->getItem();
 
 				ptr->RDY_TO_RUN();
-				if (p->getItem()->getstate() == 1)
+				RUNtoBLK(ptr);
+				RUNtoTRM(ptr);
+				if (ptr->GetRun())
 				{
-					if (p->getItem()->GetRun()->GetRemTime() == 0)
-					{
-						RUNtoTRM(ptr);
-					}
-					else
-					{
-						int Random = 1 + (rand() % 100);
-						if (Random >= 1 && Random <= 15)
-						{
-							RUNtoBLK(ptr);
-						}
-						else if (Random >= 20 && Random <= 30)
-						{
-							RUNtoRDY(ptr);
-						}
-						else if (Random >= 50 && Random <= 60)
-						{
-							RUNtoTRM(ptr);
-						}
-						else
-						{
-							ptr->GetRun()->decremtime();
-						}
-					}
+					ptr->GetRun()->decremtime();
 				}
 				p = p->getNext();
 			}
-			int r = 1 + (rand() % 100);
-			if (r < 10)
-			{
-				BLKtoRDY();
-			}
-			int idd = 1 + (rand() % processno);
-			FORCEDTRM(idd);
 			print();
 			cin.ignore();
 			time++;
@@ -131,7 +100,6 @@ public:
 			id++;
 		}
 	}
-
 	bool DONE()
 	{
 		if (NEW->isEmpty() == true && BLK->isEmpty() == true)
@@ -216,9 +184,6 @@ public:
 		}
 	}
 	void NEWtoRDY()
-
-
-
 	{
 		process* ptr1;
 		NEW->peek(ptr1);
@@ -229,16 +194,9 @@ public:
 			{
 				break;
 			}
-			if (random == nullptr)
-			{
-				random = ProcessorsList->getfront();
-
-			}
 			NEW->dequeue(ptr1);
-			processor* p2;
-			p2 = random->getItem();
+			processor* p2=shortest_processor();
 			p2->AddProcess(ptr1);
-			random = random->getNext();
 			NEW->peek(ptr1);
 
 		}
@@ -246,29 +204,43 @@ public:
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p)
 	{
-		process* run = p->GetRun();
-		if (run != nullptr)
+		process* ptr = p->GetRun();
+		if (ptr)
 		{
-			TRM->enqueue(run);
-			p->GetRun()->finishTimes(time);
-			p->setstate(0);
-			p->SetRun();
+			int c = ptr->GetRemTime();
+			if (c == 0)
+			{
+				TRM->enqueue(ptr);
+				ptr->finishTimes(time);
+				ptr->setstate(0);
+				p->SetRun();
+			}
 		}
 	}
 	void RUNtoBLK(processor* p)
 	{
-		process* run = p->GetRun();
-		if (run != nullptr)
+		process* ptr = p->GetRun();
+		if (ptr)
 		{
-			process* run = p->GetRun();
-			BLK->enqueue(run);
-			p->setstate(0);
-			p->SetRun();
+			int c_iors = ptr->get_inputsigs()->getcount();//count of iors
+			if (c_iors == 0)
+			{
+				return ;
+			}
+			int ct = ptr->CpuTime;
+			int rem = ptr->GetRemTime();
+			int io_r = ptr->get_ior();
+			if ((ct - rem) == io_r)
+			{
+				ptr->set_remIO(ptr->get_iod());
+				BLK->enqueue(ptr);
+				p->SetRun();
+				p->setstate(0);
+			}
 		}
 	}
-	void RUNtoRDY(processor* p)
+	/*void RUNtoRDY(processor* p)
 	{
-
 		process* run = p->GetRun();
 		if (run != nullptr)
 		{
@@ -281,22 +253,40 @@ public:
 			p->setstate(0);
 			p->SetRun();
 		}
-	}
+	}*/
 	void BLKtoRDY()
 	{
 		if (BLK->isEmpty() == false)
 		{
-			if (random == nullptr)
+			int rem_IO = BLK->getfront()->getItem()->get_rem_io();
+			process* ptr;
+			BLK->peek(ptr);
+			if (rem_IO == 0)
 			{
-				random = ProcessorsList->getfront();
+				BLK->dequeue(ptr);
+				processor* shortpro = shortest_processor();
+				shortpro->AddProcess(ptr);
 			}
-			process* item;
-			BLK->dequeue(item);
-			random->getItem()->AddProcess(item);
-			random = random->getNext();
+			else
+			{
+				ptr->dec_IO();
+			}
 		}
 	}
-
+	processor* shortest_processor()
+	{
+		Node <processor*>* p = ProcessorsList->getfront();
+		processor* min = p->getItem();
+		while (p)
+		{
+			if (min > p->getItem())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
+		}
+		return min;
+	}
 	friend ostream& operator<< (ostream& out, const scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;
@@ -324,8 +314,6 @@ public:
 				i++;
 				p = p->getNext();
 			}
-
-
 		}
 		out << "----------BLK PROCESSES----------" << endl;
 		Node<process*>* pr = s.BLK->getfront();
@@ -374,7 +362,6 @@ public:
 		out << "PRESS ANY KEY TO MOVE TO NEXT STEP!"<<endl;
 		return out;
 	}
-
 	int CountRun() const
 	{
 		Node <processor*>* p = ProcessorsList->getfront();
@@ -394,79 +381,41 @@ public:
 		scheduler S = *this;
 		cout << S;
 	}
-
-
 };
 
-/*bool BLKtoRDY()
-{
-	Node <processor*>* p = ProcessorsList->getfront();
-	int rem_IO = p->getItem()->GetRun()->get_rem_io();
-	if (rem_IO==0)
+/*void BLKtoRDY()
 	{
-		process* ptr;
-		BLK->dequeue(ptr);
-		processor* shortpro= shortest_processor();
-		shortpro->AddProcess(ptr);
-	}
-}
-processor* shortest_processor()
-{
-	Node <processor*>* p = ProcessorsList->getfront();
-	processor* min=p->getItem();
-	while (p)
-	{
-		if (min > p->getItem())
+		if (BLK->isEmpty() == false)
 		{
-			min = p->getItem();
+			if (random == nullptr)
+			{
+				random = ProcessorsList->getfront();
+			}
+			process* item;
+			BLK->dequeue(item);
+			random->getItem()->AddProcess(item);
+			random = random->getNext();
 		}
-		p = p->getNext();
-	}
-	return min;
- }*/
- //void RUNtoTRM()
-	 //{
-	 //	Node <processor*>* p = ProcessorsList->getfront();
-	 //	while (p)
-	 //	{
-	 //		int c = p->getItem()->GetRun()->GetRemTime();
-	 //		if (c == 0)
-	 //		{
-	 //			TRM->enqueue(p->getItem()->GetRun());
-	 //			p->getItem()->GetRun()->finishTimes(time);
-	 //			p->getItem()->setstate(0);
-	 //			p->getItem()->SetRun();
-
-	 //		}
-	 //		else
-	 //		{
-	 //			p->getItem()->GetRun()->SetRemTime(c--);
-	 //		}
-	 //		p = p->getNext();
-	 //	}
-	 //}
-	 // 
-
-	 //bool RUNtoBLK()
-	 //{
-	 //	Node <processor*>* p = ProcessorsList->getfront();
-	 //	int c_iors = p->getItem()->GetRun()->get_inputsigs()->getcount();//count of iors
-	 //	if (c_iors == 0)
-	 //	{
-	 //		return false;
-	 //	}
-	 //	while (p)
-	 //		{
-	 //			int ct = p->getItem()->GetRun()->CpuTime;
-	 //			int rem = p->getItem()->GetRun()->GetRemTime();
-	 //			int io_r = p->getItem()->GetRun()->get_ior();
-	 //			if ((ct - rem) == io_r)
-	 //			{
-	 //				p->getItem()->GetRun()->set_remIO(p->getItem()->GetRun()->get_iod());
-	 //				BLK->enqueue(p->getItem()->GetRun());
-	 //				p->getItem()->SetRun();
-	 //				p->getItem()->setstate(0);
-	 //			}
-	 //			p = p->getNext();
-	 //		}
-	 //}
+	}*/
+//void RUNtoTRM(processor* p)
+	//{
+	//	process* run = p->GetRun();
+	//	if (run != nullptr)
+	//	{
+	//		TRM->enqueue(run);
+	//		p->GetRun()->finishTimes(time);
+	//		p->setstate(0);
+	//		p->SetRun();
+	//	}
+	//}
+/*void RUNtoBLK(processor* p)
+	{
+		process* run = p->GetRun();
+		if (run != nullptr)
+		{
+			process* run = p->GetRun();
+			BLK->enqueue(run);
+			p->setstate(0);
+			p->SetRun();
+		}
+	}*/
