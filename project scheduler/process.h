@@ -11,7 +11,7 @@ private:
 	int PID;
 	int AT;
 	int RT;
-	int TT;
+	int TT;//time when process is finished
 	int TRT;
 	int WT;
 	string state;
@@ -71,6 +71,10 @@ public:
 	int get_rem_io()
 	{
 		return Rem_IO;
+	}
+	int get_TT()
+	{
+		return TT;
 	}
 	QueueADT<IO_R_D*>* get_inputsigs()
 	{

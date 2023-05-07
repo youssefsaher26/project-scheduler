@@ -70,7 +70,7 @@ public:
 				{
 					RUNtoTRM(ptr);
 				}
-				p->getItem()->STATE();
+				p->getItem()->State();
 				p = p->getNext();
 			}
 			print();
@@ -166,6 +166,20 @@ public:
 
 		outputFile.close();
 	}
+	void savefile()
+	{
+		
+		ofstream outputFile;
+		outputFile.open("Output.txt", ios::out);
+		outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\t';
+		Node<process*>* p_out = TRM->getfront();
+		while (p_out)
+		{
+			//output Sorted TRM
+		}
+		outputFile << processno<<'\n';
+
+	}
 	void FORCEDTRM(int ID)
 	{
 		FCFS* fcfs;//loop on processors. if fcfs, call forcedtrm,
@@ -211,6 +225,17 @@ public:
 		ptr->finishTimes(time);
 		ptr->setstate(0);		
 		p->SetRun();
+	}
+	void Sort_TRM()
+	{
+		Node<process*>* ptr = TRM->getfront();
+		while (ptr)
+		{
+			if (ptr->getItem()->get_TT())
+			{
+
+			}
+		}
 	}
 	void RUNtoBLK(processor* p)
 	{
