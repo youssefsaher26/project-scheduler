@@ -108,16 +108,16 @@ public:
 			return true;
 		return false;
 	}
-	//virtual int pLoad()
-	//{
-	//	int x = BusyTime / TotalTRT;
-	//	return x;
-	//	
-	//}
-	//virtual int pUtil()
-	//{
-	//	int x = BusyTime / (BusyTime + IdleTime);
-	//	return x;
-	//}
+	virtual int pLoad()
+	{
+		int x = BusyTime / TotalTRT;
+		return x;
+		
+	}
+	virtual int pUtil()
+	{
+		int x = BusyTime / (BusyTime + IdleTime);
+		return x;
+	}
 	
 };

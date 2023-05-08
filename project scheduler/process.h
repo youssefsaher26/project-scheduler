@@ -76,6 +76,22 @@ public:
 	{
 		return TT;
 	}
+	int get_CT()
+	{
+		return CpuTime;
+	}
+	int get_WT()
+	{
+		return WT;
+	}
+	int get_RT()
+	{
+		return RT;
+	}
+	int get_TRT()
+	{
+		return TRT;
+	}
 	QueueADT<IO_R_D*>* get_inputsigs()
 	{
 		return &inputsigs;

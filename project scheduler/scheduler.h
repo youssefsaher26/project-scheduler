@@ -175,10 +175,91 @@ public:
 		Node<process*>* p_out = TRM->getfront();
 		while (p_out)
 		{
-			//output Sorted TRM
+			outputFile << p_out->getItem()->get_TT()<< '\t';
+			outputFile << p_out->getItem ()->getID() << '\t';
+			outputFile << p_out->getItem()->get_CT()<<'\t';
+			outputFile << p_out->getItem()->get_iod() << '\t';
+			outputFile << p_out->getItem()->get_WT()<<'\t';
+			outputFile << p_out->getItem()->get_RT()<<'\t';
+			outputFile << p_out->getItem()->get_TRT()<< '\t';
+			p_out = p_out->getNext();
 		}
 		outputFile << processno<<'\n';
+		outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
+		outputFile << "Avg RT = " << get_Avg_RT() << "," << '\t';
+		outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
+		int no1;//(no migrated due to RTF / total no.)//
+		int no2;//(no migrated due to MaxW / total no.)//
+		outputFile << "Migration %:" << '\t' << "RTF = " << no1 << ",   " <<'\t'<<"MaxW = " << no2<<'\n';
+		int no3;//(no stolen / total no.)//
+		outputFile << "Work Steal %: " << no3<<'\n';
+		int no4;//(no forked / total no.)//
+		outputFile << "Forked Process: " << no4;
+		int no5; //(no of killed / total no.)//
+		outputFile << "Killed Process: " << no5<<'\n'<<'\n';
+		int processor_no = FCFSno + SJFno + RRno;
+		outputFile << "Processors: " << processor_no;
+		outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR ]"<<'\n';
+		outputFile << "Processors Load" << '\n';
 
+		Node<processor*>* temp = ProcessorsList->getfront();
+		int i=0;
+		while (temp)
+		{
+			outputFile << "p" << i << " = " << temp->getItem()->pLoad()<< "%";
+			outputFile << "," << '\t';
+			temp = temp->getNext();
+			i++;
+		}
+		outputFile << '\n';
+		outputFile << "Processors Utiliz" << '\n';
+		Node<processor*>* ptr = ProcessorsList->getfront();
+			int n=0,sum_util=0,avg_util=0;
+			while (ptr)
+			{
+				outputFile << "p" << n << " = " << ptr->getItem()->pUtil() << "%";
+				outputFile << "," << '\t';
+				ptr = ptr->getNext();
+				n++;
+				sum_util= ptr->getItem()->pUtil() + sum_util;
+			}
+			outputFile << '\n';
+			avg_util = sum_util / processor_no;
+			outputFile << "Avg utilization = " << avg_util << "%";
+			outputFile.close();
+	}
+	int get_Avg_WT()
+	{
+		int sum=0, avg=0;
+		Node<process*>* ptr = TRM->getfront();
+		while (ptr)
+		{
+			sum=ptr->getItem()->get_WT() + sum;
+		}
+		avg=sum / processno;
+		return avg;
+	}
+	int get_Avg_RT()
+	{
+		int sum = 0, avg = 0;
+		Node<process*>* ptr = TRM->getfront();
+		while (ptr)
+		{
+			sum = ptr->getItem()->get_RT() + sum;
+		}
+		avg = sum / processno;
+		return avg;
+	}
+	int get_Avg_TRT()
+	{
+		int sum = 0, avg = 0;
+		Node<process*>* ptr = TRM->getfront();
+		while (ptr)
+		{
+			sum = ptr->getItem()->get_TRT() + sum;
+		}
+		avg = sum / processno;
+		return avg;
 	}
 	void FORCEDTRM(int ID)
 	{
@@ -220,21 +301,13 @@ public:
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p)
 	{
-		process* ptr = p->GetRun();
-		TRM->enqueue(ptr);
-		ptr->finishTimes(time);
-		ptr->setstate(0);		
-		p->SetRun();
-	}
-	void Sort_TRM()
-	{
-		Node<process*>* ptr = TRM->getfront();
-		while (ptr)
+		if (p->GetRun() != nullptr)
 		{
-			if (ptr->getItem()->get_TT())
-			{
-
-			}
+			process* ptr = p->GetRun();
+			TRM->enqueue(ptr);
+			ptr->finishTimes(time);
+			ptr->setstate(0);
+			p->SetRun();
 		}
 	}
 	void RUNtoBLK(processor* p)
