@@ -32,8 +32,24 @@ private:
 	QueueADT<kill*>* killsigs;
 	QueueADT<IO_R_D*>* inputsigs;
 	Node<processor*>* random;
-	UI* inter;
+	//UI* inter;
 public:
+	QueueADT<processor*>* get_ProcessorsList()
+	{
+		return ProcessorsList;
+	}
+	QueueADT<process*>* get_BLK()
+	{
+		return BLK;
+	}
+	QueueADT<process*>* get_TRM()
+	{
+		return TRM;
+	}
+	int get_time()
+	{
+		return time;
+	}
 	scheduler()
 	{
 		NEW = new QueueADT<process*>;
@@ -42,7 +58,7 @@ public:
 		ProcessorsList = new QueueADT<processor*>;
 		killsigs = new QueueADT<kill*>;
 		inputsigs = new QueueADT<IO_R_D*>;
-		inter = new UI(this);
+		//inter = new UI(this);
 		time = 1;
 		STL = 0;
 		forkprob = 0;
@@ -55,7 +71,7 @@ public:
 	{
 		loadfile();
 		CreateProcessors();
-		inter->MODE();
+		//inter->MODE();
 		random = ProcessorsList->getfront();
 		while (DONE() == false)
 		{
@@ -64,7 +80,15 @@ public:
 			{
 				NEWtoRDY();
 				processor* ptr = p->getItem();
-				//ptr->SchedAlgo();
+				ptr->SchedAlgo();
+				if (ptr->get_type() == 1 && ptr->get_forkit()==true)
+				{
+					
+					fork(ptr->GetRun()->GetRemTime());
+					ptr->resetFork();
+					
+					//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
+				}
 				if (ptr->Block)
 				{
 					RUNtoBLK(ptr);
@@ -73,13 +97,23 @@ public:
 				{
 					RUNtoTRM(ptr);
 				}
-				p->getItem()->State();
+				p->getItem()->STATE();
 				p = p->getNext();
 			}
-			inter->UIprint();
+			//inter->UIprint();
+			print();
+			cin.ignore();
 			time++;
 		}
+		savefile();
 		cout << "END OF SIMULATION" << endl;
+	}
+	void fork(int y)
+	{
+		processno++;
+		process* p = new process(time,processno,y,0);
+		processor* pro = shortest_FCFS();
+		pro->AddProcess(p);
 	}
 	void CreateProcessors()
 	{
@@ -87,7 +121,7 @@ public:
 		int id = 1;
 		for (int i = 0; i < FCFSno; i++)
 		{
-			ptr = new FCFS(id);
+			ptr = new FCFS(id,forkprob);
 			ProcessorsList->enqueue(ptr);
 			id++;
 		}
@@ -190,14 +224,14 @@ public:
 		outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
 		outputFile << "Avg RT = " << get_Avg_RT() << "," << '\t';
 		outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
-		int no1;//(no migrated due to RTF / total no.)//
-		int no2;//(no migrated due to MaxW / total no.)//
+		int no1=0;//(no migrated due to RTF / total no.)//
+		int no2=0;//(no migrated due to MaxW / total no.)//
 		outputFile << "Migration %:" << '\t' << "RTF = " << no1 << ",   " <<'\t'<<"MaxW = " << no2<<'\n';
-		int no3;//(no stolen / total no.)//
+		int no3=0;//(no stolen / total no.)//
 		outputFile << "Work Steal %: " << no3<<'\n';
-		int no4;//(no forked / total no.)//
+		int no4=0;//(no forked / total no.)//
 		outputFile << "Forked Process: " << no4;
-		int no5; //(no of killed / total no.)//
+		int no5=0; //(no of killed / total no.)//
 		outputFile << "Killed Process: " << no5<<'\n'<<'\n';
 		int processor_no = FCFSno + SJFno + RRno;
 		outputFile << "Processors: " << processor_no;
@@ -382,11 +416,29 @@ public:
 		}
 		return min;
 	}
-	friend ostream& operator<< (ostream& out, const scheduler* s)
+	processor* shortest_FCFS()
 	{
-		out << "Current TimeStep : " << s->time << endl;
+		Node <processor*>* p = ProcessorsList->getfront();
+		processor* min = p->getItem();
+		while (p)
+		{
+			if (min > p->getItem()&&p->getItem()->get_type()==1)
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
+		}
+		return min;
+	}
+	void print()
+	{
+		cout << *this;
+	}
+	friend ostream& operator<< (ostream& out, scheduler& s)
+	{
+		out << "Current TimeStep : " << s.time << endl;
 		out << "----------RDY PROCESSES----------" << endl;
-		Node <processor*>* p = s->ProcessorsList->getfront();
+		Node <processor*>* p = s.ProcessorsList->getfront();
 		int i = 1;
 		while (p)
 		{
@@ -411,8 +463,8 @@ public:
 			}
 		}
 		out << "----------BLK PROCESSES----------" << endl;
-		Node<process*>* pr = s->BLK->getfront();
-		out << s->BLK->getcount() << " BLK: ";
+		Node<process*>* pr = s.BLK->getfront();
+		out << s.BLK->getcount() << " BLK: ";
 		while (pr)
 		{
 			out << pr->getItem()->getID();
@@ -424,9 +476,9 @@ public:
 		}
 		out << endl;
 		out << "-----------RUN PROCESSES----------" << endl;
-		int x = s->CountRun();
+		int x = s.CountRun();
 		out << x << " RUN: ";
-		Node <processor*>* pt = s->ProcessorsList->getfront();
+		Node <processor*>* pt = s.ProcessorsList->getfront();
 		while (pt)
 		{
 			process*pp = pt->getItem()->GetRun();
@@ -442,8 +494,8 @@ public:
 		}
 		out << endl;
 		out << "----------TRM PROCESSES----------" << endl;
-		Node<process*>* ptrm = s->TRM->getfront();
-		out << s->TRM->getcount() << " TRM: ";
+		Node<process*>* ptrm = s.TRM->getfront();
+		out << s.TRM->getcount() << " TRM: ";
 		while (ptrm)
 		{
 			out << ptrm->getItem()->getID();
@@ -471,7 +523,6 @@ public:
 		}
 		return c;
 	}
-
 };
 
 

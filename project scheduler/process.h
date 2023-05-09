@@ -21,8 +21,11 @@ private:
 	int RemTime;
 	int Rem_IO;
 	int RR_TIME;
+	bool forked;
+	
 public:
-	int CpuTime;
+	
+	int  CpuTime;
 	process(int at, int pid, int ct, int IO_num)
 	{
 		RR_TIME = 0;
@@ -34,6 +37,7 @@ public:
 		state = "NEW";
 		kill_time = -1;
 		Rem_IO = -1;
+		forked = false;
 	}
 	void add_inputs_sigs(IO_R_D* ptr)
 	{
@@ -43,6 +47,14 @@ public:
 	{
 		state = "NEW";
 		kill_time = -1;
+	}
+	bool get_forked()
+	{
+		return forked;
+	}
+	void set_forked()
+	{
+		forked = true;
 	}
 	int GetArrTime()
 	{
@@ -108,7 +120,6 @@ public:
 	{
 		RemTime = y;
 	}
-	
 	void setstate(string s)
 	{
 		state = s;
@@ -129,7 +140,6 @@ public:
 	{
 		Rem_IO--;
 	}
-
 	void finishTimes(int t)
 	{
 		TT = t;

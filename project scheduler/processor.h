@@ -13,6 +13,7 @@ protected:
 	int IdleTime;
 	int BusyTime; //phase 2
 public:
+	bool fork_it;
 	bool Block;
 	bool Terminate;
 	bool State; //  0-IDLE 1-BUSY
@@ -23,9 +24,6 @@ public:
 	virtual void AddProcess(process* p) = 0;
 	virtual bool Done() = 0;
 	virtual void SchedAlgo() = 0;
-	virtual void NeedBlock();
-	virtual void NeedTrm();
-	virtual void STATE();
 
 	processor()
 	{
@@ -46,6 +44,10 @@ public:
 		{
 			State = 1;
 		}
+	}
+	void resetFork()
+	{
+		fork_it = false;
 	}
 	bool getstate()
 	{
@@ -120,6 +122,10 @@ public:
 	{
 		int x = BusyTime / (BusyTime + IdleTime);
 		return x;
+	}
+	bool get_forkit()
+	{
+		return fork_it;
 	}
 	
 };

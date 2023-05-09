@@ -8,17 +8,19 @@
 class FCFS : public processor
 {
 private:
-	
+	int forkprob;
 	LinkedList<process*>* FCFS_RDY;
 public:
 	static int MaxW;
-
-	FCFS(int x)
+	FCFS(int x, int y)
 	{
 		FCFS_RDY= new LinkedList<process*>;
 		type = 1;
 		processornumber = x;
+		forkprob = y;
+		fork_it = false;
 	}
+	
 	virtual void AddProcess(process* p)
 	{
 		FCFS_RDY->InsertEnd(p);
@@ -52,7 +54,18 @@ public:
 			}
 		}
 	}
-
+	void fork()
+	{
+		int forking_no = rand() % 100 + 1;
+		if(forking_no<forkprob)
+		{
+			if (!(RUN->get_forked()))
+			{
+				RUN->set_forked();
+				fork_it = true;
+			}
+		}
+	}
 	virtual void SchedAlgo()
 	{
 		if (!RUN)
