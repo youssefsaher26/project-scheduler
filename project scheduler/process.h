@@ -101,7 +101,7 @@ public:
 	{
 		kill_time = t;
 	}
-		void set_remIO(int t)
+	void set_remIO(int t)
 	{
 		Rem_IO = t;
 	}
