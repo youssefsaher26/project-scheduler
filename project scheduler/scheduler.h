@@ -11,9 +11,9 @@
 #include "kill.h"
 #include"IO_R_D.h"
 #include "SJF.h"
+#include "UI.h"
 #pragma once
 using namespace std;
-
 
 class scheduler
 {
@@ -32,6 +32,7 @@ private:
 	QueueADT<kill*>* killsigs;
 	QueueADT<IO_R_D*>* inputsigs;
 	Node<processor*>* random;
+	UI* inter;
 public:
 	scheduler()
 	{
@@ -41,6 +42,7 @@ public:
 		ProcessorsList = new QueueADT<processor*>;
 		killsigs = new QueueADT<kill*>;
 		inputsigs = new QueueADT<IO_R_D*>;
+		inter = new UI(this);
 		time = 1;
 		STL = 0;
 		forkprob = 0;
@@ -53,6 +55,7 @@ public:
 	{
 		loadfile();
 		CreateProcessors();
+		inter->MODE();
 		random = ProcessorsList->getfront();
 		while (DONE() == false)
 		{
@@ -73,8 +76,7 @@ public:
 				p->getItem()->STATE();
 				p = p->getNext();
 			}
-			print();
-			cin.ignore();
+			inter->UIprint();
 			time++;
 		}
 		cout << "END OF SIMULATION" << endl;
@@ -282,11 +284,11 @@ public:
 		}
 		return min;
 	}
-	friend ostream& operator<< (ostream& out, const scheduler& s)
+	friend ostream& operator<< (ostream& out, const scheduler* s)
 	{
-		out << "Current TimeStep : " << s.time << endl;
+		out << "Current TimeStep : " << s->time << endl;
 		out << "----------RDY PROCESSES----------" << endl;
-		Node <processor*>* p = s.ProcessorsList->getfront();
+		Node <processor*>* p = s->ProcessorsList->getfront();
 		int i = 1;
 		while (p)
 		{
@@ -311,8 +313,8 @@ public:
 			}
 		}
 		out << "----------BLK PROCESSES----------" << endl;
-		Node<process*>* pr = s.BLK->getfront();
-		out << s.BLK->getcount() << " BLK: ";
+		Node<process*>* pr = s->BLK->getfront();
+		out << s->BLK->getcount() << " BLK: ";
 		while (pr)
 		{
 			out << pr->getItem()->getID();
@@ -324,9 +326,9 @@ public:
 		}
 		out << endl;
 		out << "-----------RUN PROCESSES----------" << endl;
-		int x = s.CountRun();
+		int x = s->CountRun();
 		out << x << " RUN: ";
-		Node <processor*>* pt = s.ProcessorsList->getfront();
+		Node <processor*>* pt = s->ProcessorsList->getfront();
 		while (pt)
 		{
 			process*pp = pt->getItem()->GetRun();
@@ -342,8 +344,8 @@ public:
 		}
 		out << endl;
 		out << "----------TRM PROCESSES----------" << endl;
-		Node<process*>* ptrm = s.TRM->getfront();
-		out << s.TRM->getcount() << " TRM: ";
+		Node<process*>* ptrm = s->TRM->getfront();
+		out << s->TRM->getcount() << " TRM: ";
 		while (ptrm)
 		{
 			out << ptrm->getItem()->getID();
@@ -371,12 +373,9 @@ public:
 		}
 		return c;
 	}
-	void print()
-	{
-		scheduler S = *this;
-		cout << S;
-	}
+
 };
+
 
 /*void BLKtoRDY()
 	{

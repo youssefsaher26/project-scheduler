@@ -75,7 +75,12 @@ public:
 			{
 				RUN->decremtime();
 				RUN->RR_INC();
-				if (RUN->GetRRTime()== TimeSlice)
+				if(RUN->GetRemTime()==0)
+				{
+					Terminate = 1;
+					RUN->RR_RESET();
+				} 
+				else if (RUN->GetRRTime()== TimeSlice)
 				{
 					RUN->RR_RESET();
 					RR_RDY->dequeue(RUN);

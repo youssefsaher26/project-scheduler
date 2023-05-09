@@ -23,9 +23,6 @@ public:
 	virtual void AddProcess(process* p) = 0;
 	virtual bool Done() = 0;
 	virtual void SchedAlgo() = 0;
-	virtual void NeedBlock();
-	virtual void NeedTrm();
-	virtual void STATE();
 
 	processor()
 	{
