@@ -12,6 +12,7 @@ protected:
 	int type; //1 is FCFS, 2 is RR, 3 is SJF
 	int IdleTime;
 	int BusyTime; //phase 2
+	process* mig;
 public:
 	bool fork_it;
 	bool Block;
@@ -24,6 +25,7 @@ public:
 	virtual void AddProcess(process* p) = 0;
 	virtual bool Done() = 0;
 	virtual void SchedAlgo() = 0;
+	virtual process* KILL(int y) = 0;
 
 	processor()
 	{
@@ -33,6 +35,7 @@ public:
 		State = 0;
 		Block = 0;
 		Terminate = 0;
+		mig = nullptr;
 	}
 	virtual void STATE()
 	{
@@ -52,6 +55,10 @@ public:
 	bool getstate()
 	{
 		return State;
+	}
+	process* getmigrate()
+	{
+		return mig;
 	}
 	int get_type()
 	{
@@ -95,6 +102,10 @@ public:
 	virtual void setstate(bool s)
 	{
 		State = s;
+	}
+	void resetmigrate()
+	{
+		mig = nullptr;
 	}
 	void SetRun()//sets run=null
 	{

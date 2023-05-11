@@ -81,12 +81,18 @@ public:
 				NEWtoRDY();
 				processor* ptr = p->getItem();
 				ptr->SchedAlgo();
-				if (ptr->get_type() == 1 && ptr->get_forkit()==true)
+				if (ptr->getmigrate() != nullptr)
 				{
-					
-					fork(ptr->GetRun()->GetRemTime());
-					ptr->resetFork();
-					
+					//move1(ptr->getmigrate());
+				}
+				if (ptr->get_type() == 1)
+				{
+					if (ptr->get_forkit() == true)
+					{
+
+						fork(ptr->GetRun()->GetRemTime());
+						ptr->resetFork();
+					}			
 					//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
 				}
 				if (ptr->Block)
@@ -297,24 +303,34 @@ public:
 		avg = sum / processno;
 		return avg;
 	}
-	void FORCEDTRM(int ID)
+	void KILLSIG()
 	{
-		FCFS* fcfs;//loop on processors. if fcfs, call forcedtrm,
-		Node <processor*>* ptr = ProcessorsList->getfront();
-		while (ptr) //loops on processors
+		kill* k;
+		killsigs->peek(k);
+		while (k->getkiltime() == time)
 		{
-			int t = ptr->getItem()->get_type();
-			if (t == 1) //only fcfs get past this point
+			Node<processor*>* p = ProcessorsList->getfront();
+			while (p)
 			{
-				fcfs = (FCFS*)ptr->getItem();
-				process* pTrm = fcfs->ForcedTRM(ID);
-				if (pTrm != nullptr)
+				processor* ptr = p->getItem();
+				if (ptr->get_type() == 1)
 				{
-					TRM->enqueue(pTrm);
+					process* pTrm = ptr->KILL(k->getkillid());
+					if (pTrm != nullptr)
+					{
+						TRM->enqueue(pTrm);
+						killsigs->dequeue(k);
+					}
 				}
+				p = p->getNext();
 			}
-			ptr = ptr->getNext();
+			killsigs->peek(k);
 		}
+	}
+	void move1(process* p)
+	{
+		processor* ssjf = shortest_SJF();
+		ssjf->AddProcess(p);
 	}
 	void NEWtoRDY()
 	{
@@ -423,6 +439,48 @@ public:
 		while (p)
 		{
 			if (min > p->getItem()&&p->getItem()->get_type()==1)
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
+		}
+		return min;
+		//if (FCFSno == 0)
+		//{
+		//	return nullptr;
+		//}
+		//Node <processor*>* p = ProcessorsList->getfront();
+		//while (p->getItem()->get_type() != 1)
+		//{
+		//	p = p->getNext();
+		//}
+		//processor* min = p->getItem();
+		//while (p)
+		//{
+		//	if (min > p->getItem())
+		//	{
+		//		min = p->getItem();
+		//	}
+		//	p = p->getNext();
+		//}
+		//return min;
+	}
+	processor* shortest_SJF()
+	{
+		if(SJFno==0)
+		{
+			return nullptr;
+		}
+		Node <processor*>* p = ProcessorsList->getfront();
+		while (p->getItem()->get_type()!=3)
+		{
+			p = p->getNext();
+		}
+		//p=the first sjf
+		processor* min = p->getItem();
+		while (p)
+		{
+			if (min > p->getItem())
 			{
 				min = p->getItem();
 			}

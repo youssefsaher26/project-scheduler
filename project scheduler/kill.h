@@ -13,5 +13,9 @@ public:
 	{
 		return time;
 	}
+	int getkillid()
+	{
+		return id;
+	}
 };
 

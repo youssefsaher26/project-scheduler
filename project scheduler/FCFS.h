@@ -32,7 +32,7 @@ public:
 		while (temp)
 		{
 			process* C = temp->getItem();
-			sum = C->GetRemTime() + sum;
+			sum = sum + C->GetRemTime();
 			temp = temp->getNext();
 		}
 		return sum;
@@ -103,10 +103,10 @@ public:
 		MaxW = x;
 	}
 
-	process* ForcedTRM(int ID)
+	virtual process* KILL(int ID)
 	{
 
-		if (RUN != nullptr)
+		if (RUN)
 		{
 			if (RUN->getID() == ID)
 			{

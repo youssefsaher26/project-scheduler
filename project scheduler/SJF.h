@@ -64,6 +64,10 @@ public:
 			}
 		}
 	}
+	virtual process* KILL(int id)
+	{
+		return nullptr;
+	}
 	void RUN_TO_RDY()
 	{
 		SJF_RDY->enqueue(RUN);

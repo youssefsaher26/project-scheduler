@@ -17,7 +17,10 @@ public:
 		type = 2;
 		processornumber = x;
 	}
-
+	virtual process* KILL(int id)
+	{
+		return nullptr;
+	}
 	virtual void AddProcess(process* p)
 	{
 		RR_RDY->enqueue(p);
@@ -44,16 +47,25 @@ public:
 		{
 			if (RR_RDY->isEmpty() == false)
 			{
-				RR_RDY->dequeue(RUN);
-				if (RUN == nullptr)
+				process* p;
+				RR_RDY->dequeue(p);
+				MIGRATION(p);
+				if (mig == nullptr)
 				{
-					State = 0;
-				}
-				else
-				{
-					State = 1;
+					RUN = p;
 				}
 			}
+		}
+	}
+	void MIGRATION(process* p)
+	{
+		if (p->GetRemTime() < RTF)
+		{
+			mig = p;
+		}
+		else
+		{
+			mig = nullptr;
 		}
 	}
 	virtual void SchedAlgo()
@@ -62,29 +74,32 @@ public:
 		{
 			RDY_TO_RUN();
 		}
-		if (RUN)
+		if (mig == nullptr)
 		{
-			NeedBlock();
-			NeedTrm();
-			if (Block == 1 || Terminate == 1)
+			if (RUN)
 			{
-				RUN->RR_RESET();
-				return;
-			}
-			if (Block == 0 && Terminate == 0)
-			{
-				RUN->decremtime();
-				RUN->RR_INC();
-				if(RUN->GetRemTime()==0)
-				{
-					Terminate = 1;
-					RUN->RR_RESET();
-				} 
-				else if (RUN->GetRRTime()== TimeSlice)
+				NeedBlock();
+				NeedTrm();
+				if (Block == 1 || Terminate == 1)
 				{
 					RUN->RR_RESET();
-					RR_RDY->dequeue(RUN);
-					RR_RDY->enqueue(RUN);
+					return;
+				}
+				if (Block == 0 && Terminate == 0)
+				{
+					RUN->decremtime();
+					RUN->RR_INC();
+					if (RUN->GetRemTime() == 0)
+					{
+						Terminate = 1;
+						RUN->RR_RESET();
+					}
+					else if (RUN->GetRRTime() == TimeSlice)
+					{
+						RUN->RR_RESET();
+						RR_RDY->dequeue(RUN);
+						RR_RDY->enqueue(RUN);
+					}
 				}
 			}
 		}
