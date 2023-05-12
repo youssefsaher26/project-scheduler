@@ -83,7 +83,15 @@ public:
 				ptr->SchedAlgo();
 				if (ptr->getmigrate() != nullptr)
 				{
-					//move1(ptr->getmigrate());
+					if (ptr->get_type() == 3)
+					{
+						move1(ptr->getmigrate());
+					}
+					else if (ptr->get_type() == 1)
+					{
+						//move2
+					}
+					ptr->resetmigrate();
 				}
 				if (ptr->get_type() == 1)
 				{
