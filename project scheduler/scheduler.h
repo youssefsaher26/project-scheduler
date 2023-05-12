@@ -80,16 +80,18 @@ public:
 			{
 				NEWtoRDY();
 				processor* ptr = p->getItem();
+				ptr->time(time);
+				//a3mel 7aga tedakhal el current time lel fcfs
 				ptr->SchedAlgo();
 				if (ptr->getmigrate() != nullptr)
 				{
-					if (ptr->get_type() == 3)
+					if (ptr->get_type() == 2)
 					{
 						move1(ptr->getmigrate());
 					}
 					else if (ptr->get_type() == 1)
 					{
-						//move2
+						move2(ptr->getmigrate());
 					}
 					ptr->resetmigrate();
 				}
@@ -103,17 +105,18 @@ public:
 					}			
 					//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
 				}
-				if (ptr->Block)
+				if (ptr->getblock())
 				{
 					RUNtoBLK(ptr);
 				}
-				else if (ptr->Terminate)
+				else if (ptr->gettrm())
 				{
 					RUNtoTRM(ptr);
 				}
 				p->getItem()->STATE();
 				p = p->getNext();
 			}
+			BLKtoRDY();
 			//inter->UIprint();
 			print();
 			cin.ignore();
@@ -125,7 +128,7 @@ public:
 	void fork(int y)
 	{
 		processno++;
-		process* p = new process(time,processno,y,0);
+		process* p = new process(time,processno,y,0,false);
 		processor* pro = shortest_FCFS();
 		pro->AddProcess(p);
 	}
@@ -338,7 +341,18 @@ public:
 	void move1(process* p)
 	{
 		processor* ssjf = shortest_SJF();
-		ssjf->AddProcess(p);
+		if (ssjf)
+		{
+			ssjf->AddProcess(p);
+		}
+	}
+	void move2(process* p)
+	{
+		processor* srr = shortest_RR();
+		if (srr)
+		{
+			srr->AddProcess(p);
+		}
 	}
 	void NEWtoRDY()
 	{
@@ -361,36 +375,16 @@ public:
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p)
 	{
-		if (p->GetRun() != nullptr)
-		{
-			process* ptr = p->GetRun();
-			TRM->enqueue(ptr);
-			ptr->finishTimes(time);
-			ptr->setstate(0);
-			p->SetRun();
-		}
+		process* ptr = p->gettrm();
+		TRM->enqueue(ptr);
+		ptr->finishTimes(time);
+		p->resettrm();
 	}
 	void RUNtoBLK(processor* p)
 	{
-		process* ptr = p->GetRun();
-		if (ptr)
-		{
-			int c_iors = ptr->get_inputsigs()->getcount();//count of iors
-			if (c_iors == 0)
-			{
-				return ;
-			}
-			int ct = ptr->CpuTime;
-			int rem = ptr->GetRemTime();
-			int io_r = ptr->get_ior();
-			if ((ct - rem) == io_r)
-			{
-				ptr->set_remIO(ptr->get_iod());
-				BLK->enqueue(ptr);
-				p->SetRun();
-				p->setstate(0);
-			}
-		}
+		process* ptr = p->getblock();
+		BLK->enqueue(ptr);
+		p->resetblock();
 	}
 	/*void RUNtoRDY(processor* p)
 	{
@@ -411,11 +405,13 @@ public:
 	{
 		if (BLK->isEmpty() == false)
 		{
-			int rem_IO = BLK->getfront()->getItem()->get_rem_io();
 			process* ptr;
 			BLK->peek(ptr);
+			int rem_IO = ptr->get_rem_io();
 			if (rem_IO == 0)
 			{
+				IO_R_D* io;
+				ptr->get_inputsigs()->dequeue(io);
 				BLK->dequeue(ptr);
 				processor* shortpro = shortest_processor();
 				shortpro->AddProcess(ptr);
@@ -432,7 +428,7 @@ public:
 		processor* min = p->getItem();
 		while (p)
 		{
-			if (min > p->getItem())
+			if (min->queuetime() > p->getItem()->queuetime())
 			{
 				min = p->getItem();
 			}
@@ -442,21 +438,21 @@ public:
 	}
 	processor* shortest_FCFS()
 	{
+		if (FCFSno == 0)
+		{
+			return nullptr;
+		}
 		Node <processor*>* p = ProcessorsList->getfront();
 		processor* min = p->getItem();
 		while (p)
 		{
-			if (min > p->getItem()&&p->getItem()->get_type()==1)
+			if (min->queuetime() > p->getItem()->queuetime() && p->getItem()->get_type() == 1)
 			{
 				min = p->getItem();
 			}
 			p = p->getNext();
 		}
 		return min;
-		//if (FCFSno == 0)
-		//{
-		//	return nullptr;
-		//}
 		//Node <processor*>* p = ProcessorsList->getfront();
 		//while (p->getItem()->get_type() != 1)
 		//{
@@ -488,7 +484,7 @@ public:
 		processor* min = p->getItem();
 		while (p)
 		{
-			if (min > p->getItem())
+			if (min->queuetime() > p->getItem()->queuetime())
 			{
 				min = p->getItem();
 			}
@@ -496,6 +492,36 @@ public:
 		}
 		return min;
 	}
+	processor* shortest_RR()
+	{
+		if(RRno==0)
+		{
+			return nullptr;
+		}
+
+		Node <processor*>* p = ProcessorsList->getfront();
+		while (p->getItem()->get_type() != 2)
+		{
+			p = p->getNext();
+		}
+		//p=the first rr
+		processor* min = p->getItem();
+		while (p)
+		{ 
+			if (p->getItem()->get_type() == 2)
+			{
+				
+				if (min->queuetime() > p->getItem()->queuetime())
+				{
+					min = p->getItem();
+				}
+			}
+			p = p->getNext();
+		}
+		return min;
+
+	}
+
 	void print()
 	{
 		cout << *this;

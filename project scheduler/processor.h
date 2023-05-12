@@ -13,10 +13,11 @@ protected:
 	int IdleTime;
 	int BusyTime; //phase 2
 	process* mig;
+	process* block;
+	process* trm;
+	int TIME;
 public:
 	bool fork_it;
-	bool Block;
-	bool Terminate;
 	bool State; //  0-IDLE 1-BUSY
 	int TotalTRT;
 	virtual void RDY_TO_RUN() = 0;
@@ -29,13 +30,14 @@ public:
 
 	processor()
 	{
+		TIME = 0;
 		IdleTime = 0;
 		BusyTime = 0;
 		RUN = nullptr;
 		State = 0;
-		Block = 0;
-		Terminate = 0;
 		mig = nullptr;
+		block = nullptr;
+		trm = nullptr;
 	}
 	virtual void STATE()
 	{
@@ -60,6 +62,14 @@ public:
 	{
 		return mig;
 	}
+	process* gettrm()
+	{
+		return trm;
+	}
+	process* getblock()
+	{
+		return block;
+	}
 	int get_type()
 	{
 		return type;
@@ -75,18 +85,29 @@ public:
 	}
 	virtual void NeedBlock()
 	{
-		int c_iors = RUN->get_inputsigs()->getcount();//count of iors
+		int c_iors = RUN->get_inputsigs()->getcount();
 		if (c_iors == 0)
 		{
-			Block = 0;
+			block = nullptr;
 			return;
 		}
-		int ct = RUN->CpuTime;
-		int rem = RUN->GetRemTime();
-		int io_r = RUN->get_ior();
-		if ((ct - rem) == io_r)
+		else
 		{
-			Block = 1;
+			IO_R_D* io;
+			RUN->get_inputsigs()->peek(io);
+			int ct = RUN->CpuTime;
+			int rem = RUN->GetRemTime();
+			int io_r = io->get_ior();
+			if ((ct - rem) == io_r)
+			{
+				block = RUN;
+				block->set_remIO(io->get_iod());
+				RUN = nullptr;
+			}
+			else
+			{
+				block = nullptr;
+			}
 		}
 	
 	}
@@ -95,7 +116,8 @@ public:
 		int c = RUN->GetRemTime();
 		if (c == 0)
 		{
-			Terminate = 1;
+			trm = RUN;
+			RUN = nullptr;
 		}
 	}
 
@@ -107,9 +129,21 @@ public:
 	{
 		mig = nullptr;
 	}
+	void resetblock()
+	{
+		block = nullptr;
+	}
+	void resettrm()
+	{
+		trm = nullptr;
+	}
 	void SetRun()//sets run=null
 	{
 		RUN = nullptr;
+	}
+	void time(int x)
+	{
+		TIME = x;
 	}
 	bool operator > (processor* p)
 	{

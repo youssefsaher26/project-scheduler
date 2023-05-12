@@ -79,20 +79,26 @@ public:
 			if (RUN)
 			{
 				NeedBlock();
-				NeedTrm();
-				if (Block == 1 || Terminate == 1)
+				if (RUN)
 				{
-					RUN->RR_RESET();
-					return;
+					NeedTrm();
 				}
-				if (Block == 0 && Terminate == 0)
+				if (!RUN)
+				{
+					if (trm)
+						trm->RR_RESET();
+					else if (block)
+						block->RR_RESET();
+				}
+				if (block == nullptr && trm==nullptr)
 				{
 					RUN->decremtime();
 					RUN->RR_INC();
 					if (RUN->GetRemTime() == 0)
 					{
-						Terminate = 1;
+						trm = RUN;
 						RUN->RR_RESET();
+						RUN = nullptr;
 					}
 					else if (RUN->GetRRTime() == TimeSlice)
 					{

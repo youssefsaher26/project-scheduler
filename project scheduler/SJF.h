@@ -57,8 +57,11 @@ public:
 		if (RUN)
 		{
 			NeedBlock();
-			NeedTrm();
-			if (Block == 0 && Terminate == 0)
+			if (RUN)
+			{
+				NeedTrm();
+			}
+			if (block == nullptr && trm == nullptr)
 			{
 				RUN->decremtime();
 			}

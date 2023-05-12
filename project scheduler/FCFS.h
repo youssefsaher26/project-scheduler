@@ -41,28 +41,48 @@ public:
 	{
 		if (RUN == nullptr)
 		{
-			Node<process*>* temp = FCFS_RDY->GetHead();
-			if (temp == nullptr)
+			if (FCFS_RDY->isEmpty()==false)
 			{
-				return;
-			}
-			else
-			{
-				RUN = temp->getItem();
+				process* temp = FCFS_RDY->GetHead()->getItem();
 				FCFS_RDY->DeleteFirst();
-				State = 1;
+				if (temp->get_pure())
+				{
+					migration(temp);
+				}
+				if (mig == nullptr)
+				{
+					RUN = temp;
+				}
+
 			}
+		}
+	}
+	void migration(process* p)
+	{
+		int arrtime = p->GetArrTime();
+		int cpu = p->get_CT();
+		int rem = p->GetRemTime();
+		if (TIME-arrtime-cpu+rem > MaxW)
+		{
+			mig = p;
+		}
+		else
+		{
+			mig = nullptr;
 		}
 	}
 	void fork()
 	{
-		int forking_no = rand() % 100 + 1;
-		if(forking_no<forkprob)
+		if (RUN != nullptr)
 		{
-			if (!(RUN->get_forked()))
+			int forking_no = rand() % 100 + 1;
+			if (forking_no < forkprob)
 			{
-				RUN->set_forked();
-				fork_it = true;
+				if (!(RUN->get_forked()))
+				{
+					RUN->set_forked();
+					fork_it = true;
+				}
 			}
 		}
 	}
@@ -72,13 +92,20 @@ public:
 		{
 			RDY_TO_RUN();
 		}
-		if (RUN)
+		if (mig == nullptr)
 		{
-			NeedBlock();
-			NeedTrm();
-			if (Block == 0 && Terminate == 0)
+			if (RUN)
 			{
-				RUN->decremtime();
+				NeedBlock();
+				if (RUN)
+				{
+					NeedTrm();
+				}
+				if (block == nullptr && trm == nullptr)
+				{
+					RUN->decremtime();
+					fork();
+				}
 			}
 		}
 	}
@@ -105,7 +132,6 @@ public:
 
 	virtual process* KILL(int ID)
 	{
-
 		if (RUN)
 		{
 			if (RUN->getID() == ID)
@@ -124,7 +150,7 @@ public:
 			if (id == ID)
 			{
 				process* temp = p->getItem();
-				FCFS_RDY->DeleteNode(temp);
+				FCFS_RDY->DeleteNode(p->getItem());
 				return temp;
 			}
 			p = p->getNext();

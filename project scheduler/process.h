@@ -14,7 +14,6 @@ private:
 	int TT;//time when process is finished
 	int TRT;
 	int WT;
-	string state;
 	QueueADT<IO_R_D*> inputsigs;//if null then no input output sigs
 	int num_of_IO;
 	int kill_time;
@@ -22,6 +21,7 @@ private:
 	int Rem_IO;
 	int RR_TIME;
 	bool forked;
+	bool pure;
 	
 public:
 	
@@ -34,10 +34,23 @@ public:
 		AT = at;
 		PID = pid;
 		num_of_IO = IO_num;
-		state = "NEW";
 		kill_time = -1;
 		Rem_IO = -1;
 		forked = false;
+		pure = true;
+	}
+	process(int at, int pid, int ct, int IO_num, bool x)
+	{
+		RR_TIME = 0;
+		RemTime = ct;
+		CpuTime = ct;
+		AT = at;
+		PID = pid;
+		num_of_IO = IO_num;
+		kill_time = -1;
+		Rem_IO = -1;
+		forked = false;
+		pure = x;
 	}
 	void add_inputs_sigs(IO_R_D* ptr)
 	{
@@ -45,7 +58,6 @@ public:
 	}
 	process()
 	{
-		state = "NEW";
 		kill_time = -1;
 	}
 	bool get_forked()
@@ -104,6 +116,10 @@ public:
 	{
 		return TRT;
 	}
+	bool get_pure()
+	{
+		return pure;
+	}
 	QueueADT<IO_R_D*>* get_inputsigs()
 	{
 		return &inputsigs;
@@ -119,10 +135,6 @@ public:
 	void SetRemTime(int y)
 	{
 		RemTime = y;
-	}
-	void setstate(string s)
-	{
-		state = s;
 	}
 	void decremtime()
 	{
