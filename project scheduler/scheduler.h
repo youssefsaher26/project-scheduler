@@ -34,22 +34,6 @@ private:
 	Node<processor*>* random;
 	//UI* inter;
 public:
-	QueueADT<processor*>* get_ProcessorsList()
-	{
-		return ProcessorsList;
-	}
-	QueueADT<process*>* get_BLK()
-	{
-		return BLK;
-	}
-	QueueADT<process*>* get_TRM()
-	{
-		return TRM;
-	}
-	int get_time()
-	{
-		return time;
-	}
 	scheduler()
 	{
 		NEW = new QueueADT<process*>;
@@ -66,6 +50,22 @@ public:
 		SJFno = 0;
 		RRno = 0;
 
+	}
+	QueueADT<processor*>* get_ProcessorsList()
+	{
+		return ProcessorsList;
+	}
+	QueueADT<process*>* get_BLK()
+	{
+		return BLK;
+	}
+	QueueADT<process*>* get_TRM()
+	{
+		return TRM;
+	}
+	int get_time()
+	{
+		return time;
 	}
 	void simulator()
 	{
@@ -99,8 +99,8 @@ public:
 				{
 					if (ptr->get_forkit() == true)
 					{
-
-						fork(ptr->GetRun()->GetRemTime());
+						process* child = fork(ptr->GetRun()->GetRemTime());
+						ptr->GetRun()->setchild(child);
 						ptr->resetFork();
 					}			
 					//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
@@ -125,12 +125,13 @@ public:
 		savefile();
 		cout << "END OF SIMULATION" << endl;
 	}
-	void fork(int y)
+	process* fork(int y)
 	{
 		processno++;
 		process* p = new process(time,processno,y,0,false);
 		processor* pro = shortest_FCFS();
 		pro->AddProcess(p);
+		return p;
 	}
 	void CreateProcessors()
 	{
@@ -340,10 +341,33 @@ public:
 						TRM->enqueue(pTrm);
 						pTrm->finishTimes(time);
 						killsigs->dequeue(k);
+						process* child = pTrm->get_child();
+						while (child)
+						{
+							int id = child->getID();
+							Node<processor*>* pro = ProcessorsList->getfront();
+							while (pro)
+							{
+								if (pro->getItem()->get_type() != 1)
+								{
+									break;
+								}
+								process* c = pro->getItem()->KILL(id);
+								if (c)
+								{
+									TRM->enqueue(c);
+									c->finishTimes(time);
+									break;
+								}
+								pro = pro->getNext();
+							}
+							child = child->get_child();
+						}
 					}
 				}
 				p = p->getNext();
 			}
+
 			killsigs->peek(k);
 		}
 	}
@@ -387,6 +411,27 @@ public:
 		process* ptr = p->gettrm();
 		TRM->enqueue(ptr);
 		ptr->finishTimes(time);
+		process* child = ptr->get_child();
+		while (child)
+		{
+			int id = child->getID(); 
+			Node<processor*>* pro = ProcessorsList->getfront();
+			while (pro)
+			{
+				if (pro->getItem()->get_type()!=1)
+				{
+					break;
+				}
+				process* c = pro->getItem()->KILL(id);
+				if (c)
+				{
+					TRM->enqueue(c);
+					c->finishTimes(time);
+				}
+				pro = pro->getNext();
+			}
+			child = child->get_child();
+		}
 		p->resettrm();
 	}
 	void RUNtoBLK(processor* p)

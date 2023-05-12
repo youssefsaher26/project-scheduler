@@ -22,6 +22,7 @@ private:
 	int RR_TIME;
 	bool forked;
 	bool pure;
+	process* child;
 	
 public:
 	
@@ -38,6 +39,7 @@ public:
 		Rem_IO = -1;
 		forked = false;
 		pure = true;
+		child = nullptr;
 	}
 	process(int at, int pid, int ct, int IO_num, bool x)
 	{
@@ -51,6 +53,7 @@ public:
 		Rem_IO = -1;
 		forked = false;
 		pure = x;
+		child = nullptr;
 	}
 	void add_inputs_sigs(IO_R_D* ptr)
 	{
@@ -122,6 +125,10 @@ public:
 	{
 		return pure;
 	}
+	process* get_child()
+	{
+		return child;
+	}
 	QueueADT<IO_R_D*>* get_inputsigs()
 	{
 		return &inputsigs;
@@ -129,6 +136,10 @@ public:
 	void RR_INC()
 	{
 		RR_TIME++;
+	}
+	void setchild(process* p)
+	{
+		child = p;
 	}
 	void RR_RESET()
 	{
