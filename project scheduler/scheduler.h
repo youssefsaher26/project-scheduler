@@ -338,6 +338,7 @@ public:
 					if (pTrm != nullptr)
 					{
 						TRM->enqueue(pTrm);
+						pTrm->finishTimes(time);
 						killsigs->dequeue(k);
 					}
 				}
