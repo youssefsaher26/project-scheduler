@@ -103,8 +103,8 @@ public:
 					else if (RUN->GetRRTime() == TimeSlice)
 					{
 						RUN->RR_RESET();
-						RR_RDY->dequeue(RUN);
 						RR_RDY->enqueue(RUN);
+						RR_RDY->dequeue(RUN);
 					}
 				}
 			}
