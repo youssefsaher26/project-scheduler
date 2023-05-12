@@ -169,6 +169,7 @@ public:
 			return true;
 		}
 		return false;
+		
 	}
 	void loadfile()
 	{
@@ -224,20 +225,23 @@ public:
 		
 		ofstream outputFile;
 		outputFile.open("Output.txt", ios::out);
-		outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\t';
+		outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\n';
 		Node<process*>* p_out = TRM->getfront();
 		while (p_out)
 		{
 			outputFile << p_out->getItem()->get_TT()<< '\t';
 			outputFile << p_out->getItem ()->getID() << '\t';
 			outputFile << p_out->getItem()->get_CT()<<'\t';
+			if(p_out->getItem()->get_iod())
 			outputFile << p_out->getItem()->get_iod() << '\t';
 			outputFile << p_out->getItem()->get_WT()<<'\t';
 			outputFile << p_out->getItem()->get_RT()<<'\t';
 			outputFile << p_out->getItem()->get_TRT()<< '\t';
 			p_out = p_out->getNext();
+			outputFile << "\n";
 		}
-		outputFile << processno<<'\n';
+		outputFile << "---------------------------------------"<<'\n';
+		outputFile << "Processes: " << processno << '\n';
 		outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
 		outputFile << "Avg RT = " << get_Avg_RT() << "," << '\t';
 		outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
@@ -247,7 +251,7 @@ public:
 		int no3=0;//(no stolen / total no.)//
 		outputFile << "Work Steal %: " << no3<<'\n';
 		int no4=0;//(no forked / total no.)//
-		outputFile << "Forked Process: " << no4;
+		outputFile << "Forked Process: " << no4<<'\t';
 		int no5=0; //(no of killed / total no.)//
 		outputFile << "Killed Process: " << no5<<'\n'<<'\n';
 		int processor_no = FCFSno + SJFno + RRno;
@@ -274,6 +278,7 @@ public:
 				outputFile << "," << '\t';
 				ptr = ptr->getNext();
 				n++;
+				if(ptr)
 				sum_util= ptr->getItem()->pUtil() + sum_util;
 			}
 			outputFile << '\n';
@@ -288,6 +293,7 @@ public:
 		while (ptr)
 		{
 			sum=ptr->getItem()->get_WT() + sum;
+			ptr = ptr->getNext();
 		}
 		avg=sum / processno;
 		return avg;
@@ -299,6 +305,7 @@ public:
 		while (ptr)
 		{
 			sum = ptr->getItem()->get_RT() + sum;
+			ptr = ptr->getNext();
 		}
 		avg = sum / processno;
 		return avg;
@@ -310,6 +317,7 @@ public:
 		while (ptr)
 		{
 			sum = ptr->getItem()->get_TRT() + sum;
+			ptr = ptr->getNext();
 		}
 		avg = sum / processno;
 		return avg;

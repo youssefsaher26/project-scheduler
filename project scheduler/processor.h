@@ -159,12 +159,16 @@ public:
 	}
 	virtual int pLoad()
 	{
+		if (TotalTRT == 0)
+			return 0;
 		int x = BusyTime / TotalTRT;
 		return x;
 		
 	}
 	virtual int pUtil()
 	{
+		if (BusyTime + IdleTime==0)
+			return 0;
 		int x = BusyTime / (BusyTime + IdleTime);
 		return x;
 	}

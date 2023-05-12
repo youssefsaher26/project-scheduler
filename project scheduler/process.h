@@ -90,7 +90,9 @@ public:
 	}
 	int get_iod()
 	{
-		return inputsigs.getfront()->getItem()->get_iod();
+		if (inputsigs.getfront() != nullptr)
+			return inputsigs.getfront()->getItem()->get_iod();
+		else return 0;
 	}
 	int get_rem_io()
 	{
