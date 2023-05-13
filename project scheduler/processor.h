@@ -45,10 +45,12 @@ public:
 		if(RUN==nullptr)
 		{
 			State = 0;
+			IdleTime++;
 		}
 		else
 		{
 			State = 1;
+			BusyTime++;
 		}
 	}
 	void resetFork()
@@ -153,14 +155,6 @@ public:
 	{
 		RUN = nullptr;
 	}
-	void inc_busy_time()
-	{
-		BusyTime ++;
-	}
-	void inc_idle_time()
-	{
-		IdleTime++;
-	}
 	void time(int x)
 	{
 		TIME = x;
@@ -177,11 +171,11 @@ public:
 			return true;
 		return false;
 	}
-	virtual int pLoad()
+	virtual int pLoad(int TotalTRT)
 	{
 		if (TotalTRT == 0)
 			return 0;
-		int x = BusyTime / TotalTRT;
+		int x = ((BusyTime*100) / TotalTRT);
 		return x;
 		
 	}
@@ -189,7 +183,8 @@ public:
 	{
 		if (BusyTime + IdleTime==0)
 			return 0;
-		int x = BusyTime / (BusyTime + IdleTime);
+		int z = (BusyTime + IdleTime);
+		int x =((BusyTime*100)/z);
 		return x;
 	}
 	

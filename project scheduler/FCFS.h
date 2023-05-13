@@ -34,6 +34,8 @@ public:
 			sum = sum + C->GetRemTime();
 			temp = temp->getNext();
 		}
+		if (RUN)
+			sum = RUN->GetRemTime() + sum;
 		return sum;
 	}
 	void RDY_TO_RUN()
@@ -52,6 +54,7 @@ public:
 				{
 					if (temp->GetRemTime() == temp->get_CT())
 						temp->setRT(TIME);
+
 					RUN = temp;
 				}
 

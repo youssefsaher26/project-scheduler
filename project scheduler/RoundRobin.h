@@ -39,6 +39,8 @@ public:
 			}
 			ptr = ptr->getNext();
 		}
+		if (RUN)
+			sum = RUN->GetRemTime() + sum;
 		return sum;
 	}
 	void RDY_TO_RUN()
@@ -96,18 +98,13 @@ public:
 				{
 					RUN->decremtime();
 					RUN->RR_INC();
-					if (RUN->GetRemTime() == 0)
-					{
-						trm = RUN;
-						RUN->RR_RESET();
-						RUN = nullptr;
-					}
-					else if (RUN->GetRRTime() == TimeSlice)
+					 if (RUN->GetRRTime() == TimeSlice && RUN->GetRemTime()!=0)
 					{
 						RUN->RR_RESET();
 						RR_RDY->enqueue(RUN);
 						RR_RDY->dequeue(RUN);
 					}
+					
 				}
 			}
 		}

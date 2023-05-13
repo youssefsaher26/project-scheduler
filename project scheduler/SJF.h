@@ -27,6 +27,8 @@ public:
 			sum = C->GetRemTime() + sum;
 			temp = temp->getNext();
 		}
+		if (RUN)
+			sum = RUN->GetRemTime() + sum;
 		return sum;
 	}
 	virtual void AddProcess(process* p)

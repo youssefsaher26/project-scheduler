@@ -15,6 +15,7 @@ private:
 	int TRT;
 	int WT;
 	QueueADT<IO_R_D*> inputsigs;//if null then no input output sigs
+	int total_io_D;
 	int num_of_IO;
 	int kill_time;
 	int RemTime;
@@ -39,6 +40,7 @@ public:
 		forked = false;
 		pure = true;
 		child = nullptr;
+		total_io_D = 0;
 	}
 	process(int at, int pid, int ct, int IO_num, bool x)
 	{
@@ -53,6 +55,7 @@ public:
 		forked = false;
 		pure = x;
 		child = nullptr;
+		total_io_D = 0;
 	}
 	void add_inputs_sigs(IO_R_D* ptr)
 	{
@@ -65,6 +68,10 @@ public:
 	bool get_forked()
 	{
 		return forked;
+	}
+	void set_total_io_D(int io_d)
+	{
+		total_io_D= io_d+ total_io_D;
 	}
 	void set_forked()
 	{
@@ -100,6 +107,10 @@ public:
 	{
 		return Rem_IO;
 	}
+	int get_total_io_D()
+	{
+		return total_io_D;
+	}
 	int get_TT()
 	{
 		return TT;
@@ -126,7 +137,7 @@ public:
 	}
 	void setRT(int x)
 	{
-		RT = x;
+		RT = x-AT;
 	}
 	process* get_child()
 	{
@@ -173,6 +184,13 @@ public:
 		TT = t;
 		TRT = TT - AT;
 		WT = TRT - CpuTime;
+	}
+	void finish_Kill_Times(int t)
+	{
+		TT = t;
+		TRT = TT - AT;
+		WT = TRT - (CpuTime- RemTime);
+
 	}
 	bool operator > (process* p)
 	{

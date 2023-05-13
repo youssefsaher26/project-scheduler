@@ -238,13 +238,13 @@ public:
 			outputFile << p_out->getItem()->GetArrTime() << '\t';
 			int x = p_out->getItem()->get_CT();
 			outputFile << x << '\t';
-			if (p_out->getItem()->get_iod())
-				outputFile << p_out->getItem()->get_iod() << '\t';
+			if (p_out->getItem()->get_total_io_D() != 0)
+				outputFile << p_out->getItem()->get_total_io_D() << '\t';
 			else
 				outputFile << "-" << '\t';
 			outputFile << p_out->getItem()->get_WT() << '\t';
 			outputFile << p_out->getItem()->get_RT() << '\t';
-			outputFile << p_out->getItem()->get_TRT()<<'\t';
+			outputFile << p_out->getItem()->get_TRT() << '\t';
 			outputFile << "\n";
 			p_out = p_out->getNext();
 		}
@@ -271,7 +271,7 @@ public:
 			int i=0;
 			while (temp)
 			{
-				outputFile << "p" << i << " = " << temp->getItem()->pLoad()<< "%";
+				outputFile << "p" << i << " = " << temp->getItem()->pLoad(get_Total_TRT())<< "%";
 				outputFile << "," << '\t';
 				temp = temp->getNext();
 				i++;
@@ -293,6 +293,17 @@ public:
 				avg_util = sum_util / processor_no;
 				outputFile << "Avg utilization = " << avg_util << "%";
 				outputFile.close();
+	}
+	int get_Total_TRT()
+	{
+		int total=0;
+		Node<process*>* temp = TRM->getfront();
+		while(temp)
+		{ 
+			total = total + temp->getItem()->get_TRT();
+			temp = temp->getNext();
+		}
+		return total;
 	}
 	int get_Avg_WT()
 	{
@@ -348,7 +359,7 @@ public:
 						if (pTrm != nullptr)
 						{
 							TRM->enqueue(pTrm);
-							pTrm->finishTimes(time);
+							pTrm->finish_Kill_Times(time);
 							killsigs->dequeue(k);
 							process* child = pTrm->get_child();
 							while (child)
@@ -365,7 +376,7 @@ public:
 									if (c)
 									{
 										TRM->enqueue(c);
-										c->finishTimes(time);
+										c->finish_Kill_Times(time);
 										break;
 									}
 									pro = pro->getNext();
@@ -445,7 +456,7 @@ public:
 				if (c)
 				{
 					TRM->enqueue(c);
-					c->finishTimes(time);
+					c->finish_Kill_Times(time);
 				}
 				pro = pro->getNext();
 			}
@@ -485,6 +496,7 @@ public:
 			{
 				IO_R_D* io;
 				ptr->get_inputsigs()->dequeue(io);
+				ptr->set_total_io_D(io->get_iod());
 				BLK->dequeue(ptr);
 				processor* shortpro = shortest_processor();
 				shortpro->AddProcess(ptr);
