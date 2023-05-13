@@ -52,6 +52,8 @@ public:
 				MIGRATION(p);
 				if (mig == nullptr)
 				{
+					if (p->GetRemTime() == p->get_CT())
+						p->setRT(TIME);
 					RUN = p;
 				}
 			}
@@ -110,7 +112,6 @@ public:
 			}
 		}
 	}
-
 	void RUN_TO_RDY()
 	{
 		RR_RDY->enqueue(RUN);
@@ -131,7 +132,15 @@ public:
 	{
 		RTF = x;
 	}
-	
+	virtual process* donate()
+	{
+		process* p=nullptr;
+		RR_RDY->dequeue(p);
+		if (p)
+			return p;
+		else
+			return nullptr;
+	}
 	friend ostream& operator<< (ostream& out, const RoundRobin& p)
 	{
 		out << "[RR  ] : "<< p.RR_RDY->getcount()<<" RDY: ";
