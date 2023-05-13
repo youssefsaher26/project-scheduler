@@ -114,6 +114,13 @@ public:
 					RUNtoTRM(ptr);
 				}
 				p->getItem()->STATE();
+				if (p->getItem()->GetRun())
+				{
+					p->getItem()->inc_busy_time();
+				}
+				else {
+					p->getItem()->inc_idle_time();
+				}
 				p = p->getNext();
 			}
 			BLKtoRDY();

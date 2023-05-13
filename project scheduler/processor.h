@@ -78,6 +78,18 @@ public:
 	{
 		return processornumber;
 	}
+	bool get_forkit()
+	{
+		return fork_it;
+	}
+	int get_busy_time()
+	{
+		return BusyTime;
+	}
+	int get_idle_time()
+	{
+		return IdleTime;
+	}
 	process* GetRun()
 	{
 		return RUN;
@@ -120,7 +132,6 @@ public:
 			RUN = nullptr;
 		}
 	}
-
 	virtual void setstate(bool s)
 	{
 		State = s;
@@ -140,6 +151,14 @@ public:
 	void SetRun()//sets run=null
 	{
 		RUN = nullptr;
+	}
+	void inc_busy_time()
+	{
+		BusyTime ++;
+	}
+	void inc_idle_time()
+	{
+		IdleTime++;
 	}
 	void time(int x)
 	{
@@ -172,9 +191,6 @@ public:
 		int x = BusyTime / (BusyTime + IdleTime);
 		return x;
 	}
-	bool get_forkit()
-	{
-		return fork_it;
-	}
+	
 	
 };
