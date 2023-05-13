@@ -20,7 +20,6 @@ public:
 		forkprob = y;
 		fork_it = false;
 	}
-	
 	virtual void AddProcess(process* p)
 	{
 		FCFS_RDY->InsertEnd(p);
@@ -51,6 +50,8 @@ public:
 				}
 				if (mig == nullptr)
 				{
+					if (temp->GetRemTime() == temp->get_CT())
+						temp->setRT(TIME);
 					RUN = temp;
 				}
 
@@ -121,6 +122,16 @@ public:
 			return true;
 		return false;
 	}
+	virtual process* donate()
+	{
+		if (FCFS_RDY->isEmpty() == false)
+		{
+			process* p=nullptr;
+			p = FCFS_RDY->GetHead()->getItem();
+			FCFS_RDY->DeleteFirst();
+		}
+		return nullptr;
+	}
 	LinkedList<process*>* get_FCFS_RDY()
 	{
 		return FCFS_RDY;
@@ -129,7 +140,6 @@ public:
 	{
 		MaxW = x;
 	}
-
 	virtual process* KILL(int ID)
 	{
 		if (RUN)
@@ -140,7 +150,6 @@ public:
 				RUN = nullptr;
 				State = 0;
 				return t;
-
 			}
 		}
 		Node <process*>* p = FCFS_RDY->GetHead();
@@ -157,7 +166,6 @@ public:
 		}
 		return nullptr;
 	}
-
 	friend ostream& operator<< (ostream& out, const FCFS& p)
 	{
 

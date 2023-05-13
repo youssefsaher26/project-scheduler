@@ -23,10 +23,9 @@ private:
 	bool forked;
 	bool pure;
 	process* child;
+	int  CpuTime;
 	
 public:
-	
-	int  CpuTime;
 	process(int at, int pid, int ct, int IO_num)
 	{
 		RR_TIME = 0;
@@ -124,6 +123,10 @@ public:
 	bool get_pure()
 	{
 		return pure;
+	}
+	void setRT(int x)
+	{
+		RT = x;
 	}
 	process* get_child()
 	{

@@ -27,6 +27,7 @@ public:
 	virtual bool Done() = 0;
 	virtual void SchedAlgo() = 0;
 	virtual process* KILL(int y) = 0;
+	virtual process* donate() = 0;
 
 	processor()
 	{
@@ -107,7 +108,7 @@ public:
 		{
 			IO_R_D* io;
 			RUN->get_inputsigs()->peek(io);
-			int ct = RUN->CpuTime;
+			int ct = RUN->get_CT();
 			int rem = RUN->GetRemTime();
 			int io_r = io->get_ior();
 			if ((ct - rem) == io_r)

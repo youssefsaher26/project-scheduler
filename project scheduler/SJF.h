@@ -35,17 +35,11 @@ public:
 	}
 	void RDY_TO_RUN()	
 	{ 
-		if (RUN == nullptr)
+		if (RUN == nullptr && !SJF_RDY->isEmpty())
 		{
 			SJF_RDY->dequeue(RUN);
-			if (RUN == nullptr)
-			{
-				State = 0;
-			}
-			else
-			{
-				State = 1;
-			}
+			if (RUN->GetRemTime() == RUN->get_CT())
+				RUN->setRT(TIME);
 		}
 	}
 	virtual void SchedAlgo()
@@ -66,6 +60,15 @@ public:
 				RUN->decremtime();
 			}
 		}
+	}
+	virtual process* donate()
+	{
+		process* p;
+		SJF_RDY->dequeue(p);
+		if (p)
+			return p;
+		else
+			return nullptr;
 	}
 	virtual process* KILL(int id)
 	{

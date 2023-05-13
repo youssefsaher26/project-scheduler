@@ -51,18 +51,6 @@ public:
 		RRno = 0;
 
 	}
-	QueueADT<processor*>* get_ProcessorsList()
-	{
-		return ProcessorsList;
-	}
-	QueueADT<process*>* get_BLK()
-	{
-		return BLK;
-	}
-	QueueADT<process*>* get_TRM()
-	{
-		return TRM;
-	}
 	int get_time()
 	{
 		return time;
@@ -81,46 +69,14 @@ public:
 				NEWtoRDY();
 				processor* ptr = p->getItem();
 				ptr->time(time);
-				//a3mel 7aga tedakhal el current time lel fcfs
+				KILLSIG();
+				steal();
 				ptr->SchedAlgo();
-				if (ptr->getmigrate() != nullptr)
-				{
-					if (ptr->get_type() == 2)
-					{
-						move1(ptr->getmigrate());
-					}
-					else if (ptr->get_type() == 1)
-					{
-						move2(ptr->getmigrate());
-					}
-					ptr->resetmigrate();
-				}
-				if (ptr->get_type() == 1)
-				{
-					if (ptr->get_forkit() == true)
-					{
-						process* child = fork(ptr->GetRun()->GetRemTime());
-						ptr->GetRun()->setchild(child);
-						ptr->resetFork();
-					}			
-					//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
-				}
-				if (ptr->getblock())
-				{
-					RUNtoBLK(ptr);
-				}
-				else if (ptr->gettrm())
-				{
-					RUNtoTRM(ptr);
-				}
+				forks(ptr);
+				allmoving(ptr);
+				blockandtrm(ptr);
 				p->getItem()->STATE();
-				if (p->getItem()->GetRun())
-				{
-					p->getItem()->inc_busy_time();
-				}
-				else {
-					p->getItem()->inc_idle_time();
-				}
+				//p->calculations();
 				p = p->getNext();
 			}
 			BLKtoRDY();
@@ -129,8 +85,24 @@ public:
 			cin.ignore();
 			time++;
 		}
+		//finalcalculations
 		savefile();
 		cout << "END OF SIMULATION" << endl;
+	}
+	void allmoving(processor* ptr)
+	{
+		if (ptr->getmigrate() != nullptr)
+		{
+			if (ptr->get_type() == 2)
+			{
+				move1(ptr->getmigrate());
+			}
+			else if (ptr->get_type() == 1)
+			{
+				move2(ptr->getmigrate());
+			}
+			ptr->resetmigrate();
+		}
 	}
 	process* fork(int y)
 	{
@@ -161,6 +133,30 @@ public:
 			ptr = new SJF(id);
 			ProcessorsList->enqueue(ptr);
 			id++;
+		}
+	}
+	void blockandtrm(processor* ptr)
+	{
+		if (ptr->getblock())
+		{
+			RUNtoBLK(ptr);
+		}
+		else if (ptr->gettrm())
+		{
+			RUNtoTRM(ptr);
+		}
+	}
+	void forks(processor* ptr)
+	{
+		if (ptr->get_type() == 1)
+		{
+			if (ptr->get_forkit() == true && ptr->GetRun())
+			{
+				process* child = fork(ptr->GetRun()->GetRemTime());
+				ptr->GetRun()->setchild(child);
+				ptr->resetFork();
+			}
+			//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
 		}
 	}
 	bool DONE()
@@ -233,66 +229,70 @@ public:
 		
 		ofstream outputFile;
 		outputFile.open("Output.txt", ios::out);
-		outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\n';
+		outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "IO_D" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\n';
 		Node<process*>* p_out = TRM->getfront();
 		while (p_out)
 		{
-			outputFile << p_out->getItem()->get_TT()<< '\t';
-			outputFile << p_out->getItem ()->getID() << '\t';
-			outputFile << p_out->getItem()->get_CT()<<'\t';
-			if(p_out->getItem()->get_iod())
-			outputFile << p_out->getItem()->get_iod() << '\t';
-			outputFile << p_out->getItem()->get_WT()<<'\t';
-			outputFile << p_out->getItem()->get_RT()<<'\t';
-			outputFile << p_out->getItem()->get_TRT()<< '\t';
-			p_out = p_out->getNext();
+			outputFile << p_out->getItem()->get_TT() << '\t';
+			outputFile << p_out->getItem()->getID() << '\t';
+			outputFile << p_out->getItem()->GetArrTime() << '\t';
+			int x = p_out->getItem()->get_CT();
+			outputFile << x << '\t';
+			if (p_out->getItem()->get_iod())
+				outputFile << p_out->getItem()->get_iod() << '\t';
+			else
+				outputFile << "-" << '\t';
+			outputFile << p_out->getItem()->get_WT() << '\t';
+			outputFile << p_out->getItem()->get_RT() << '\t';
+			outputFile << p_out->getItem()->get_TRT()<<'\t';
 			outputFile << "\n";
+			p_out = p_out->getNext();
 		}
-		outputFile << "---------------------------------------"<<'\n';
-		outputFile << "Processes: " << processno << '\n';
-		outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
-		outputFile << "Avg RT = " << get_Avg_RT() << "," << '\t';
-		outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
-		int no1=0;//(no migrated due to RTF / total no.)//
-		int no2=0;//(no migrated due to MaxW / total no.)//
-		outputFile << "Migration %:" << '\t' << "RTF = " << no1 << ",   " <<'\t'<<"MaxW = " << no2<<'\n';
-		int no3=0;//(no stolen / total no.)//
-		outputFile << "Work Steal %: " << no3<<'\n';
-		int no4=0;//(no forked / total no.)//
-		outputFile << "Forked Process: " << no4<<'\t';
-		int no5=0; //(no of killed / total no.)//
-		outputFile << "Killed Process: " << no5<<'\n'<<'\n';
-		int processor_no = FCFSno + SJFno + RRno;
-		outputFile << "Processors: " << processor_no;
-		outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR ]"<<'\n';
-		outputFile << "Processors Load" << '\n';
-
-		Node<processor*>* temp = ProcessorsList->getfront();
-		int i=0;
-		while (temp)
-		{
-			outputFile << "p" << i << " = " << temp->getItem()->pLoad()<< "%";
-			outputFile << "," << '\t';
-			temp = temp->getNext();
-			i++;
-		}
-		outputFile << '\n';
-		outputFile << "Processors Utiliz" << '\n';
-		Node<processor*>* ptr = ProcessorsList->getfront();
-			int n=0,sum_util=0,avg_util=0;
-			while (ptr)
+			outputFile << "---------------------------------------" << '\n';
+			outputFile << "Processes: " << processno << '\n';
+			outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
+			outputFile << "Avg RT = " << get_Avg_RT() << "," << '\t';
+			outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
+			int no1 = 0;//(no migrated due to RTF / total no.)//
+			int no2 = 0;//(no migrated due to MaxW / total no.)//
+			outputFile << "Migration %:" << '\t' << "RTF = " << no1 << ",   " << '\t' << "MaxW = " << no2 << '\n';
+			int no3 = 0;//(no stolen / total no.)//
+			outputFile << "Work Steal %: " << no3 << '\n';
+			int no4 = 0;//(no forked / total no.)//
+			outputFile << "Forked Process: " << no4 << '\t';
+			int no5 = 0; //(no of killed / total no.)//
+			outputFile << "Killed Process: " << no5 << '\n' << '\n';
+			int processor_no = FCFSno + SJFno + RRno;
+			outputFile << "Processors: " << processor_no;
+			outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR ]" << '\n';
+			outputFile << "Processors Load" << '\n';
+		
+			Node<processor*>* temp = ProcessorsList->getfront();
+			int i=0;
+			while (temp)
 			{
-				outputFile << "p" << n << " = " << ptr->getItem()->pUtil() << "%";
+				outputFile << "p" << i << " = " << temp->getItem()->pLoad()<< "%";
 				outputFile << "," << '\t';
-				ptr = ptr->getNext();
-				n++;
-				if(ptr)
-				sum_util= ptr->getItem()->pUtil() + sum_util;
+				temp = temp->getNext();
+				i++;
 			}
 			outputFile << '\n';
-			avg_util = sum_util / processor_no;
-			outputFile << "Avg utilization = " << avg_util << "%";
-			outputFile.close();
+			outputFile << "Processors Utiliz" << '\n';
+			Node<processor*>* ptr = ProcessorsList->getfront();
+				int n=0,sum_util=0,avg_util=0;
+				while (ptr)
+				{
+					outputFile << "p" << n << " = " << ptr->getItem()->pUtil() << "%";
+					outputFile << "," << '\t';
+					ptr = ptr->getNext();
+					n++;
+					if(ptr)
+					sum_util= ptr->getItem()->pUtil() + sum_util;
+				}
+				outputFile << '\n';
+				avg_util = sum_util / processor_no;
+				outputFile << "Avg utilization = " << avg_util << "%";
+				outputFile.close();
 	}
 	int get_Avg_WT()
 	{
@@ -334,48 +334,60 @@ public:
 	{
 		kill* k;
 		killsigs->peek(k);
-		while (k->getkiltime() == time)
+		if (killsigs->isEmpty() == false)
 		{
-			Node<processor*>* p = ProcessorsList->getfront();
-			while (p)
+			while (k->getkiltime() == time)
 			{
-				processor* ptr = p->getItem();
-				if (ptr->get_type() == 1)
+				Node<processor*>* p = ProcessorsList->getfront();
+				while (p)
 				{
-					process* pTrm = ptr->KILL(k->getkillid());
-					if (pTrm != nullptr)
+					processor* ptr = p->getItem();
+					if (ptr->get_type() == 1)
 					{
-						TRM->enqueue(pTrm);
-						pTrm->finishTimes(time);
-						killsigs->dequeue(k);
-						process* child = pTrm->get_child();
-						while (child)
+						process* pTrm = ptr->KILL(k->getkillid());
+						if (pTrm != nullptr)
 						{
-							int id = child->getID();
-							Node<processor*>* pro = ProcessorsList->getfront();
-							while (pro)
+							TRM->enqueue(pTrm);
+							pTrm->finishTimes(time);
+							killsigs->dequeue(k);
+							process* child = pTrm->get_child();
+							while (child)
 							{
-								if (pro->getItem()->get_type() != 1)
+								int id = child->getID();
+								Node<processor*>* pro = ProcessorsList->getfront();
+								while (pro)
 								{
-									break;
+									if (pro->getItem()->get_type() != 1)
+									{
+										break;
+									}
+									process* c = pro->getItem()->KILL(id);
+									if (c)
+									{
+										TRM->enqueue(c);
+										c->finishTimes(time);
+										break;
+									}
+									pro = pro->getNext();
 								}
-								process* c = pro->getItem()->KILL(id);
-								if (c)
-								{
-									TRM->enqueue(c);
-									c->finishTimes(time);
-									break;
-								}
-								pro = pro->getNext();
+								child = child->get_child();
 							}
-							child = child->get_child();
 						}
 					}
+					p = p->getNext();
 				}
-				p = p->getNext();
+				kill* k1;
+				killsigs->peek(k1);
+				if (k == k1)
+				{
+					killsigs->dequeue(k1);
+				}
+				killsigs->peek(k);
+				if (killsigs->peek(k) == false)
+				{
+					break;
+				}
 			}
-
-			killsigs->peek(k);
 		}
 	}
 	void move1(process* p)
@@ -497,6 +509,20 @@ public:
 		}
 		return min;
 	}
+	processor* longest_processor()
+	{
+		Node <processor*>* p = ProcessorsList->getfront();
+		processor* max = p->getItem();
+		while (p)
+		{
+			if (max->queuetime() < p->getItem()->queuetime())
+			{
+				max = p->getItem();
+			}
+			p = p->getNext();
+		}
+		return max;
+	}
 	processor* shortest_FCFS()
 	{
 		if (FCFSno == 0)
@@ -582,7 +608,39 @@ public:
 		return min;
 
 	}
-
+	bool should_steal()
+	{
+		if (time % STL == 0)
+		{
+			int lim = calclimit();
+			if (lim > 40)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	int calclimit()
+	{
+		int LQF = longest_processor()->queuetime();
+		int SQF = shortest_processor()->queuetime();
+		return(((LQF - SQF) / LQF) * 100);
+	}
+	void steal()
+	{
+		bool y = should_steal();
+		while (y == true)
+		{
+			processor* longest = longest_processor();
+			processor* shortest = shortest_processor();
+			process* p = longest->donate();
+			if (p)
+			{
+				shortest->AddProcess(p);
+			}
+			y = should_steal();
+		}
+	}
 	void print()
 	{
 		cout << *this;
@@ -676,6 +734,18 @@ public:
 		}
 		return c;
 	}
+	//QueueADT<processor*>* get_ProcessorsList()
+//{
+//	return ProcessorsList;
+//}
+//QueueADT<process*>* get_BLK()
+//{
+//	return BLK;
+//}
+//QueueADT<process*>* get_TRM()
+//{
+//	return TRM;
+//}
 };
 
 
