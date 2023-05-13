@@ -25,6 +25,11 @@ private:
 	int FCFSno;
 	int SJFno;
 	int RRno;
+	int migRTF;
+	int migMaxW;
+	int forkedno;
+	int killedno;
+	int stolenno;
 	QueueADT<process*>* NEW;
 	QueueADT<process*>* BLK;
 	QueueADT<process*>* TRM;
@@ -45,10 +50,15 @@ public:
 		//inter = new UI(this);
 		time = 1;
 		STL = 0;
+		stolenno = 0;
 		forkprob = 0;
 		FCFSno = 0;
 		SJFno = 0;
 		RRno = 0;
+		migRTF = 0;
+		migMaxW = 0;
+		forkedno = 0;
+		killedno = 0;
 
 	}
 	int get_time()
@@ -60,7 +70,6 @@ public:
 		loadfile();
 		CreateProcessors();
 		//inter->MODE();
-		random = ProcessorsList->getfront();
 		while (DONE() == false)
 		{
 			Node <processor*>* p = ProcessorsList->getfront();
@@ -95,6 +104,7 @@ public:
 		{
 			if (ptr->get_type() == 2)
 			{
+
 				move1(ptr->getmigrate());
 			}
 			else if (ptr->get_type() == 1)
@@ -110,6 +120,7 @@ public:
 		process* p = new process(time,processno,y,0,false);
 		processor* pro = shortest_FCFS();
 		pro->AddProcess(p);
+		forkedno++;
 		return p;
 	}
 	void CreateProcessors()
@@ -253,14 +264,14 @@ public:
 			outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
 			outputFile << "Avg RT = " << get_Avg_RT() << "," << '\t';
 			outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
-			int no1 = 0;//(no migrated due to RTF / total no.)//
-			int no2 = 0;//(no migrated due to MaxW / total no.)//
+			int no1 = ((migRTF * 100) / processno);
+			int no2 = ((migMaxW * 100) / processno);
 			outputFile << "Migration %:" << '\t' << "RTF = " << no1 << ",   " << '\t' << "MaxW = " << no2 << '\n';
-			int no3 = 0;//(no stolen / total no.)//
+			int no3 = ((stolenno * 100) / processno);
 			outputFile << "Work Steal %: " << no3 << '\n';
-			int no4 = 0;//(no forked / total no.)//
+			int no4 = ((forkedno * 100) / processno);
 			outputFile << "Forked Process: " << no4 << '\t';
-			int no5 = 0; //(no of killed / total no.)//
+			int no5 = ((killedno * 100) / processno);
 			outputFile << "Killed Process: " << no5 << '\n' << '\n';
 			int processor_no = FCFSno + SJFno + RRno;
 			outputFile << "Processors: " << processor_no;
@@ -360,6 +371,7 @@ public:
 						{
 							TRM->enqueue(pTrm);
 							pTrm->finish_Kill_Times(time);
+							killedno++;
 							killsigs->dequeue(k);
 							process* child = pTrm->get_child();
 							while (child)
@@ -377,6 +389,7 @@ public:
 									{
 										TRM->enqueue(c);
 										c->finish_Kill_Times(time);
+										killedno++;
 										break;
 									}
 									pro = pro->getNext();
@@ -407,6 +420,7 @@ public:
 		if (ssjf)
 		{
 			ssjf->AddProcess(p);
+			migRTF++;
 		}
 	}
 	void move2(process* p)
@@ -415,6 +429,7 @@ public:
 		if (srr)
 		{
 			srr->AddProcess(p);
+			migMaxW++;
 		}
 	}
 	void NEWtoRDY()
@@ -649,6 +664,7 @@ public:
 			if (p)
 			{
 				shortest->AddProcess(p);
+				stolenno++;
 			}
 			y = should_steal();
 		}
@@ -758,6 +774,24 @@ public:
 //{
 //	return TRM;
 //}
+	~scheduler()
+	{
+		delete TRM;
+		delete NEW;
+		delete ProcessorsList;
+		delete BLK;
+		delete killsigs;
+		delete inputsigs;
+	}
+	//void deletelist(QueueADT<process*>*& q)
+	//{
+	//	Node<process*>* p = q->getfront();
+	//	while (p)
+	//	{
+	//		delete p->getItem();
+	//		p = p->getNext();
+	//	}
+	//}
 };
 
 
