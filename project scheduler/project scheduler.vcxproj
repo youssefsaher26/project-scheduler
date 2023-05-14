@@ -144,7 +144,16 @@
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FCFS.cpp" />
+    <ClCompile Include="IO_R_D.cpp" />
+    <ClCompile Include="kill.cpp" />
+    <ClCompile Include="process.cpp" />
+    <ClCompile Include="processor.cpp" />
+    <ClCompile Include="RoundRobin.cpp" />
+    <ClCompile Include="scheduler.cpp" />
+    <ClCompile Include="SJF.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -28,165 +28,31 @@ public:
 	virtual void SchedAlgo() = 0;
 	virtual process* KILL(int y) = 0;
 	virtual process* donate() = 0;
+	virtual int stealqueuetime() = 0;
 
-	processor()
-	{
-		TIME = 0;
-		IdleTime = 0;
-		BusyTime = 0;
-		RUN = nullptr;
-		State = 0;
-		mig = nullptr;
-		block = nullptr;
-		trm = nullptr;
-	}
-	virtual void STATE()
-	{
-		if(RUN==nullptr)
-		{
-			State = 0;
-			IdleTime++;
-		}
-		else
-		{
-			State = 1;
-			BusyTime++;
-		}
-	}
-	void resetFork()
-	{
-		fork_it = false;
-	}
-	bool getstate()
-	{
-		return State;
-	}
-	process* getmigrate()
-	{
-		return mig;
-	}
-	process* gettrm()
-	{
-		return trm;
-	}
-	process* getblock()
-	{
-		return block;
-	}
-	int get_type()
-	{
-		return type;
-	}
-	int getpnumber()
-	{
-		return processornumber;
-	}
-	bool get_forkit()
-	{
-		return fork_it;
-	}
-	int get_busy_time()
-	{
-		return BusyTime;
-	}
-	int get_idle_time()
-	{
-		return IdleTime;
-	}
-	process* GetRun()
-	{
-		return RUN;
-
-	}
-	virtual void NeedBlock()
-	{
-		int c_iors = RUN->get_inputsigs()->getcount();
-		if (c_iors == 0)
-		{
-			block = nullptr;
-			return;
-		}
-		else
-		{
-			IO_R_D* io;
-			RUN->get_inputsigs()->peek(io);
-			int ct = RUN->get_CT();
-			int rem = RUN->GetRemTime();
-			int io_r = io->get_ior();
-			if ((ct - rem) == io_r)
-			{
-				block = RUN;
-				block->set_remIO(io->get_iod());
-				RUN = nullptr;
-			}
-			else
-			{
-				block = nullptr;
-			}
-		}
-	
-	}
-	virtual void NeedTrm()
-	{
-		int c = RUN->GetRemTime();
-		if (c == 0)
-		{
-			trm = RUN;
-			RUN = nullptr;
-		}
-	}
-	virtual void setstate(bool s)
-	{
-		State = s;
-	}
-	void resetmigrate()
-	{
-		mig = nullptr;
-	}
-	void resetblock()
-	{
-		block = nullptr;
-	}
-	void resettrm()
-	{
-		trm = nullptr;
-	}
-	void SetRun()//sets run=null
-	{
-		RUN = nullptr;
-	}
-	void time(int x)
-	{
-		TIME = x;
-	}
-	bool operator > (processor* p)
-	{
-		if (this->queuetime() > p->queuetime())
-			return true;
-		return false;
-	}
-	bool operator < (processor* p)
-	{
-		if (this->queuetime() < p->queuetime())
-			return true;
-		return false;
-	}
-	virtual int pLoad(int TotalTRT)
-	{
-		if (TotalTRT == 0)
-			return 0;
-		int x = ((BusyTime*100) / TotalTRT);
-		return x;
-		
-	}
-	virtual int pUtil()
-	{
-		if (BusyTime + IdleTime==0)
-			return 0;
-		int z = (BusyTime + IdleTime);
-		int x =((BusyTime*100)/z);
-		return x;
-	}
-	
-	
+	processor();
+	virtual void STATE();
+	void resetFork();
+	bool getstate();
+	process* getmigrate();
+	process* gettrm();
+	process* getblock();
+	int get_type();
+	int getpnumber();
+	bool get_forkit();
+	int get_busy_time();
+	int get_idle_time();
+	process* GetRun();
+	virtual void NeedBlock();
+	virtual void NeedTrm();
+	virtual void setstate(bool s);
+	void resetmigrate();
+	void resetblock();
+	void resettrm();
+	void SetRun();
+	void time(int x);
+	bool operator > (processor* p);
+	bool operator < (processor* p);
+	virtual int pLoad(int TotalTRT);
+	virtual int pUtil();
 };
