@@ -18,7 +18,7 @@ void UI::MODE()
 		cin >> mode;
 	}
 	if (mode==3)
-		cout << "silent mode... output file will be saved at the end of simulation";
+		cout << "silent mode... output file will be saved at the end of simulation"<<'\n';
 }
 void UI:: print()
 {
