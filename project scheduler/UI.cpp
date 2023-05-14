@@ -5,6 +5,10 @@ UI::UI(scheduler* S)
 	s = S;
 	mode = 1;
 }
+void UI::UIbegin()
+{
+	cout << "PROCESSING..." << endl<<'\n';
+}
 void UI::MODE()
 {
 	cout << "Select Mode" << endl;
@@ -28,11 +32,13 @@ void UI:: UIprint()
 {
 	if (mode == 1)
 	{
-		print();
 		cin.ignore();
+		print();
+		cout << "PRESS ANY KEY TO MOVE TO NEXT STEP!" << '\n';
 	}
 	else if (mode == 2)
 	{
+		cout << '\n';
 		print();
 		Sleep(1000);
 	}
@@ -40,4 +46,8 @@ void UI:: UIprint()
 	{
 		Sleep(1000);
 	}
+}
+void UI:: UIend()
+{
+	cout << "END OF SIMULATION... VIEW OUTPUT FILE" << endl;
 }

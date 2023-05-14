@@ -4,6 +4,7 @@ processor:: processor()
 	TIME = 0;
 	IdleTime = 0;
 	BusyTime = 0;
+	frozen = 0;
 	RUN = nullptr;
 	State = 0;
 	mig = nullptr;
@@ -67,6 +68,14 @@ process* processor:: GetRun()
 {
 	return RUN;
 
+}
+void processor::setfrozen(bool f)
+{
+	frozen = f;
+}
+bool processor::getfrozen()
+{
+	return frozen;
 }
 void processor:: NeedBlock()
 {

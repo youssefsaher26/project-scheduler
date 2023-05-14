@@ -16,6 +16,7 @@ protected:
 	process* block;
 	process* trm;
 	int TIME;
+	bool frozen;
 public:
 	bool fork_it;
 	bool State; //  0-IDLE 1-BUSY
@@ -42,6 +43,9 @@ public:
 	bool get_forkit();
 	int get_busy_time();
 	int get_idle_time();
+	bool getfrozen();
+	void setfrozen(bool f);
+
 	process* GetRun();
 	virtual void NeedBlock();
 	virtual void NeedTrm();

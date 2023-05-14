@@ -14,5 +14,7 @@ public:
 	void MODE();
 	void print();
 	void UIprint();
+	void UIend();
+	void UIbegin();
 };
 	

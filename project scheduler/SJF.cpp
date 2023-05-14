@@ -66,7 +66,7 @@ void SJF::SchedAlgo()
 }
 process* SJF:: donate()
 {
-	process* p;
+	process* p = nullptr;
 	SJF_RDY->dequeue(p);
 	if (p)
 		return p;

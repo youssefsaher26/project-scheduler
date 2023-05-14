@@ -30,6 +30,8 @@ private:
 	int forkedno;
 	int killedno;
 	int stolenno;
+	int overheatdur;
+	int removerheatdur;
 	QueueADT<kill*>* killsigs;
 	QueueADT<IO_R_D*>* inputsigs;
 	Node<processor*>* random;
@@ -38,8 +40,10 @@ private:
 	QueueADT<process*>* TRM;
 	QueueADT<processor*>* ProcessorsList;
 	UI* inter;
+	processor* frozen;
 public:
 	scheduler();
+	void overheat(processor* proc);
 	int get_time();
 	void simulator();
 	void allmoving(processor* ptr);
@@ -57,6 +61,7 @@ public:
 	void KILLSIG();
 	void move1(process* p);
 	void move2(process* p);
+	void serve_heat();
 	int CountRun() const;
 	void NEWtoRDY();
 	//simulator: generate the probability and take action accordingly
@@ -84,8 +89,19 @@ public:
 		int i = 1;
 		while (p)
 		{
+			if (p->getItem() == s.frozen)
+			{
+				out << "Processor " << p->getItem()->getpnumber() << " ";
+				if (p->getItem()->get_type() == 1)
 
-			if (p->getItem()->get_type() == 1)
+					out << "[FCFS]: OVERHEAT!" << endl;
+				else if (p->getItem()->get_type() == 2)
+					out << "[RR]: OVERHEAT!" << endl;
+				else
+					out << "[SJF]: OVERHEAT!" << endl;
+				p = p->getNext();
+			}
+			else if (p->getItem()->get_type() == 1)
 			{
 				out << "Processor " << p->getItem()->getpnumber() << " " << *(FCFS*)p->getItem() << endl;
 				i++;
@@ -148,7 +164,6 @@ public:
 			ptrm = ptrm->getNext();
 		}
 		out << endl;
-		out << "PRESS ANY KEY TO MOVE TO NEXT STEP!" <<'\n';
 		return out;
 	}
 	~scheduler();

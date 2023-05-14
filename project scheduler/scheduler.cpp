@@ -20,14 +20,62 @@ scheduler::scheduler()
 	migMaxW = 0;
 	forkedno = 0;
 	killedno = 0;
-
+	removerheatdur = 0;
+	frozen = nullptr;
+}
+void scheduler::overheat(processor *proc)
+{
+	if (proc->get_type() == 1 && FCFSno == 1) //corner case: overheat fcfs and only one fcfs processor so children cant migrate
+	{
+		return;
+	}
+	if (time > 50)
+	{
+		int p = rand() % 100 + 1;
+		if (p > 85 && proc->getstate()==1) 
+		{
+			frozen = proc;
+			process* don = proc->GetRun();
+			if (don)
+			{
+				if (don->get_pure() == 0)
+					shortest_FCFS()->AddProcess(don);
+				else
+					shortest_processor()->AddProcess(don);
+				proc->SetRun();
+			}
+			don = proc->donate();
+			while (don)
+			{
+				if (don->get_pure() == 0)
+					shortest_FCFS()->AddProcess(don);
+				else
+					shortest_processor()->AddProcess(don);
+				don = proc->donate();
+			}
+			removerheatdur = overheatdur;
+		}
+	}
+	
 }
 int scheduler::get_time()
 {
 	return time;
 }
+void scheduler::serve_heat()
+{
+	if (frozen)
+	{
+		removerheatdur--;
+		if (removerheatdur == 0)
+		{
+			frozen = nullptr;
+		}
+	}
+}
 void scheduler::simulator()
 {
+	inter->UIbegin();
 	loadfile();
 	CreateProcessors();
 	inter->MODE();
@@ -36,26 +84,33 @@ void scheduler::simulator()
 		Node <processor*>* p = ProcessorsList->getfront();
 		while (p)
 		{
-			NEWtoRDY();
-			processor* ptr = p->getItem();
-			ptr->time(time);
-			KILLSIG();
-			ptr->SchedAlgo();
-			forks(ptr);
-			allmoving(ptr);
-			blockandtrm(ptr);
-			p->getItem()->STATE();
-			//p->calculations();
-			p = p->getNext();
+			if (p->getItem() == frozen)
+				p = p->getNext();
+			if (p)
+			{
+				if(!frozen)
+					overheat(p->getItem());
+				NEWtoRDY();
+				processor* ptr = p->getItem();
+				ptr->time(time);
+				KILLSIG();
+				ptr->SchedAlgo();
+				forks(ptr);
+				allmoving(ptr);
+				blockandtrm(ptr);
+				p->getItem()->STATE();
+				p = p->getNext();
+			}
 		}
+		serve_heat();
 		BLKtoRDY();
 		steal();
 		inter->UIprint();
 		time++;
 	}
-	//finalcalculations
+	inter->UIend();
 	savefile();
-	cout << "END OF SIMULATION" << endl;
+
 }
 void scheduler::allmoving(processor* ptr)
 {
@@ -152,7 +207,6 @@ void scheduler:: loadfile()
 	ifstream inputFile;
 	inputFile.open("Test.txt", ios::in);
 	int rtf, t_slice, Maxw;
-	cout << "Processing" << endl;
 	inputFile >> FCFSno >> SJFno >> RRno;
 	inputFile >> t_slice;
 	RoundRobin::set_Timeslice(t_slice);
@@ -184,6 +238,7 @@ void scheduler:: loadfile()
 		}
 		NEW->enqueue(p);
 	}
+	inputFile >> overheatdur;
 	int SigId, SigT;
 	while (!inputFile.eof())
 	{
@@ -409,7 +464,6 @@ void scheduler:: NEWtoRDY()
 
 	}
 }
-//simulator: generate the probability and take action accordingly
 void scheduler:: RUNtoTRM(processor* p)
 {
 	process* ptr = p->gettrm();
@@ -472,11 +526,16 @@ processor* scheduler:: shortest_processor()
 	processor* min = p->getItem();
 	while (p)
 	{
-		if (min->queuetime() > p->getItem()->queuetime())
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
 		{
-			min = p->getItem();
+			if (min->queuetime() > p->getItem()->queuetime())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
 		}
-		p = p->getNext();
 	}
 	return min;
 }
@@ -486,11 +545,16 @@ processor* scheduler:: stl_shortest_processor()
 	processor* min = p->getItem();
 	while (p)
 	{
-		if (min->stealqueuetime() > p->getItem()->stealqueuetime())
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
 		{
-			min = p->getItem();
+			if (min->stealqueuetime() > p->getItem()->stealqueuetime())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
 		}
-		p = p->getNext();
 	}
 	return min;
 }
@@ -500,11 +564,16 @@ processor* scheduler:: longest_processor()
 	processor* max = p->getItem();
 	while (p)
 	{
-		if (max->queuetime() < p->getItem()->queuetime())
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
 		{
-			max = p->getItem();
+			if (max->queuetime() < p->getItem()->queuetime())
+			{
+				max = p->getItem();
+			}
+			p = p->getNext();
 		}
-		p = p->getNext();
 	}
 	return max;
 }
@@ -518,11 +587,17 @@ processor* scheduler:: shortest_FCFS()
 	processor* min = p->getItem();
 	while (p)
 	{
-		if (min->queuetime() > p->getItem()->queuetime() && p->getItem()->get_type() == 1)
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
 		{
-			min = p->getItem();
+			if (min->queuetime() > p->getItem()->queuetime() && p->getItem()->get_type() == 1)
+			{
+				min = p->getItem();
+			}
+			
+			p = p->getNext();
 		}
-		p = p->getNext();
 	}
 	return min;
 	//Node <processor*>* p = ProcessorsList->getfront();
@@ -556,11 +631,16 @@ processor* scheduler:: shortest_SJF()
 	processor* min = p->getItem();
 	while (p)
 	{
-		if (min->queuetime() > p->getItem()->queuetime())
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
 		{
-			min = p->getItem();
+			if (min->queuetime() > p->getItem()->queuetime())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
 		}
-		p = p->getNext();
 	}
 	return min;
 }
@@ -580,7 +660,7 @@ processor* scheduler:: shortest_RR()
 	processor* min = p->getItem();
 	while (p)
 	{
-		if (p->getItem()->get_type() == 2)
+		if (p->getItem()->get_type() == 2 && p->getItem()!=frozen)
 		{
 
 			if (min->queuetime() > p->getItem()->queuetime())
