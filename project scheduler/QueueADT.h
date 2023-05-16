@@ -1,5 +1,6 @@
 #include "Node.h"
 #pragma once
+
 template <typename T>
 class QueueADT
 {

@@ -176,11 +176,3 @@ void process:: finish_Kill_Times(int t)
 	WT = TRT - (CpuTime - RemTime);
 
 }
-bool process:: operator > (process* p)
-{
-	if (RemTime > p->GetRemTime())
-	{
-		return true;
-	}
-	return false;
-}

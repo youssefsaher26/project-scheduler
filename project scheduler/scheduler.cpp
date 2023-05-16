@@ -25,7 +25,11 @@ scheduler::scheduler()
 	killed = false;
 }
 void scheduler::overheat(processor *proc)
-{ 
+{
+	if ( ProcessorsList->getcount() == 1)
+	{
+		return;
+	}
 	if (frozen == nullptr)
 	{
 		if (proc->get_type() == 1 && FCFSno == 1) //corner case: overheat fcfs and only one fcfs processor so children cant migrate
@@ -213,7 +217,7 @@ void scheduler:: loadfile()
 	char garbage;
 	ofstream outputFile;
 	ifstream inputFile;
-	inputFile.open("Test.txt", ios::in);
+	inputFile.open("test.txt", ios::in);
 	int rtf, t_slice, Maxw;
 	inputFile >> FCFSno >> SJFno >> RRno;
 	inputFile >> t_slice;
@@ -254,7 +258,6 @@ void scheduler:: loadfile()
 		kill* k = new kill(SigT, SigId);
 		killsigs->enqueue(k);
 	}
-	cout << "shit";
 	outputFile.close();
 }
 void scheduler:: savefile()
@@ -500,6 +503,10 @@ processor* scheduler:: shortest_processor()
 	Node <processor*>* p = ProcessorsList->getfront();
 	if (p->getItem() == frozen)
 		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
 	processor* min = p->getItem();
 	while (p)
 	{
@@ -521,6 +528,10 @@ processor* scheduler:: stl_shortest_processor()
 	Node <processor*>* p = ProcessorsList->getfront();
 	if (p->getItem() == frozen)
 		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
 	processor* min = p->getItem();
 	while (p)
 	{
@@ -542,6 +553,10 @@ processor* scheduler:: longest_processor()
 	Node <processor*>* p = ProcessorsList->getfront();
 	if (p->getItem() == frozen)
 		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
 	processor* max = p->getItem();
 	while (p)
 	{
@@ -567,6 +582,10 @@ processor* scheduler:: shortest_FCFS()
 	Node <processor*>* p = ProcessorsList->getfront();
 	if (p->getItem() == frozen)
 		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
 	processor* min = p->getItem();
 	while (p)
 	{
@@ -610,6 +629,10 @@ processor* scheduler:: shortest_SJF()
 	{
 		p = p->getNext();
 	}
+	if (!p)
+	{
+		return nullptr;
+	}
 	//p=the first sjf
 	processor* min = p->getItem();
 	while (p)
@@ -638,6 +661,10 @@ processor* scheduler:: shortest_RR()
 	while (p->getItem()->get_type() != 2)
 	{
 		p = p->getNext();
+	}
+	if (!p)
+	{
+		return nullptr;
 	}
 	//p=the first rr
 	processor* min = p->getItem();

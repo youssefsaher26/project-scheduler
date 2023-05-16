@@ -27,7 +27,7 @@ public:
 		{
 			return out;
 		}
-		Node <process*>* ptr = p.SJF_RDY->getfront();
+		PNode <process*>* ptr = p.SJF_RDY->getfront();
 		while (ptr)
 		{
 			out << ptr->getItem()->getID();
