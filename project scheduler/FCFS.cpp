@@ -66,7 +66,7 @@ void FCFS:: migration(process* p)
 	int arrtime = p->GetArrTime();
 	int cpu = p->get_CT();
 	int rem = p->GetRemTime();
-	if (TIME - arrtime - cpu + rem > MaxW && p->get_pure() == 1)
+	if (TIME - arrtime - cpu + rem > MaxW && p->get_pure() == 1 && p->get_pure()==1)
 	{
 		mig = p;
 	}
@@ -82,11 +82,12 @@ void FCFS:: fork()
 		int forking_no = rand() % 100 + 1;
 		if (forking_no < forkprob)
 		{
-			if (!(RUN->get_forked()))
+			if (RUN->get_children_no() < 2)
 			{
-				RUN->set_forked();
 				fork_it = true;
 			}
+			else
+				fork_it = false;
 		}
 	}
 }

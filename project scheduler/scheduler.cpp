@@ -22,38 +22,42 @@ scheduler::scheduler()
 	killedno = 0;
 	removerheatdur = 0;
 	frozen = nullptr;
+	killed = false;
 }
 void scheduler::overheat(processor *proc)
-{
-	if (proc->get_type() == 1 && FCFSno == 1) //corner case: overheat fcfs and only one fcfs processor so children cant migrate
+{ 
+	if (frozen == nullptr)
 	{
-		return;
-	}
-	if (time > 50)
-	{
-		int p = rand() % 100 + 1;
-		if (p > 85 && proc->getstate()==1) 
+		if (proc->get_type() == 1 && FCFSno == 1) //corner case: overheat fcfs and only one fcfs processor so children cant migrate
 		{
-			frozen = proc;
-			process* don = proc->GetRun();
-			if (don)
+			return;
+		}
+		if (time > 50)
+		{
+			int p = rand() % 100 + 1;
+			if (p > 85 && proc->getstate() == 1)
 			{
-				if (don->get_pure() == 0)
-					shortest_FCFS()->AddProcess(don);
-				else
-					shortest_processor()->AddProcess(don);
-				proc->SetRun();
-			}
-			don = proc->donate();
-			while (don)
-			{
-				if (don->get_pure() == 0)
-					shortest_FCFS()->AddProcess(don);
-				else
-					shortest_processor()->AddProcess(don);
+				frozen = proc;
+				process* don = proc->GetRun();
+				if (don)
+				{
+					if (don->get_pure() == 0)
+						shortest_FCFS()->AddProcess(don);
+					else
+						shortest_processor()->AddProcess(don);
+					proc->SetRun();
+				}
 				don = proc->donate();
+				while (don)
+				{
+					if (don->get_pure() == 0)
+						shortest_FCFS()->AddProcess(don);
+					else
+						shortest_processor()->AddProcess(don);
+					don = proc->donate();
+				}
+				removerheatdur = overheatdur;
 			}
-			removerheatdur = overheatdur;
 		}
 	}
 	
@@ -73,7 +77,7 @@ void scheduler::serve_heat()
 		}
 	}
 }
-void scheduler::simulator()
+void scheduler:: simulator()
 {
 	inter->UIbegin();
 	loadfile();
@@ -86,6 +90,7 @@ void scheduler::simulator()
 		{
 			if (p->getItem() == frozen)
 				p = p->getNext();
+			serve_heat();
 			if (p)
 			{
 				if(!frozen)
@@ -102,7 +107,6 @@ void scheduler::simulator()
 				p = p->getNext();
 			}
 		}
-		serve_heat();
 		BLKtoRDY();
 		steal();
 		inter->UIprint();
@@ -127,15 +131,6 @@ void scheduler::allmoving(processor* ptr)
 		}
 		ptr->resetmigrate();
 	}
-}
-process* scheduler:: fork(int y)
-{
-	processno++;
-	process* p = new process(time, processno, y, 0, false);
-	processor* pro = shortest_FCFS();
-	pro->AddProcess(p);
-	forkedno++;
-	return p;
 }
 void scheduler:: CreateProcessors()
 {
@@ -178,11 +173,24 @@ void scheduler:: forks(processor* ptr)
 		if (ptr->get_forkit() == true && ptr->GetRun())
 		{
 			process* child = fork(ptr->GetRun()->GetRemTime());
-			ptr->GetRun()->setchild(child);
+			if (ptr->GetRun()->get_children_no() == 0)
+				ptr->GetRun()->setchild1(child);
+			else
+				ptr->GetRun()->setchild2(child);
 			ptr->resetFork();
+			ptr->GetRun()->inc_children();
 		}
 		//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
 	}
+}
+process* scheduler::fork(int y)
+{
+	processno++;
+	process* p = new process(time, processno, y, 0, false);
+	processor* pro = shortest_FCFS();
+	pro->AddProcess(p);
+	forkedno++;
+	return p;
 }
 bool scheduler:: DONE()
 {
@@ -280,13 +288,13 @@ void scheduler:: savefile()
 	outputFile << "Avg TRT = " << get_Avg_TRT() << "," << '\n';
 	int no1 = ((migRTF * 100) / processno);
 	int no2 = ((migMaxW * 100) / processno);
-	outputFile << "Migration %:" << '\t' << "RTF = " << no1 << ",   " << '\t' << "MaxW = " << no2 << ", " << '\n';
+	outputFile << "Migration:" << '\t' << "RTF = " << no1 << "%" << ",   " << '\t' << "MaxW = " << no2 << "%" << '\n';
 	int no3 = ((stolenno * 100) / processno);
-	outputFile << "Work Steal %: " << no3 << '\n';
+	outputFile << "Work Steal: " << no3 << "%" << '\n';
 	int no4 = ((forkedno * 100) / processno);
-	outputFile << "Forked Process: " << no4 << '\t';
+	outputFile << "Forked Process: " << no4 << "%"<< '\t';
 	int no5 = ((killedno * 100) / processno);
-	outputFile << "Killed Process: " << no5 << '\n' << '\n';
+	outputFile << "Killed Process: " << no5 << "%" << '\n' << '\n';
 	int processor_no = FCFSno + SJFno + RRno;
 	outputFile << "Processors: " << processor_no;
 	outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR ]" << '\n';
@@ -366,68 +374,55 @@ int scheduler:: get_Avg_TRT()
 	avg = sum / processno;
 	return avg;
 }
+process* scheduler::kill1(int id)
+{
+	Node<processor*>* p = ProcessorsList->getfront();
+	while (p)
+	{
+		processor* ptr = p->getItem();
+		if (ptr->get_type() == 1)
+		{
+			process* pTrm = ptr->KILL(id);
+			if (pTrm != nullptr)
+			{
+				TRM->enqueue(pTrm);
+				pTrm->finish_Kill_Times(time);
+				killedno++;
+				return pTrm;
+			}
+		}
+		else
+			return nullptr;
+		p = p->getNext();
+		//because fcfs are at the beginning of the processor list, so if the ptr isnt fcfs then
+		//there are no fcfs coming up.
+	}
+}
+void scheduler::kill_children(process* p)
+{
+	if (p == nullptr)
+		return;
+	kill1(p->getID());
+	kill_children(p->get_child1());
+	kill_children(p->get_child2());
+}
 void scheduler:: KILLSIG()
 {
-	kill* k;
+	kill* k = nullptr;
 	killsigs->peek(k);
 	if (killsigs->isEmpty() == false)
 	{
 		while (k->getkiltime() == time)
 		{
-			Node<processor*>* p = ProcessorsList->getfront();
-			while (p)
-			{
-				processor* ptr = p->getItem();
-				if (ptr->get_type() == 1)
-				{
-					process* pTrm = ptr->KILL(k->getkillid());
-					if (pTrm != nullptr)
-					{
-						TRM->enqueue(pTrm);
-						pTrm->finish_Kill_Times(time);
-						killedno++;
-						killsigs->dequeue(k);
-						process* child = pTrm->get_child();
-						while (child)
-						{
-							int id = child->getID();
-							Node<processor*>* pro = ProcessorsList->getfront();
-							while (pro)
-							{
-								if (pro->getItem()->get_type() != 1)
-								{
-									break;
-								}
-								process* c = pro->getItem()->KILL(id);
-								if (c)
-								{
-									TRM->enqueue(c);
-									c->finish_Kill_Times(time);
-									killedno++;
-									break;
-								}
-								pro = pro->getNext();
-							}
-							child = child->get_child();
-						}
-					}
-				}
-				p = p->getNext();
-			}
-			kill* k1;
-			killsigs->peek(k1);
-			if (k == k1)
-			{
-				killsigs->dequeue(k1);
-			}
-			killsigs->peek(k);
+			process* p=kill1(k->getkillid());
+			kill_children(p);
+			killsigs->dequeue(k);
 			if (killsigs->peek(k) == false)
-			{
 				break;
-			}
+			killsigs->peek(k);
 		}
 	}
-}
+} //check overheat  //check overheat 
 void scheduler:: move1(process* p)
 {
 	processor* ssjf = shortest_SJF();
@@ -469,27 +464,7 @@ void scheduler:: RUNtoTRM(processor* p)
 	process* ptr = p->gettrm();
 	TRM->enqueue(ptr);
 	ptr->finishTimes(time);
-	process* child = ptr->get_child();
-	while (child)
-	{
-		int id = child->getID();
-		Node<processor*>* pro = ProcessorsList->getfront();
-		while (pro)
-		{
-			if (pro->getItem()->get_type() != 1)
-			{
-				break;
-			}
-			process* c = pro->getItem()->KILL(id);
-			if (c)
-			{
-				TRM->enqueue(c);
-				c->finish_Kill_Times(time);
-			}
-			pro = pro->getNext();
-		}
-		child = child->get_child();
-	}
+	kill_children(ptr);
 	p->resettrm();
 }
 void scheduler:: RUNtoBLK(processor* p)
@@ -523,6 +498,8 @@ void scheduler:: BLKtoRDY()
 processor* scheduler:: shortest_processor()
 {
 	Node <processor*>* p = ProcessorsList->getfront();
+	if (p->getItem() == frozen)
+		p = p->getNext();
 	processor* min = p->getItem();
 	while (p)
 	{

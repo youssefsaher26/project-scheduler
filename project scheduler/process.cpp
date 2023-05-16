@@ -11,8 +11,10 @@ process:: process(int at, int pid, int ct, int IO_num)
 	Rem_IO = -1;
 	forked = false;
 	pure = true;
-	child = nullptr;
+	child1 = nullptr;
+	child2 = nullptr;
 	total_io_D = 0;
+	childrenno = 0;
 }
 process:: process(int at, int pid, int ct, int IO_num, bool x)
 {
@@ -26,28 +28,30 @@ process:: process(int at, int pid, int ct, int IO_num, bool x)
 	Rem_IO = -1;
 	forked = false;
 	pure = x;
-	child = nullptr;
+	child1 = nullptr;
+	child2 = nullptr;
 	total_io_D = 0;
+	childrenno = 0;
 }
 process:: process()
 {
 	kill_time = -1;
 }
+void process::inc_children()
+{
+	childrenno++;
+}
+int process:: get_children_no()
+{
+	return childrenno;
+}
 void process:: add_inputs_sigs(IO_R_D* ptr)
 {
 	inputsigs.enqueue(ptr);
 }
-bool process:: get_forked()
-{
-	return forked;
-}
 void process:: set_total_io_D(int io_d)
 {
 	total_io_D = io_d + total_io_D;
-}
-void process:: set_forked()
-{
-	forked = true;
 }
 int process:: GetArrTime()
 {
@@ -111,9 +115,13 @@ void process:: setRT(int x)
 {
 	RT = x - AT;
 }
-process* process:: get_child()
+process* process:: get_child1()
 {
-	return child;
+	return child1;
+}
+process* process::get_child2()
+{
+	return child2;
 }
 QueueADT<IO_R_D*>* process:: get_inputsigs()
 {
@@ -123,9 +131,13 @@ void process:: RR_INC()
 {
 	RR_TIME++;
 }
-void process:: setchild(process* p)
+void process:: setchild1(process* p)
 {
-	child = p;
+	child1 = p;
+}
+void process::setchild2(process* p)
+{
+	child2 = p;
 }
 void process:: RR_RESET()
 {

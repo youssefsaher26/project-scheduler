@@ -23,15 +23,17 @@ private:
 	int RR_TIME;
 	bool forked;
 	bool pure;
-	process* child;
+	process* child1;
+	process* child2;
 	int  CpuTime;
+	int childrenno;
 	
 public:
 	process(int at, int pid, int ct, int IO_num);
 	process(int at, int pid, int ct, int IO_num, bool x);
 	process();
+	void inc_children();
 	void add_inputs_sigs(IO_R_D* ptr);
-	bool get_forked();
 	void set_total_io_D(int io_d);
 	void set_forked();
 	int GetArrTime();
@@ -49,10 +51,13 @@ public:
 	int get_TRT();
 	bool get_pure();
 	void setRT(int x);
-	process* get_child();
+	process* get_child1();
+	process* get_child2();
+	int get_children_no();
 	QueueADT<IO_R_D*>* get_inputsigs();
 	void RR_INC();
-	void setchild(process* p);
+	void setchild1(process* p);
+	void setchild2(process* p);
 	void RR_RESET();
 	void SetRemTime(int y);
 	void decremtime();

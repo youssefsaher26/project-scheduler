@@ -32,6 +32,7 @@ private:
 	int stolenno;
 	int overheatdur;
 	int removerheatdur;
+	bool killed;
 	QueueADT<kill*>* killsigs;
 	QueueADT<IO_R_D*>* inputsigs;
 	Node<processor*>* random;
@@ -58,7 +59,6 @@ public:
 	int get_Avg_WT();
 	int get_Avg_RT();
 	int get_Avg_TRT();
-	void KILLSIG();
 	void move1(process* p);
 	void move2(process* p);
 	void serve_heat();
@@ -76,6 +76,9 @@ public:
 	processor* shortest_RR();
 	bool should_steal();
 	int calclimit();
+	void KILLSIG();
+	void kill_children(process* p);
+	process* kill1(int id);
 	void steal();
 	void print()
 	{
