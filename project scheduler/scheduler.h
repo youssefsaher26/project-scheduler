@@ -118,9 +118,15 @@ public:
 				i++;
 				p = p->getNext();
 			}
-			else
+			else if(p->getItem()->get_type() == 3)
 			{
 				out << "Processor " << p->getItem()->getpnumber() << " " << *(SJF*)p->getItem() << endl;
+				i++;
+				p = p->getNext();
+			}
+			else 
+			{
+				out << "Processor " << p->getItem()->getpnumber() << " " << *(EDF*)p->getItem() << endl;
 				i++;
 				p = p->getNext();
 			}

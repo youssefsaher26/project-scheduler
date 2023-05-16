@@ -51,7 +51,7 @@ void EDF::RDY_TO_RUN()
 bool EDF::Replace_RUN()
 {
 	process* ptr;
-	if (!EDF_RDY)
+	if (EDF_RDY->isEmpty())
 		return false;
 	EDF_RDY->peek(ptr);
 	if (ptr->get_EDF() < RUN->get_EDF())

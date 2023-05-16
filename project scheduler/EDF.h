@@ -18,6 +18,24 @@ public:
 	virtual process* KILL(int id);
 	void RUN_TO_RDY();
 	virtual bool Done();
-
+	friend ostream& operator<< (ostream& out, const EDF& p)
+	{
+		out << "[EDF ] : " << p.EDF_RDY->getcount() << " RDY: ";
+		if (p.EDF_RDY->getcount() == 0)
+		{
+			return out;
+		}
+		PNode <process*>* ptr = p.EDF_RDY->getfront();
+		while (ptr)
+		{
+			out << ptr->getItem()->getID();
+			if (ptr->getNext() != nullptr)
+			{
+				out << " , ";
+			}
+			ptr = ptr->getNext();
+		}
+		return out;
+	}
 };
 
