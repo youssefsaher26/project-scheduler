@@ -33,6 +33,24 @@ process:: process(int at, int pid, int ct, int IO_num, bool x)
 	total_io_D = 0;
 	childrenno = 0;
 }
+process::process(int at, int pid, int ct, int IO_num, int edf)
+{
+	RR_TIME = 0;
+	RemTime = ct;
+	CpuTime = ct;
+	AT = at;
+	PID = pid;
+	num_of_IO = IO_num;
+	kill_time = -1;
+	Rem_IO = -1;
+	forked = false;
+	pure = true;
+	child1 = nullptr;
+	child2 = nullptr;
+	total_io_D = 0;
+	childrenno = 0;
+	EDF = edf;
+}
 process:: process()
 {
 	kill_time = -1;
@@ -110,6 +128,10 @@ int process:: get_TRT()
 bool process:: get_pure()
 {
 	return pure;
+}
+int process::get_EDF()
+{
+	return EDF;
 }
 void process:: setRT(int x)
 {

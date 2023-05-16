@@ -27,10 +27,11 @@ private:
 	process* child2;
 	int  CpuTime;
 	int childrenno;
-	
+	int EDF;
 public:
 	process(int at, int pid, int ct, int IO_num);
 	process(int at, int pid, int ct, int IO_num, bool x);
+	process(int at, int pid, int ct, int IO_num,int edf);
 	process();
 	void inc_children();
 	void add_inputs_sigs(IO_R_D* ptr);
@@ -49,6 +50,7 @@ public:
 	int get_RT();
 	int get_TRT();
 	bool get_pure();
+	int get_EDF();
 	void setRT(int x);
 	process* get_child1();
 	process* get_child2();

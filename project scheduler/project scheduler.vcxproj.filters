@@ -60,6 +60,9 @@
     <ClInclude Include="PNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EDF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -90,6 +93,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EDF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -158,6 +158,12 @@ void scheduler:: CreateProcessors()
 		ProcessorsList->enqueue(ptr);
 		id++;
 	}
+	for (int i = 0; i < EDFno; i++)
+	{
+		ptr = new EDF(id);
+		ProcessorsList->enqueue(ptr);
+		id++;
+	}
 }
 void scheduler:: blockandtrm(processor* ptr)
 {
@@ -217,9 +223,9 @@ void scheduler:: loadfile()
 	char garbage;
 	ofstream outputFile;
 	ifstream inputFile;
-	inputFile.open("test.txt", ios::in);
+	inputFile.open("inputfile.txt", ios::in);
 	int rtf, t_slice, Maxw;
-	inputFile >> FCFSno >> SJFno >> RRno;
+	inputFile >> FCFSno >> SJFno >> RRno>> EDFno;
 	inputFile >> t_slice;
 	RoundRobin::set_Timeslice(t_slice);
 	inputFile >> rtf;
@@ -230,9 +236,9 @@ void scheduler:: loadfile()
 	inputFile >> processno;
 	for (int i = 0; i < processno; i++)
 	{
-		int at, pid, ct, io_num, io_R, io_D;
-		inputFile >> at >> pid >> ct >> io_num;
-		process* p = new process(at, pid, ct, io_num);
+		int at, pid, ct, io_num, io_R, io_D,edf;
+		inputFile >> at >> pid >> ct >> edf>> io_num;
+		process* p = new process(at, pid, ct, io_num,edf);
 		for (int i = 0; i < io_num; i++)
 		{
 			inputFile >> garbage;//bracket1
@@ -300,7 +306,7 @@ void scheduler:: savefile()
 	outputFile << "Killed Process: " << no5 << "%" << '\n' << '\n';
 	int processor_no = FCFSno + SJFno + RRno;
 	outputFile << "Processors: " << processor_no;
-	outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR ]" << '\n';
+	outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR "<< EDFno<<"EDF]" << '\n';
 	outputFile << "Processors Load" << '\n';
 
 	Node<processor*>* temp = ProcessorsList->getfront();

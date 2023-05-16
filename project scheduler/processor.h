@@ -9,7 +9,7 @@ class processor
 protected:
 	process* RUN;
 	int processornumber;
-	int type; //1 is FCFS, 2 is RR, 3 is SJF
+	int type; //1 is FCFS, 2 is RR, 3 is SJF, 4 is EDF
 	int IdleTime;
 	int BusyTime; //phase 2
 	process* mig;

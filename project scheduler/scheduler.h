@@ -9,6 +9,7 @@
 #include"RoundRobin.h"
 #include "PriorityQueue.h"
 #include"FCFS.h"
+#include"EDF.h"
 #include<fstream>
 #include "kill.h"
 #include"IO_R_D.h"
@@ -25,6 +26,7 @@ private:
 	int FCFSno;
 	int SJFno;
 	int RRno;
+	int EDFno;
 	int migRTF;
 	int migMaxW;
 	int forkedno;
