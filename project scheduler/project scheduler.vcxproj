@@ -141,7 +141,7 @@
     <ClInclude Include="scheduler.h" />
     <ClInclude Include="SJF.h" />
     <ClInclude Include="StackADT.h" />
-    <ClInclude Include="TNode.h" />
+    <ClInclude Include="PNode.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>

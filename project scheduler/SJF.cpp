@@ -9,7 +9,7 @@ SJF::SJF(int x)
 int SJF:: queuetime()
 {
 	int sum = 0;
-	Node<process*>* temp = SJF_RDY->getfront();
+	PNode<process*>* temp = SJF_RDY->getfront();
 	while (temp)
 	{
 		process* C = temp->getItem();
@@ -23,7 +23,7 @@ int SJF:: queuetime()
 int SJF:: stealqueuetime()
 {
 	int sum = 0;
-	Node<process*>* temp = SJF_RDY->getfront();
+	PNode<process*>* temp = SJF_RDY->getfront();
 	while (temp)
 	{
 		process* C = temp->getItem();
@@ -34,7 +34,7 @@ int SJF:: stealqueuetime()
 }
 void SJF::AddProcess(process* p)
 {
-	SJF_RDY->enqueue(p);
+	SJF_RDY->enqueue(p,p->GetRemTime());
 }
 void SJF::RDY_TO_RUN()
 {
@@ -79,7 +79,7 @@ process* SJF:: KILL(int id)
 }
 void SJF:: RUN_TO_RDY()
 {
-	SJF_RDY->enqueue(RUN);
+	SJF_RDY->enqueue(RUN,RUN->GetRemTime());
 	RUN = NULL;
 	State = 0;
 }

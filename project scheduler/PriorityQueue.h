@@ -1,11 +1,11 @@
-#include "Node.h"
+#include "PNode.h"
 #pragma once
 template <typename T>
 class PriorityQueue
 {
 private:
-	Node<T>* backPtr;
-	Node<T>* frontPtr;
+	PNode<T>* backPtr;
+	PNode<T>* frontPtr;
 	int count;
 public:
 	PriorityQueue()
@@ -19,9 +19,9 @@ public:
 		return (frontPtr == nullptr);
 	}
 
-	bool enqueue(const T& newEntry)
+	bool enqueue(const T& newEntry,int p)
 	{
-		Node<T>* newNodePtr = new Node<T>(newEntry);
+		PNode<T>* newNodePtr = new PNode<T>(newEntry,p);
 
 		if (isEmpty())	//special case if this is the first node to insert
 		{
@@ -32,9 +32,9 @@ public:
 		}
 		else
 		{
-			Node<T>* prv = frontPtr;
-			Node<T>* ptr = frontPtr->getNext();
-			if (prv->getItem() > newEntry)
+			PNode<T>* prv = frontPtr;
+			PNode<T>* ptr = frontPtr->getNext();
+			if (prv->get_priority() > p)
 			{
 				newNodePtr->setNext(frontPtr);
 				frontPtr = newNodePtr ;
@@ -45,7 +45,7 @@ public:
 			{
 				while (ptr)
 				{
-					if (ptr->getItem() > newEntry)
+					if (ptr->get_priority() > p)
 					{
 						prv->setNext(newNodePtr);
 						newNodePtr->setNext(ptr);
@@ -69,7 +69,7 @@ public:
 		if (isEmpty())
 			return false;
 
-		Node<T>* nodeToDeletePtr = frontPtr;
+		PNode<T>* nodeToDeletePtr = frontPtr;
 		frntEntry = frontPtr->getItem();
 		frontPtr = frontPtr->getNext();
 		// Queue is not empty; remove front
@@ -95,11 +95,11 @@ public:
 		return true;
 
 	}
-	Node<T>* getfront() const
+	PNode<T>* getfront() const
 	{
 		return frontPtr;
 	}
-	Node<T>* getrear() const
+	PNode<T>* getrear() const
 	{
 		return backPtr;
 	}
@@ -114,7 +114,7 @@ public:
 	//copy constructor
 	PriorityQueue(const PriorityQueue<T>& LQ)
 	{
-		Node<T>* NodePtr = LQ.frontPtr;
+		PNode<T>* NodePtr = LQ.frontPtr;
 		if (!NodePtr) //LQ is empty
 		{
 			frontPtr = backPtr = nullptr;
@@ -122,14 +122,14 @@ public:
 		}
 
 		//insert the first node
-		Node<T>* ptr = new Node<T>(NodePtr->getItem());
+		PNode<T>* ptr = new PNode<T>(NodePtr->getItem());
 		frontPtr = backPtr = ptr;
 		NodePtr = NodePtr->getNext();
 
 		//insert remaining nodes
 		while (NodePtr)
 		{
-			Node<T>* ptr = new Node<T>(NodePtr->getItem());
+			PNode<T>* ptr = new PNode<T>(NodePtr->getItem());
 			backPtr->setNext(ptr);
 			backPtr = ptr;
 			NodePtr = NodePtr->getNext();

@@ -35,7 +35,6 @@ public:
 	void inc_children();
 	void add_inputs_sigs(IO_R_D* ptr);
 	void set_total_io_D(int io_d);
-	void set_forked();
 	int GetArrTime();
 	int GetRemTime();
 	int GetRRTime();
@@ -66,6 +65,13 @@ public:
 	void dec_IO();
 	void finishTimes(int t);
 	void finish_Kill_Times(int t);
-	bool operator > (process* p);
+	bool operator > (process* p)
+	{
+		if (RemTime > p->GetRemTime())
+		{
+			return true;
+		}
+		return false;
+	}
 };
 
