@@ -132,15 +132,12 @@ process* FCFS:: donate()
 	{
 		Node<process*>* p = nullptr;
 		p = FCFS_RDY->GetHead();
-		while (p)
+		if (p)
 		{
-			if (p->getItem()->get_pure() == 1)
-			{
-				process* pro = p->getItem();
-				FCFS_RDY->DeleteNode(p->getItem());
-				return pro;
-			}
-			p = p->getNext();
+			process* pro = p->getItem();
+			FCFS_RDY->DeleteNode(p->getItem());
+			return pro;
+
 		}
 	}
 	return nullptr;

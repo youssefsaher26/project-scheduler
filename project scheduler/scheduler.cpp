@@ -85,12 +85,12 @@ void scheduler:: simulator()
 	inter->MODE();
 	while (DONE() == false)
 	{
+		serve_heat();
 		Node <processor*>* p = ProcessorsList->getfront();
 		while (p)
 		{
 			if (p->getItem() == frozen)
 				p = p->getNext();
-			serve_heat();
 			if (p)
 			{
 				if(!frozen)
@@ -254,7 +254,7 @@ void scheduler:: loadfile()
 		kill* k = new kill(SigT, SigId);
 		killsigs->enqueue(k);
 	}
-
+	cout << "shit";
 	outputFile.close();
 }
 void scheduler:: savefile()
@@ -519,6 +519,8 @@ processor* scheduler:: shortest_processor()
 processor* scheduler:: stl_shortest_processor()
 {
 	Node <processor*>* p = ProcessorsList->getfront();
+	if (p->getItem() == frozen)
+		p = p->getNext();
 	processor* min = p->getItem();
 	while (p)
 	{
@@ -538,6 +540,8 @@ processor* scheduler:: stl_shortest_processor()
 processor* scheduler:: longest_processor()
 {
 	Node <processor*>* p = ProcessorsList->getfront();
+	if (p->getItem() == frozen)
+		p = p->getNext();
 	processor* max = p->getItem();
 	while (p)
 	{
@@ -561,6 +565,8 @@ processor* scheduler:: shortest_FCFS()
 		return nullptr;
 	}
 	Node <processor*>* p = ProcessorsList->getfront();
+	if (p->getItem() == frozen)
+		p = p->getNext();
 	processor* min = p->getItem();
 	while (p)
 	{
@@ -686,8 +692,13 @@ void scheduler:: steal()
 		}
 		if (p)
 		{
-			shortest->AddProcess(p);
-			stolenno++;
+			if (p->get_pure() == 1)
+			{
+				shortest->AddProcess(p);
+				stolenno++;
+			}
+			else
+				longest->AddProcess(p);
 		}
 		prv = p;
 		y = should_steal();
