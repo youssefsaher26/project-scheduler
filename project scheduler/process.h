@@ -27,6 +27,7 @@ private:
 	int  CpuTime;
 	int childrenno; //0-2
 	int EDF;
+
 public:
 	//constructor that is called while forking to inour pure as 0 to know that this process was forked
 	process(int at, int pid, int ct, int IO_num,int edf, bool x); 

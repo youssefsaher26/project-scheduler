@@ -19,18 +19,18 @@ using namespace std;
 class scheduler
 {
 private:
-	int count_edf;
-	int time;
+	int count_edf; //no of processes ended before deadline
+	int time; //timestep
 	int STL;
 	int forkprob;
 	int processno;
-	int FCFSno;
-	int SJFno;
-	int RRno;
-	int EDFno;
-	int migRTF;
-	int migMaxW;
-	int forkedno;
+	int FCFSno; //number of FCFS processors
+	int SJFno;//number of SJF processors
+	int RRno;//number of RR processors
+	int EDFno;//number of EDF processors
+	int migRTF;//number of processes migrated due to RTF
+	int migMaxW;//number of processes migrated due to MAXW
+	int forkedno;//number of forked processes
 	int killedno;
 	int stolenno;
 	int overheatdur;
@@ -55,28 +55,28 @@ public:
 	void CreateProcessors();
 	void blockandtrm(processor* ptr);
 	void forks(processor* ptr);
-	bool DONE();
-	void loadfile();
-	void savefile();
+	bool DONE();//checks if all processes are done and processors are empty
+	void loadfile();//loading input file
+	void savefile();//saving output file
 	int get_Total_TRT();
 	int get_Avg_WT();
 	int get_Avg_RT();
 	int get_Avg_TRT();
-	void move1(process* p);
-	void move2(process* p);
+	void move1(process* p); //moves process to shortest SJF
+	void move2(process* p); //moves process to Shortest RR
 	void serve_heat();
 	int CountRun() const;
 	void NEWtoRDY();
 	//simulator: generate the probability and take action accordingly
-	void RUNtoTRM(processor* p);
-	void RUNtoBLK(processor* p);
-	void BLKtoRDY();
-	processor* shortest_processor();
+	void RUNtoTRM(processor* p);//move process from RUN state to TRM list
+	void RUNtoBLK(processor* p);//move process from RUN to BLK List
+	void BLKtoRDY(); //return process from BLK to shortest RDY List
+	processor* shortest_processor(); //returns pointer to the shortest processor
 	processor* stl_shortest_processor();
 	processor* longest_processor();
-	processor* shortest_FCFS();
-	processor* shortest_SJF();
-	processor* shortest_RR();
+	processor* shortest_FCFS();//returns pointer to the shortest FCFS processor
+	processor* shortest_SJF();//returns pointer to the shortest SJF processor
+	processor* shortest_RR();//returns pointer to the shortest RR processor
 	bool should_steal();
 	int calclimit();
 	void KILLSIG();

@@ -68,25 +68,25 @@ void scheduler::CreateProcessors()
 {
 	processor* ptr;
 	int id = 1;
-	for (int i = 0; i < FCFSno; i++)
+	for (int i = 0; i < FCFSno; i++) // creating FCFS Processes
 	{
 		ptr = new FCFS(id, forkprob);
 		ProcessorsList->enqueue(ptr);
 		id++;
 	}
-	for (int i = 0; i < RRno; i++)
+	for (int i = 0; i < RRno; i++) // creating RR Processes
 	{
 		ptr = new RoundRobin(id);
 		ProcessorsList->enqueue(ptr);
 		id++;
 	}
-	for (int i = 0; i < SJFno; i++)
+	for (int i = 0; i < SJFno; i++) // creating SJF Processes
 	{
 		ptr = new SJF(id);
 		ProcessorsList->enqueue(ptr);
 		id++;
 	}
-	for (int i = 0; i < EDFno; i++)
+	for (int i = 0; i < EDFno; i++) // creating EDF Processes
 	{
 		ptr = new EDF(id);
 		ProcessorsList->enqueue(ptr);
@@ -217,21 +217,21 @@ bool scheduler:: DONE()
 }
 void scheduler:: loadfile()
 {
-	char garbage;
+	char garbage;	//garbage variable
 	ofstream outputFile;
 	ifstream inputFile;
 	inputFile.open("test.txt", ios::in);
 	int rtf, t_slice, Maxw;
-	inputFile >> FCFSno >> SJFno >> RRno>> EDFno;
-	inputFile >> t_slice;
+	inputFile >> FCFSno >> SJFno >> RRno>> EDFno; //processors numbers
+	inputFile >> t_slice; //RR Time Slice
 	RoundRobin::set_Timeslice(t_slice);
-	inputFile >> rtf;
+	inputFile >> rtf; //Inputting RTF
 	RoundRobin::set_RTF(rtf);
-	inputFile >> Maxw;
+	inputFile >> Maxw; //Inputting MaxW
 	FCFS::set_Maxw(Maxw);
-	inputFile >> STL >> forkprob;
+	inputFile >> STL >> forkprob; //Inputting STL, Forkprob
 	inputFile >> processno;
-	for (int i = 0; i < processno; i++)
+	for (int i = 0; i < processno; i++) //Creating Processes
 	{
 		int at, pid, ct, io_num, io_R, io_D,edf;
 		inputFile >> at >> pid >> ct >> edf>> io_num;
@@ -255,7 +255,7 @@ void scheduler:: loadfile()
 	}
 	inputFile >> overheatdur;
 	int SigId, SigT;
-	while (!inputFile.eof())
+	while (!inputFile.eof()) //inputting kill sigs till lines end
 	{
 		inputFile >> SigT >> SigId;
 		kill* k = new kill(SigT, SigId);
@@ -269,7 +269,8 @@ void scheduler:: savefile()
 	outputFile.open("Output.txt", ios::out);
 	outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "IO_D" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\n';
 	Node<process*>* p_out = TRM->getfront();
-	while (p_out)
+	//saving processes 
+	while (p_out) 
 	{
 		outputFile << p_out->getItem()->get_TT() << '\t';
 		outputFile << p_out->getItem()->getID() << '\t';
@@ -285,7 +286,8 @@ void scheduler:: savefile()
 		outputFile << p_out->getItem()->get_TRT() << '\t';
 		outputFile << "\n";
 		p_out = p_out->getNext();
-	}
+	}	 
+	//saving processors details
 	outputFile << "---------------------------------------" << '\n';
 	outputFile << "Processes: " << processno << '\n';
 	outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
@@ -307,6 +309,7 @@ void scheduler:: savefile()
 
 	Node<processor*>* temp = ProcessorsList->getfront();
 	int i = 1;
+	//loop on processors and calc load
 	while (temp)
 	{
 		outputFile << "p" << i << " = " << temp->getItem()->pLoad(get_Total_TRT()) << "%";
@@ -318,6 +321,7 @@ void scheduler:: savefile()
 	outputFile << "Processors Utiliz" << '\n';
 	Node<processor*>* ptr = ProcessorsList->getfront();
 	int n = 1, sum_util = 0, avg_util = 0;
+	//loop on processors and calc util
 	while (ptr)
 	{
 		outputFile << "p" << n << " = " << ptr->getItem()->pUtil() << "%";

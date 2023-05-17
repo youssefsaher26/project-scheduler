@@ -4,20 +4,20 @@
 class EDF:public processor 
 {
 private:
-	PriorityQueue<process*>* EDF_RDY;
+	PriorityQueue<process*>* EDF_RDY; //EDF RDY list
 
 public:
 	EDF(int x);
 	virtual void AddProcess(process* p);
 	virtual int queuetime();
 	virtual int stealqueuetime();
-	void RDY_TO_RUN();
-	bool Replace_RUN();
+	void RDY_TO_RUN(); 
+	bool Replace_RUN(); //replaces the run with the earliest deadline in RDY list
 	virtual void SchedAlgo();
 	virtual process* donate();
 	virtual process* KILL(int id);
 	void RUN_TO_RDY();
-	virtual bool Done();
+	virtual bool Done(); 
 	friend ostream& operator<< (ostream& out, const EDF& p)
 	{
 		out << "[EDF ] : " << p.EDF_RDY->getcount() << " RDY: ";
@@ -36,6 +36,6 @@ public:
 			ptr = ptr->getNext();
 		}
 		return out;
-	}
+	} //operator overloading
 };
 
