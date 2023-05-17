@@ -97,6 +97,7 @@ void processor:: NeedBlock()
 			block = RUN;
 			block->set_remIO(io->get_iod());
 			RUN = nullptr;
+			RDY_TO_RUN();
 		}
 		else
 		{
@@ -112,6 +113,7 @@ void processor:: NeedTrm()
 	{
 		trm = RUN;
 		RUN = nullptr;
+		RDY_TO_RUN();
 	}
 }
 void processor:: setstate(bool s)

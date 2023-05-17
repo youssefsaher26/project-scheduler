@@ -24,6 +24,74 @@ scheduler::scheduler()
 	frozen = nullptr;
 	killed = false;
 }
+void scheduler::simulator()
+{
+	inter->UIbegin();
+	loadfile();
+	CreateProcessors();
+	inter->MODE();
+	while (DONE() == false)
+	{
+		serve_heat();
+		Node <processor*>* p = ProcessorsList->getfront();
+		while (p)
+		{
+			if (p->getItem() == frozen)
+				p = p->getNext();
+			if (p)
+			{
+				if (!frozen)
+					overheat(p->getItem());
+				NEWtoRDY();
+				processor* ptr = p->getItem();
+				ptr->time(time);
+				KILLSIG();
+				ptr->SchedAlgo();
+				forks(ptr);
+				allmoving(ptr);
+				blockandtrm(ptr);
+				p->getItem()->STATE();
+				p = p->getNext();
+			}
+		}
+		BLKtoRDY();
+		steal();
+		inter->UIprint();
+		time++;
+	}
+	inter->UIend();
+	savefile();
+
+}
+void scheduler::CreateProcessors()
+{
+	processor* ptr;
+	int id = 1;
+	for (int i = 0; i < FCFSno; i++)
+	{
+		ptr = new FCFS(id, forkprob);
+		ProcessorsList->enqueue(ptr);
+		id++;
+	}
+	for (int i = 0; i < RRno; i++)
+	{
+		ptr = new RoundRobin(id);
+		ProcessorsList->enqueue(ptr);
+		id++;
+	}
+	for (int i = 0; i < SJFno; i++)
+	{
+		ptr = new SJF(id);
+		ProcessorsList->enqueue(ptr);
+		id++;
+	}
+	for (int i = 0; i < EDFno; i++)
+	{
+		ptr = new EDF(id);
+		ProcessorsList->enqueue(ptr);
+		id++;
+	}
+}
 void scheduler::overheat(processor *proc)
 {
 	if ( ProcessorsList->getcount() == 1)
@@ -66,10 +134,6 @@ void scheduler::overheat(processor *proc)
 	}
 	
 }
-int scheduler::get_time()
-{
-	return time;
-}
 void scheduler::serve_heat()
 {
 	if (frozen)
@@ -80,45 +144,6 @@ void scheduler::serve_heat()
 			frozen = nullptr;
 		}
 	}
-}
-void scheduler:: simulator()
-{
-	inter->UIbegin();
-	loadfile();
-	CreateProcessors();
-	inter->MODE();
-	while (DONE() == false)
-	{
-		serve_heat();
-		Node <processor*>* p = ProcessorsList->getfront();
-		while (p)
-		{
-			if (p->getItem() == frozen)
-				p = p->getNext();
-			if (p)
-			{
-				if(!frozen)
-					overheat(p->getItem());
-				NEWtoRDY();
-				processor* ptr = p->getItem();
-				ptr->time(time);
-				KILLSIG();
-				ptr->SchedAlgo();
-				forks(ptr);
-				allmoving(ptr);
-				blockandtrm(ptr);
-				p->getItem()->STATE();
-				p = p->getNext();
-			}
-		}
-		BLKtoRDY();
-		steal();
-		inter->UIprint();
-		time++;
-	}
-	inter->UIend();
-	savefile();
-
 }
 void scheduler::allmoving(processor* ptr)
 {
@@ -134,35 +159,6 @@ void scheduler::allmoving(processor* ptr)
 			move2(ptr->getmigrate());
 		}
 		ptr->resetmigrate();
-	}
-}
-void scheduler:: CreateProcessors()
-{
-	processor* ptr;
-	int id = 1;
-	for (int i = 0; i < FCFSno; i++)
-	{
-		ptr = new FCFS(id, forkprob);
-		ProcessorsList->enqueue(ptr);
-		id++;
-	}
-	for (int i = 0; i < RRno; i++)
-	{
-		ptr = new RoundRobin(id);
-		ProcessorsList->enqueue(ptr);
-		id++;
-	}
-	for (int i = 0; i < SJFno; i++)
-	{
-		ptr = new SJF(id);
-		ProcessorsList->enqueue(ptr);
-		id++;
-	}
-	for (int i = 0; i < EDFno; i++)
-	{
-		ptr = new EDF(id);
-		ProcessorsList->enqueue(ptr);
-		id++;
 	}
 }
 void scheduler:: blockandtrm(processor* ptr)
@@ -223,7 +219,7 @@ void scheduler:: loadfile()
 	char garbage;
 	ofstream outputFile;
 	ifstream inputFile;
-	inputFile.open("inputfile.txt", ios::in);
+	inputFile.open("test.txt", ios::in);
 	int rtf, t_slice, Maxw;
 	inputFile >> FCFSno >> SJFno >> RRno>> EDFno;
 	inputFile >> t_slice;
@@ -304,9 +300,9 @@ void scheduler:: savefile()
 	outputFile << "Forked Process: " << no4 << "%"<< '\t';
 	int no5 = ((killedno * 100) / processno);
 	outputFile << "Killed Process: " << no5 << "%" << '\n' << '\n';
-	int processor_no = FCFSno + SJFno + RRno;
+	int processor_no = FCFSno + SJFno + RRno+ EDFno;
 	outputFile << "Processors: " << processor_no;
-	outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR "<< EDFno<<"EDF]" << '\n';
+	outputFile << " [ " << FCFSno << " FCFS" << ", " << SJFno << " SJF, " << RRno << " RR, "<< EDFno<<" EDF]" << '\n';
 	outputFile << "Processors Load" << '\n';
 
 	Node<processor*>* temp = ProcessorsList->getfront();
@@ -335,6 +331,10 @@ void scheduler:: savefile()
 	avg_util = sum_util / processor_no;
 	outputFile << "Avg utilization = " << avg_util << "%";
 	outputFile.close();
+}
+int scheduler::get_time()
+{
+	return time;
 }
 int scheduler:: get_Total_TRT()
 {
@@ -603,7 +603,6 @@ processor* scheduler:: shortest_FCFS()
 			{
 				min = p->getItem();
 			}
-			
 			p = p->getNext();
 		}
 	}
@@ -640,6 +639,12 @@ processor* scheduler:: shortest_SJF()
 		return nullptr;
 	}
 	//p=the first sjf
+	if (p->getItem() == frozen)
+		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
 	processor* min = p->getItem();
 	while (p)
 	{
@@ -647,7 +652,7 @@ processor* scheduler:: shortest_SJF()
 			p = p->getNext();
 		if (p)
 		{
-			if (min->queuetime() > p->getItem()->queuetime())
+			if (min->queuetime() > p->getItem()->queuetime() && p->getItem()->get_type()==3)
 			{
 				min = p->getItem();
 			}
@@ -673,6 +678,12 @@ processor* scheduler:: shortest_RR()
 		return nullptr;
 	}
 	//p=the first rr
+	if (p->getItem() == frozen)
+		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
 	processor* min = p->getItem();
 	while (p)
 	{
