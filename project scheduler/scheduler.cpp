@@ -21,6 +21,7 @@ scheduler::scheduler()
 	forkedno = 0;
 	killedno = 0;
 	removerheatdur = 0;
+	count_edf = 0;
 	frozen = nullptr;
 	killed = false;
 }
@@ -178,7 +179,7 @@ void scheduler:: forks(processor* ptr)
 	{
 		if (ptr->get_forkit() == true && ptr->GetRun())
 		{
-			process* child = fork(ptr->GetRun()->GetRemTime());
+			process* child = fork(ptr->GetRun()->GetRemTime(), ptr->GetRun()->get_EDF());
 			if (ptr->GetRun()->get_children_no() == 0)
 				ptr->GetRun()->setchild1(child);
 			else
@@ -189,10 +190,10 @@ void scheduler:: forks(processor* ptr)
 		//see if it needs forking, if yes, call fork in scheduler, then revert the bool back
 	}
 }
-process* scheduler::fork(int y)
+process* scheduler::fork(int y, int z)
 {
 	processno++;
-	process* p = new process(time, processno, y, 0, false);
+	process* p = new process(time, processno, y, 0, z, false);
 	processor* pro = shortest_FCFS();
 	pro->AddProcess(p);
 	forkedno++;
@@ -264,7 +265,6 @@ void scheduler:: loadfile()
 }
 void scheduler:: savefile()
 {
-
 	ofstream outputFile;
 	outputFile.open("Output.txt", ios::out);
 	outputFile << "TT" << '\t' << "PID" << '\t' << "AT" << '\t' << "CT" << '\t' << "IO_D" << '\t' << "WT" << '\t' << "RT" << '\t' << "TRT" << '\n';
@@ -306,7 +306,7 @@ void scheduler:: savefile()
 	outputFile << "Processors Load" << '\n';
 
 	Node<processor*>* temp = ProcessorsList->getfront();
-	int i = 0;
+	int i = 1;
 	while (temp)
 	{
 		outputFile << "p" << i << " = " << temp->getItem()->pLoad(get_Total_TRT()) << "%";
@@ -317,7 +317,7 @@ void scheduler:: savefile()
 	outputFile << '\n';
 	outputFile << "Processors Utiliz" << '\n';
 	Node<processor*>* ptr = ProcessorsList->getfront();
-	int n = 0, sum_util = 0, avg_util = 0;
+	int n = 1, sum_util = 0, avg_util = 0;
 	while (ptr)
 	{
 		outputFile << "p" << n << " = " << ptr->getItem()->pUtil() << "%";
@@ -329,7 +329,8 @@ void scheduler:: savefile()
 	}
 	outputFile << '\n';
 	avg_util = sum_util / processor_no;
-	outputFile << "Avg utilization = " << avg_util << "%";
+	outputFile << "Avg utilization = " << avg_util << "%"<<'\n';
+	outputFile << "Percentage of Processes ended before EDF: " << (100*count_edf/processno)<<" %"<<'\n';
 	outputFile.close();
 }
 int scheduler::get_time()
@@ -396,6 +397,8 @@ process* scheduler::kill1(int id)
 			{
 				TRM->enqueue(pTrm);
 				pTrm->finish_Kill_Times(time);
+				if (pTrm->get_TT() < pTrm->get_EDF())
+					count_edf++;
 				killedno++;
 				return pTrm;
 			}
@@ -473,6 +476,8 @@ void scheduler:: RUNtoTRM(processor* p)
 	process* ptr = p->gettrm();
 	TRM->enqueue(ptr);
 	ptr->finishTimes(time);
+	if (ptr->get_TT() < ptr->get_EDF())
+		count_edf++;
 	kill_children(ptr);
 	p->resettrm();
 }

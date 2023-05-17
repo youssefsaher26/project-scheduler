@@ -30,7 +30,7 @@ private:
 	int EDF;
 public:
 	process(int at, int pid, int ct, int IO_num);
-	process(int at, int pid, int ct, int IO_num, bool x);
+	process(int at, int pid, int ct, int IO_num,int edf, bool x);
 	process(int at, int pid, int ct, int IO_num,int edf);
 	process();
 	void inc_children();

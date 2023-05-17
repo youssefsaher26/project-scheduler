@@ -19,6 +19,7 @@ using namespace std;
 class scheduler
 {
 private:
+	int count_edf;
 	int time;
 	int STL;
 	int forkprob;
@@ -50,7 +51,7 @@ public:
 	int get_time();
 	void simulator();
 	void allmoving(processor* ptr);
-	process* fork(int y);
+	process* fork(int y, int z);
 	void CreateProcessors();
 	void blockandtrm(processor* ptr);
 	void forks(processor* ptr);
