@@ -51,3 +51,7 @@ void UI:: UIend()
 {
 	cout << "END OF SIMULATION... VIEW OUTPUT FILE" << endl;
 }
+UI:: ~UI()
+{
+	delete s;
+}
