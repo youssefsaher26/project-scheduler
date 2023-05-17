@@ -46,7 +46,7 @@ void FCFS:: RDY_TO_RUN()
 		{
 			process* temp = FCFS_RDY->GetHead()->getItem();
 			FCFS_RDY->DeleteFirst();
-			if (temp->get_pure() && pno>1)
+			if (temp->get_pure())
 			{
 				migration(temp);
 			}
@@ -64,6 +64,11 @@ void FCFS:: RDY_TO_RUN()
 }
 void FCFS:: migration(process* p)
 {
+	if (rr_no == 0)
+	{
+		mig = nullptr;
+		return;
+	}
 	int arrtime = p->GetArrTime();
 	int cpu = p->get_CT();
 	int rem = p->GetRemTime();

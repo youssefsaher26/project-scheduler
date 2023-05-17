@@ -45,7 +45,8 @@ void scheduler::simulator()
 				NEWtoRDY();
 				processor* ptr = p->getItem();
 				ptr->Time(Time);
-				ptr->setpno(ProcessorsList->getcount());
+				ptr->setrr_no(RRno);
+				ptr->setsjf_no(SJFno);
 				KILLSIG();
 				ptr->SchedAlgo();
 				forks(ptr);
@@ -95,7 +96,7 @@ void scheduler::CreateProcessors()
 }
 void scheduler::overheat(processor *proc)
 {
-	if ( ProcessorsList->getcount() == 1)
+	if ( ProcessorsList->getcount() <3)
 	{
 		return;
 	}

@@ -69,12 +69,12 @@ void RoundRobin:: RDY_TO_RUN()
 }
 void RoundRobin:: MIGRATION(process* p)
 {
-	if (pno == 1)
+	if (sjf_no == 1)
 	{
 		mig = nullptr;
 		return;
 	}
-	if (p->GetRemTime() < RTF && pno>1)
+	if (p->GetRemTime() < RTF)
 	{
 		mig = p;
 	}

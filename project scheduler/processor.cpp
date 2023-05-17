@@ -11,9 +11,13 @@ processor:: processor()
 	block = nullptr;
 	trm = nullptr;
 }
-void processor::setpno(int y)
+void processor::setrr_no(int y)
 {
-	pno = y;
+	rr_no = y;
+}
+void processor::setsjf_no(int y)
+{
+	sjf_no = y;
 }
 void processor:: STATE()
 {

@@ -16,7 +16,8 @@ protected:
 	process* block;
 	process* trm;
 	int TIME; 
-	int pno;
+	int rr_no;
+	int sjf_no;
 	bool frozen; // 1 if processor is overheated, 0 if processor is operating normally
 public:
 	bool fork_it; //checked each time step in the scheduler to know if a process needs to be forked or not
@@ -47,7 +48,8 @@ public:
 	int get_idle_time();
 	bool getfrozen(); //whether this processor has overheated or not
 	process* GetRun(); //returns pointer to the running process
-	void setpno(int y);
+	void setrr_no(int y);
+	void setsjf_no(int y);
 	virtual void NeedBlock();// checks the running process and sees if it needs to blocked or not
 	virtual void NeedTrm();
 	//SETTERS
