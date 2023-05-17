@@ -34,7 +34,7 @@ void UI:: UIprint()
 	{
 		cin.ignore();
 		print();
-		cout << "PRESS ANY KEY TO MOVE TO NEXT STEP!" << '\n';
+		cout << "PRESS ENTER TO MOVE TO NEXT STEP!" << '\n';
 	}
 	else if (mode == 2)
 	{
@@ -50,4 +50,8 @@ void UI:: UIprint()
 void UI:: UIend()
 {
 	cout << "END OF SIMULATION... VIEW OUTPUT FILE" << endl;
+}
+UI:: ~UI()
+{
+	delete s;
 }

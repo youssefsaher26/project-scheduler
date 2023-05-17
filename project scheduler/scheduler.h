@@ -19,6 +19,7 @@ using namespace std;
 class scheduler
 {
 private:
+	int count_edf;
 	int time;
 	int STL;
 	int forkprob;
@@ -50,7 +51,7 @@ public:
 	int get_time();
 	void simulator();
 	void allmoving(processor* ptr);
-	process* fork(int y);
+	process* fork(int y, int z);
 	void CreateProcessors();
 	void blockandtrm(processor* ptr);
 	void forks(processor* ptr);
@@ -82,10 +83,6 @@ public:
 	void kill_children(process* p);
 	process* kill1(int id);
 	void steal();
-	void print()
-	{
-		cout << *this;
-	}
 	friend ostream& operator<< (ostream& out, scheduler& s)
 	{
 		out << "Current TimeStep : " << s.time << endl;
@@ -98,12 +95,13 @@ public:
 			{
 				out << "Processor " << p->getItem()->getpnumber() << " ";
 				if (p->getItem()->get_type() == 1)
-
 					out << "[FCFS]: OVERHEAT!" << endl;
 				else if (p->getItem()->get_type() == 2)
 					out << "[RR]: OVERHEAT!" << endl;
-				else
+				else if (p->getItem()->get_type() == 3)
 					out << "[SJF]: OVERHEAT!" << endl;
+				else
+					out << "[EDF]: OVERHEAT!" << endl;
 				p = p->getNext();
 			}
 			else if (p->getItem()->get_type() == 1)

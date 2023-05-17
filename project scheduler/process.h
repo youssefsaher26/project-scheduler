@@ -22,7 +22,7 @@ private:
 	int Rem_IO;
 	int RR_TIME;
 	bool forked;
-	bool pure;
+	bool pure; //if 
 	process* child1;
 	process* child2;
 	int  CpuTime;
@@ -30,13 +30,15 @@ private:
 	int EDF;
 
 public:
-	process(int at, int pid, int ct, int IO_num);
-	process(int at, int pid, int ct, int IO_num, bool x);
+	//constructor that is called while forking to inour pure as 0 to know that this process was forked
+	process(int at, int pid, int ct, int IO_num,int edf, bool x); 
+	//constructor that is called in load function
 	process(int at, int pid, int ct, int IO_num,int edf);
 	process();
-	void inc_children();
-	void add_inputs_sigs(IO_R_D* ptr);
-	void set_total_io_D(int io_d);
+	void inc_children(); //function that increases count of children when a process is forked
+	void add_inputs_sigs(IO_R_D* ptr); //function used in load file to assign IOs to the process in the form of an ior object
+	void set_total_io_D(int io_d); //adds the total iod to print it in the output file
+	//GETTERS:
 	int GetArrTime();
 	int GetRemTime();
 	int GetRRTime();

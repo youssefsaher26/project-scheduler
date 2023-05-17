@@ -16,8 +16,9 @@ process:: process(int at, int pid, int ct, int IO_num)
 	total_io_D = 0;
 	childrenno = 0;
 }
-process:: process(int at, int pid, int ct, int IO_num, bool x)
+process:: process(int at, int pid, int ct, int IO_num, int edf, bool x)
 {
+	EDF = edf;
 	RR_TIME = 0;
 	RemTime = ct;
 	CpuTime = ct;
