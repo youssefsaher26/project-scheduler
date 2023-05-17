@@ -1,21 +1,4 @@
 #include "process.h"
-process:: process(int at, int pid, int ct, int IO_num)
-{
-	RR_TIME = 0;
-	RemTime = ct;
-	CpuTime = ct;
-	AT = at;
-	PID = pid;
-	num_of_IO = IO_num;
-	kill_time = -1;
-	Rem_IO = -1;
-	forked = false;
-	pure = true;
-	child1 = nullptr;
-	child2 = nullptr;
-	total_io_D = 0;
-	childrenno = 0;
-}
 process:: process(int at, int pid, int ct, int IO_num, int edf, bool x)
 {
 	EDF = edf;
@@ -27,7 +10,6 @@ process:: process(int at, int pid, int ct, int IO_num, int edf, bool x)
 	num_of_IO = IO_num;
 	kill_time = -1;
 	Rem_IO = -1;
-	forked = false;
 	pure = x;
 	child1 = nullptr;
 	child2 = nullptr;
@@ -44,7 +26,6 @@ process::process(int at, int pid, int ct, int IO_num, int edf)
 	num_of_IO = IO_num;
 	kill_time = -1;
 	Rem_IO = -1;
-	forked = false;
 	pure = true;
 	child1 = nullptr;
 	child2 = nullptr;

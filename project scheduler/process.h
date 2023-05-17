@@ -21,12 +21,11 @@ private:
 	int RemTime;
 	int Rem_IO;
 	int RR_TIME;
-	bool forked;
-	bool pure; //if 
+	bool pure; //if process is a child, pure=0. if process is not, pure=1.
 	process* child1;
 	process* child2;
 	int  CpuTime;
-	int childrenno;
+	int childrenno; //0-2
 	int EDF;
 public:
 	//constructor that is called while forking to inour pure as 0 to know that this process was forked
@@ -53,22 +52,22 @@ public:
 	int get_TRT();
 	bool get_pure();
 	int get_EDF();
-	void setRT(int x);
 	process* get_child1();
 	process* get_child2();
 	int get_children_no();
 	QueueADT<IO_R_D*>* get_inputsigs();
-	void RR_INC();
+	void setRT(int x); //setter for the RT (time where process reached CPU for first time)
+	void RR_INC(); //function used in RR_SCHEDALGO to increment the time spent in RR processor until timeslice is reached
 	void setchild1(process* p);
 	void setchild2(process* p);
-	void RR_RESET();
-	void SetRemTime(int y);
-	void decremtime();
+	void RR_RESET(); //resets the time spent in RR when the timeslice is over
+	void SetRemTime(int y); //setter for remaining time
+	void decremtime(); //decrements remaining cpu time 
 	void setkiltime(int t);
 	void set_remIO(int t);
-	void dec_IO();
-	void finishTimes(int t);
-	void finish_Kill_Times(int t);
+	void dec_IO(); //decrements remaining IO_D to know when BLKtoRDY needs to be called
+	void finishTimes(int t); //calculates the times needed after a process is terminated(TT, WT, TRT)
+	void finish_Kill_Times(int t);//calculates the times needed when a process is killed (TT, WT, TRT)
 	bool operator > (process* p)
 	{
 		if (RemTime > p->GetRemTime())
