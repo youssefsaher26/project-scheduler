@@ -287,7 +287,7 @@ void scheduler:: savefile()
 		outputFile << "\n";
 		p_out = p_out->getNext();
 	}	 
-	
+	//saving processors details
 	outputFile << "---------------------------------------" << '\n';
 	outputFile << "Processes: " << processno << '\n';
 	outputFile << "Avg WT = " << get_Avg_WT() << "," << '\t';
