@@ -14,6 +14,7 @@ public:
 	static int MaxW;
 	FCFS(int x, int y);
 	virtual void AddProcess(process* p);
+	virtual void destruct();
 	virtual int queuetime();
 	virtual int stealqueuetime();
 	void RDY_TO_RUN();
@@ -23,6 +24,7 @@ public:
 	void RUN_TO_RDY();
 	virtual bool Done();
 	virtual process* donate();
+	virtual process* donate_steal();
 	LinkedList<process*>* get_FCFS_RDY();
 	static void set_Maxw(int x);
 	virtual process* KILL(int ID);

@@ -110,10 +110,21 @@ void EDF::RUN_TO_RDY()
 	RUN = NULL;
 	State = 0;
 }
-
+process* EDF::donate_steal()
+{
+	return this->donate();
+}
 bool EDF::Done()
 {
 	if (RUN == nullptr && EDF_RDY->isEmpty() == true)
 		return true;
 	return false;
+}
+void EDF::destruct()
+{
+	EDF_RDY->~PriorityQueue();
+	delete RUN;
+	delete mig;
+	delete block;
+	delete trm;
 }

@@ -20,6 +20,10 @@ int SJF:: queuetime()
 		sum = RUN->GetRemTime() + sum;
 	return sum;
 }
+process* SJF:: donate_steal()
+{
+	return this->donate();
+}
 int SJF:: stealqueuetime()
 {
 	int sum = 0;
@@ -88,4 +92,12 @@ bool SJF:: Done()
 	if (RUN == nullptr && SJF_RDY->isEmpty() == true)
 		return true;
 	return false;
+}
+void SJF::destruct()
+{
+	SJF_RDY->~PriorityQueue();
+	delete RUN;
+	delete mig;
+	delete block;
+	delete trm;
 }

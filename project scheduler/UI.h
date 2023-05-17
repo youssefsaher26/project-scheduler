@@ -16,6 +16,5 @@ public:
 	void print(); // print fn called each time step in modes 1 and 2
 	void UIprint(); //prints based on mode
 	void UIend(); //prints out ending message
-	~UI();
 };
 	

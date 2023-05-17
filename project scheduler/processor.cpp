@@ -11,6 +11,10 @@ processor:: processor()
 	block = nullptr;
 	trm = nullptr;
 }
+void processor::setpno(int y)
+{
+	pno = y;
+}
 void processor:: STATE()
 {
 	if (RUN == nullptr)
@@ -136,15 +140,15 @@ void processor:: SetRun()//sets run=null
 {
 	RUN = nullptr;
 }
-void processor:: time(int x)
+void processor::Time(int x)
 {
 	TIME = x;
 }
-int processor::pLoad(int TotalTRT)
+double processor::pLoad(int TotalTRT)
 {
 	if (TotalTRT == 0)
 		return 0;
-	int x = ((BusyTime * 100) / TotalTRT);
+	double x = (((double)BusyTime * 100) / TotalTRT);
 	return x;
 
 }
@@ -156,6 +160,7 @@ int processor::pUtil()
 	int x = ((BusyTime * 100) / z);
 	return x;
 }
+
 bool processor:: operator > (processor* p)
 {
 	if (this->queuetime() > p->queuetime())

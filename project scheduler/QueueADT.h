@@ -123,7 +123,6 @@ public:
 	~QueueADT()
 	{
 		T temp;
-
 		//Free (Dequeue) all nodes in the queue
 		while (dequeue(temp));
 	}

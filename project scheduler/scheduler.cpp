@@ -9,7 +9,7 @@ scheduler::scheduler()
 	killsigs = new QueueADT<kill*>;
 	inputsigs = new QueueADT<IO_R_D*>;
 	inter = new UI(this);
-	time = 1;
+	Time = 1;
 	STL = 0;
 	stolenno = 0;
 	forkprob = 0;
@@ -23,7 +23,6 @@ scheduler::scheduler()
 	removerheatdur = 0;
 	count_edf = 0;
 	frozen = nullptr;
-	killed = false;
 }
 void scheduler::simulator()
 {
@@ -45,7 +44,8 @@ void scheduler::simulator()
 					overheat(p->getItem());
 				NEWtoRDY();
 				processor* ptr = p->getItem();
-				ptr->time(time);
+				ptr->Time(Time);
+				ptr->setpno(ProcessorsList->getcount());
 				KILLSIG();
 				ptr->SchedAlgo();
 				forks(ptr);
@@ -58,7 +58,7 @@ void scheduler::simulator()
 		BLKtoRDY();
 		steal();
 		inter->UIprint();
-		time++;
+		Time++;
 	}
 	inter->UIend();
 	savefile();
@@ -105,7 +105,7 @@ void scheduler::overheat(processor *proc)
 		{
 			return;
 		}
-		if (time > 50)
+		if (Time > 50)
 		{
 			int p = rand() % 100 + 1;
 			if (p > 85 && proc->getstate() == 1)
@@ -148,6 +148,8 @@ void scheduler::serve_heat()
 }
 void scheduler::allmoving(processor* ptr)
 {
+	if (ProcessorsList->getcount() < 2)
+		return;
 	if (ptr->getmigrate() != nullptr)
 	{
 		if (ptr->get_type() == 2)
@@ -193,7 +195,7 @@ void scheduler:: forks(processor* ptr)
 process* scheduler::fork(int y, int z)
 {
 	processno++;
-	process* p = new process(time, processno, y, 0, z, false);
+	process* p = new process(Time, processno, y, 0, z, false);
 	processor* pro = shortest_FCFS();
 	pro->AddProcess(p);
 	forkedno++;
@@ -220,7 +222,7 @@ void scheduler:: loadfile()
 	char garbage;	//garbage variable
 	ofstream outputFile;
 	ifstream inputFile;
-	inputFile.open("test.txt", ios::in);
+	inputFile.open("Test.txt", ios::in);
 	int rtf, t_slice, Maxw;
 	inputFile >> FCFSno >> SJFno >> RRno>> EDFno; //processors numbers
 	inputFile >> t_slice; //RR Time Slice
@@ -337,10 +339,6 @@ void scheduler:: savefile()
 	outputFile << "Percentage of Processes ended before EDF: " << (100*count_edf/processno)<<" %"<<'\n';
 	outputFile.close();
 }
-int scheduler::get_time()
-{
-	return time;
-}
 int scheduler:: get_Total_TRT()
 {
 	int total = 0;
@@ -400,7 +398,7 @@ process* scheduler::kill1(int id)
 			if (pTrm != nullptr)
 			{
 				TRM->enqueue(pTrm);
-				pTrm->finish_Kill_Times(time);
+				pTrm->finish_Kill_Times(Time);
 				if (pTrm->get_TT() < pTrm->get_EDF())
 					count_edf++;
 				killedno++;
@@ -428,7 +426,7 @@ void scheduler:: KILLSIG()
 	killsigs->peek(k);
 	if (killsigs->isEmpty() == false)
 	{
-		while (k->getkiltime() == time)
+		while (k->getkiltime() == Time)
 		{
 			process* p=kill1(k->getkillid());
 			kill_children(p);
@@ -438,7 +436,7 @@ void scheduler:: KILLSIG()
 			killsigs->peek(k);
 		}
 	}
-} //check overheat  //check overheat 
+} 
 void scheduler:: move1(process* p)
 {
 	processor* ssjf = shortest_SJF();
@@ -464,7 +462,7 @@ void scheduler:: NEWtoRDY()
 	while (ptr1 && NEW->isEmpty() != true)
 	{
 
-		if (ptr1->GetArrTime() > time)
+		if (ptr1->GetArrTime() > Time)
 		{
 			break;
 		}
@@ -479,7 +477,7 @@ void scheduler:: RUNtoTRM(processor* p)
 {
 	process* ptr = p->gettrm();
 	TRM->enqueue(ptr);
-	ptr->finishTimes(time);
+	ptr->finishTimes(Time);
 	if (ptr->get_TT() < ptr->get_EDF())
 		count_edf++;
 	kill_children(ptr);
@@ -512,56 +510,6 @@ void scheduler:: BLKtoRDY()
 			ptr->dec_IO();
 		}
 	}
-}
-processor* scheduler:: shortest_processor()
-{
-	Node <processor*>* p = ProcessorsList->getfront();
-	if (p->getItem() == frozen)
-		p = p->getNext();
-	if (!p)
-	{
-		return nullptr;
-	}
-	processor* min = p->getItem();
-	while (p)
-	{
-		if (p->getItem() == frozen)
-			p = p->getNext();
-		if (p)
-		{
-			if (min->queuetime() > p->getItem()->queuetime())
-			{
-				min = p->getItem();
-			}
-			p = p->getNext();
-		}
-	}
-	return min;
-}
-processor* scheduler:: stl_shortest_processor()
-{
-	Node <processor*>* p = ProcessorsList->getfront();
-	if (p->getItem() == frozen)
-		p = p->getNext();
-	if (!p)
-	{
-		return nullptr;
-	}
-	processor* min = p->getItem();
-	while (p)
-	{
-		if (p->getItem() == frozen)
-			p = p->getNext();
-		if (p)
-		{
-			if (min->stealqueuetime() > p->getItem()->stealqueuetime())
-			{
-				min = p->getItem();
-			}
-			p = p->getNext();
-		}
-	}
-	return min;
 }
 processor* scheduler:: longest_processor()
 {
@@ -711,7 +659,7 @@ processor* scheduler:: shortest_RR()
 }
 bool scheduler:: should_steal()
 {
-	if (time % STL == 0)
+	if (Time % STL == 0)
 	{
 		int lim = calclimit();
 		if (lim > 40)
@@ -720,6 +668,56 @@ bool scheduler:: should_steal()
 		}
 	}
 	return false;
+}
+processor* scheduler::shortest_processor()
+{
+	Node <processor*>* p = ProcessorsList->getfront();
+	if (p->getItem() == frozen)
+		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
+	processor* min = p->getItem();
+	while (p)
+	{
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
+		{
+			if (min->queuetime() > p->getItem()->queuetime())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
+		}
+	}
+	return min;
+}
+processor* scheduler::stl_shortest_processor()
+{
+	Node <processor*>* p = ProcessorsList->getfront();
+	if (p->getItem() == frozen)
+		p = p->getNext();
+	if (!p)
+	{
+		return nullptr;
+	}
+	processor* min = p->getItem();
+	while (p)
+	{
+		if (p->getItem() == frozen)
+			p = p->getNext();
+		if (p)
+		{
+			if (min->stealqueuetime() > p->getItem()->stealqueuetime())
+			{
+				min = p->getItem();
+			}
+			p = p->getNext();
+		}
+	}
+	return min;
 }
 int scheduler:: calclimit()
 {
@@ -731,31 +729,40 @@ int scheduler:: calclimit()
 }
 void scheduler:: steal()
 {
+	if (ProcessorsList->getcount() < 2)
+		return;
 	bool y = should_steal();
 	process* prv = nullptr;
+	processor* longest = longest_processor();
+	processor* shortest = stl_shortest_processor();
 	while (y == true)
 	{
-		processor* longest = longest_processor();
-		processor* shortest = stl_shortest_processor();
-		process* p = longest->donate();
-		if (p == prv)
-		{
-			shortest->AddProcess(p);
-			break;
-		}
+		process* p = longest->donate_steal();
 		if (p)
 		{
 			if (p->get_pure() == 1)
 			{
 				shortest->AddProcess(p);
 				stolenno++;
+				prv = p;
 			}
 			else
 				longest->AddProcess(p);
 		}
-		prv = p;
-		y = should_steal();
+		if (!p)
+			break;
+		y = stealagain(longest, shortest);
 	}
+}
+bool scheduler:: stealagain(processor* longest, processor* shortest)
+{
+	int LQF = longest->stealqueuetime();
+	int SQF = shortest->stealqueuetime();
+	if (LQF == 0)
+		return false;
+	if ((((LQF - SQF) * 100) / LQF) > 40)
+		return true;
+	return false;	
 }
 int scheduler:: CountRun() const
 {
@@ -773,12 +780,23 @@ int scheduler:: CountRun() const
 }
 scheduler:: ~scheduler()
 {
-	delete TRM;
-	delete NEW;
-	delete ProcessorsList;
-	delete BLK;
+	killsigs->~QueueADT();
 	delete killsigs;
+	inputsigs->~QueueADT();
 	delete inputsigs;
+	NEW->~QueueADT();
+	delete NEW;
+	BLK->~QueueADT();
+	delete BLK;
+	TRM->~QueueADT();
+	delete TRM;
+	processor* p = nullptr;
+	while (ProcessorsList->dequeue(p))
+	{
+		p->destruct();
+		delete p;
+	}
+	delete inter;
 }
 
 //QueueADT<processor*>* get_ProcessorsList()

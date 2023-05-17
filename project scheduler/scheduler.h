@@ -20,10 +20,10 @@ class scheduler
 {
 private:
 	int count_edf; //no of processes ended before deadline
-	int time; //timestep
-	int STL;
-	int forkprob;
-	int processno;
+	int Time; //timestep
+	int STL; //steal limit
+	int forkprob; //forking procbability
+	int processno; //number of processes
 	int FCFSno; //number of FCFS processors
 	int SJFno;//number of SJF processors
 	int RRno;//number of RR processors
@@ -31,30 +31,28 @@ private:
 	int migRTF;//number of processes migrated due to RTF
 	int migMaxW;//number of processes migrated due to MAXW
 	int forkedno;//number of forked processes
-	int killedno;
-	int stolenno;
-	int overheatdur;
-	int removerheatdur;
-	bool killed;
+	int killedno; //number of killed processes
+	int stolenno;//number of stolen processes
+	int overheatdur; //overheat duration loaded from input file
+	int removerheatdur; //remaining overheat duration
 	QueueADT<kill*>* killsigs;
 	QueueADT<IO_R_D*>* inputsigs;
-	Node<processor*>* random;
 	QueueADT<process*>* NEW;
 	QueueADT<process*>* BLK;
 	QueueADT<process*>* TRM;
 	QueueADT<processor*>* ProcessorsList;
-	UI* inter;
+	UI* inter; //pointer from interface class
 	processor* frozen;
 public:
-	scheduler();
-	void overheat(processor* proc);
-	int get_time();
-	void simulator();
-	void allmoving(processor* ptr);
-	process* fork(int y, int z);
-	void CreateProcessors();
-	void blockandtrm(processor* ptr);
-	void forks(processor* ptr);
+	scheduler(); 
+	void simulator(); //responsible for calling all functions to simulate the program
+	void allmoving(processor* ptr); //function that calls all the moving functions in simulator, move1 or move2
+	void CreateProcessors(); //called in scheduler to create the processors
+	void blockandtrm(processor* ptr); //called in simulator to call all functions related to blocking and terminating
+	process* fork(int y, int z); //function that creates a process with cpu time y and edf z and adds it to shortest FCFS
+	void forks(processor* ptr); //checks if the processor is fcfs, and checks the fork_it boolean to see if it needs to be forked
+	//if a process needs to be forked, fork(int z, int y) is called to create the process and handle it, then the 
+	//fork_it boolean in that processor is reset.
 	bool DONE();//checks if all processes are done and processors are empty
 	void loadfile();//loading input file
 	void savefile();//saving output file
@@ -62,30 +60,34 @@ public:
 	int get_Avg_WT();
 	int get_Avg_RT();
 	int get_Avg_TRT();
-	void move1(process* p); //moves process to shortest SJF
-	void move2(process* p); //moves process to Shortest RR
-	void serve_heat();
+	void move1(process* p); //moves process to shortest SJF from RR, migration due to RTF
+	void move2(process* p); //moves process to Shortest RR from FCFS, migration due to MaxW
 	int CountRun() const;
 	void NEWtoRDY();
 	//simulator: generate the probability and take action accordingly
 	void RUNtoTRM(processor* p);//move process from RUN state to TRM list
 	void RUNtoBLK(processor* p);//move process from RUN to BLK List
 	void BLKtoRDY(); //return process from BLK to shortest RDY List
-	processor* shortest_processor(); //returns pointer to the shortest processor
-	processor* stl_shortest_processor();
+	processor* shortest_processor(); //returns pointer to the shortest processor shortest rdy plus run
+	processor* stl_shortest_processor(); //shortest RDY list
 	processor* longest_processor();
 	processor* shortest_FCFS();//returns pointer to the shortest FCFS processor
 	processor* shortest_SJF();//returns pointer to the shortest SJF processor
 	processor* shortest_RR();//returns pointer to the shortest RR processor
-	bool should_steal();
-	int calclimit();
-	void KILLSIG();
-	void kill_children(process* p);
-	process* kill1(int id);
-	void steal();
+	void KILLSIG(); //checks the KILLSIGSQUEUE and calls kill(int id) function to kill that process
+	void kill_children(process* p); //kills children of the process recursively by calling kill1
+	process* kill1(int id); //takes the process id and loops on all fcfs processors and calls FCFS::KILL(int id)
+	//to see if the process is there and removes it, and calls killchildren(process* p)
+	bool should_steal(); //boolean calculated each time step to see if time is multiple of STL, and calculate the steal limit
+	int calclimit();//caclulates steal limit
+	bool stealagain(processor *p1, processor *p2);
+	void steal(); //performs the stealing process
+	void overheat(processor* proc); //checks if the processor has overheated
+	void serve_heat(); //serves overheated process, either decrements the removerheatdur or releases the processor from 
+	//the overheat state
 	friend ostream& operator<< (ostream& out, scheduler& s)
 	{
-		out << "Current TimeStep : " << s.time << endl;
+		out << "Current TimeStep : " << s.Time << endl;
 		out << "----------RDY PROCESSES----------" << endl;
 		Node <processor*>* p = s.ProcessorsList->getfront();
 		int i = 1;

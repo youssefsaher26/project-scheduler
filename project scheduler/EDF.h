@@ -8,7 +8,9 @@ private:
 
 public:
 	EDF(int x);
+	virtual process* donate_steal();
 	virtual void AddProcess(process* p);
+	virtual void destruct();
 	virtual int queuetime();
 	virtual int stealqueuetime();
 	void RDY_TO_RUN(); 

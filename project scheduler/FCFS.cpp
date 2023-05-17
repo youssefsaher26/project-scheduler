@@ -46,10 +46,11 @@ void FCFS:: RDY_TO_RUN()
 		{
 			process* temp = FCFS_RDY->GetHead()->getItem();
 			FCFS_RDY->DeleteFirst();
-			if (temp->get_pure())
+			if (temp->get_pure() && pno>1)
 			{
 				migration(temp);
 			}
+
 			if (mig == nullptr)
 			{
 				if (temp->GetRemTime() == temp->get_CT())
@@ -67,8 +68,7 @@ void FCFS:: migration(process* p)
 	int cpu = p->get_CT();
 	int rem = p->GetRemTime();
 	if (TIME - arrtime - cpu + rem > MaxW && p->get_pure() == 1 && p->get_pure()==1)
-	{
-		mig = p;
+	{		mig = p;
 	}
 	else
 	{
@@ -142,6 +142,22 @@ process* FCFS:: donate()
 	}
 	return nullptr;
 }
+process* FCFS::donate_steal()
+{
+	int count = 0;
+	Node<process*>* p = FCFS_RDY->GetHead();
+	while (p)
+	{
+		if (p->getItem()->get_pure() == 0)
+			count++;
+		p = p->getNext();
+	}
+	if (count == FCFS_RDY->get_count())
+		return nullptr;
+	else
+		return this->donate();
+
+}
 LinkedList<process*>* FCFS:: get_FCFS_RDY()
 {
 	return FCFS_RDY;
@@ -175,4 +191,12 @@ process* FCFS:: KILL(int ID)
 		p = p->getNext();
 	}
 	return nullptr;
+}
+void FCFS::destruct()
+{
+	FCFS_RDY->~LinkedList();
+	delete RUN;
+	delete mig;
+	delete block;
+	delete trm;
 }

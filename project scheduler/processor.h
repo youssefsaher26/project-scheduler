@@ -16,11 +16,13 @@ protected:
 	process* block;
 	process* trm;
 	int TIME; 
+	int pno;
 	bool frozen; // 1 if processor is overheated, 0 if processor is operating normally
 public:
 	bool fork_it; //checked each time step in the scheduler to know if a process needs to be forked or not
 	bool State; //  0-IDLE 1-BUSY
 	int TotalTRT;
+	virtual process* donate_steal() = 0;
 	virtual void RDY_TO_RUN() = 0; 
 	virtual void RUN_TO_RDY() = 0;
 	virtual int queuetime() = 0; //caclulates the total queue time (including RUN process)
@@ -30,7 +32,7 @@ public:
 	virtual void SchedAlgo() = 0; //serves running process, and checks if it needs to terminated, blocked, forked(fcfs), or killed(fcfs)
 	virtual process* KILL(int y) = 0; //returns nullptr in rr, sjf, edf but looks for it in fcfs.
 	virtual process* donate() = 0; //return a process from the top of the rdy list (needed in stealing and overheating)
-
+	virtual void destruct() = 0; //function called in processor destructor
 	processor();
 	virtual void STATE(); //called in the end of each time step to set the state of the processor
 	//GETTERS
@@ -45,7 +47,7 @@ public:
 	int get_idle_time();
 	bool getfrozen(); //whether this processor has overheated or not
 	process* GetRun(); //returns pointer to the running process
-
+	void setpno(int y);
 	virtual void NeedBlock();// checks the running process and sees if it needs to blocked or not
 	virtual void NeedTrm();
 	//SETTERS
@@ -56,11 +58,9 @@ public:
 	void resettrm(); //makes the TRM pointer null
 	void resetFork(); //resets the boolean of whether the run process needs to be forked or not
 	void SetRun();
-	void time(int x);
-
-	virtual int pLoad(int TotalTRT);
+	void Time(int x);
+	virtual double pLoad(int TotalTRT);
 	virtual int pUtil();
 	bool operator > (processor* p);
 	bool operator < (processor* p);
-
 };

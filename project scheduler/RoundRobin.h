@@ -21,6 +21,8 @@ public:
 	virtual void SchedAlgo();
 	void RUN_TO_RDY();
 	virtual bool Done();
+	virtual void destruct();
+	virtual process* donate_steal();
 	static void set_Timeslice(int x)
 	{
 		TimeSlice = x;
