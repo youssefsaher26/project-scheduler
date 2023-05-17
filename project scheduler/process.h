@@ -28,6 +28,7 @@ private:
 	int  CpuTime;
 	int childrenno;
 	int EDF;
+
 public:
 	process(int at, int pid, int ct, int IO_num);
 	process(int at, int pid, int ct, int IO_num, bool x);
